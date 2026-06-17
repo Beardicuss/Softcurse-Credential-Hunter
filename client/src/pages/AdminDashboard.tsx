@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Loader2, RefreshCw, AlertCircle, CheckCircle, Clock, Plus, Edit2, Lock, Copy } from "lucide-react";
+import { Loader2, RefreshCw, AlertCircle, CheckCircle, Clock, Plus, Edit2, Lock, Copy, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,6 +8,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+
+// Fix 7a: proper validity type instead of any
+type KeyValidity = "valid" | "invalid" | "rate_limited" | "unknown";
+
+// Fix 7b: typed edit object instead of any
+interface EditKeyObj {
+  id: number;
+  provider: string;
+  keyValue: string;
+  validity: KeyValidity;
+}
+
+// Fix 8: consistent UTC timestamp formatter — accepts Date objects or ISO strings from tRPC
+const fmtDate = (d: Date | string | null | undefined): string =>
+  d ? new Date(d).toISOString().replace("T", " ").slice(0, 19) + " UTC" : "—";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -26,11 +41,22 @@ export default function AdminDashboard() {
     }
   });
 
+  // Fix 1: NEW PROVIDER dialog gets its own state — no longer shared with ADD KEY
+  const [newProviderName, setNewProviderName] = useState("");
+
+  // ADD KEY dialog state (separate from above)
   const [addKeyProvider, setAddKeyProvider] = useState("");
   const [addKeyValue, setAddKeyValue] = useState("");
-  const [addKeyValidity, setAddKeyValidity] = useState<any>("unknown");
+  const [addKeyValidity, setAddKeyValidity] = useState<KeyValidity>("unknown");
 
-  const [editKeyObj, setEditKeyObj] = useState<any>(null);
+  // Fix 7b: typed edit object
+  const [editKeyObj, setEditKeyObj] = useState<EditKeyObj | null>(null);
+
+  // Fix 6: per-key pending state so only the clicked validate button spins
+  const [pendingKeyId, setPendingKeyId] = useState<number | null>(null);
+
+  // Fix A: per-provider pending state so only the clicked RUN DIAGNOSTIC button spins
+  const [pendingDiagProvider, setPendingDiagProvider] = useState<string | null>(null);
 
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } = trpc.chessAI.getProviderStats.useQuery(
     undefined,
@@ -55,7 +81,9 @@ export default function AdminDashboard() {
   const validateAllMutation = trpc.chessAI.validateAllKeysForProvider.useMutation({
     onSuccess: (result) => {
       toast.success(`Validation complete: ${result.valid} valid, ${result.invalid} invalid, ${result.rateLimited} rate-limited`);
+      // Fix 2: also refresh key list so validity badges update immediately
       refetchStats();
+      refetchKeys();
     },
     onError: (error) => { toast.error(`Batch validation failed: ${error.message}`); },
   });
@@ -63,9 +91,12 @@ export default function AdminDashboard() {
   const addKeyMutation = trpc.chessAI.addKey.useMutation({
     onSuccess: () => {
       toast.success("Key added");
+      // Fix 3: refresh key list so new key appears immediately in the expanded panel
       refetchStats();
+      refetchKeys();
       setAddKeyProvider("");
       setAddKeyValue("");
+      setAddKeyValidity("unknown");
     },
     onError: (error) => { toast.error(`Failed to add key: ${error.message}`); },
   });
@@ -73,7 +104,9 @@ export default function AdminDashboard() {
   const editKeyMutation = trpc.chessAI.editKey.useMutation({
     onSuccess: () => {
       toast.success("Key updated");
+      // Fix C: refresh stats so provider card validKeyCount reflects the manual override
       refetchKeys();
+      refetchStats();
       setEditKeyObj(null);
     },
     onError: (error) => { toast.error(`Failed to update key: ${error.message}`); },
@@ -83,7 +116,8 @@ export default function AdminDashboard() {
     onSuccess: () => {
       toast.success("Provider initialized successfully");
       refetchStats();
-      setAddKeyProvider("");
+      // Fix B: clear the correct field — newProviderName, not addKeyProvider
+      setNewProviderName("");
     },
     onError: (error) => { toast.error(`Failed to initialize provider: ${error.message}`); },
   });
@@ -133,7 +167,9 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Dialog>
+            {/* Fix 1: NEW PROVIDER dialog uses its own newProviderName state */}
+            {/* Fix 11: onOpenChange resets the field when dialog is dismissed */}
+            <Dialog onOpenChange={(open) => { if (!open) setNewProviderName(""); }}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="h-10 border-[var(--c-orange)] text-[var(--c-orange)] hover:bg-[var(--c-orange)] hover:text-black">
                   <Plus className="h-4 w-4 mr-2" /> NEW PROVIDER
@@ -144,11 +180,11 @@ export default function AdminDashboard() {
                   <DialogTitle className="data-text text-[var(--c-orange)] tracking-widest uppercase">INITIALIZE NEW PROVIDER</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4 mt-2">
-                  <Input placeholder="Provider ID (e.g. Anthropic)" className="glass-panel text-[var(--c-text)] data-text" value={addKeyProvider} onChange={e => setAddKeyProvider(e.target.value)} />
+                  <Input placeholder="Provider ID (e.g. Anthropic)" className="glass-panel text-[var(--c-text)] data-text" value={newProviderName} onChange={e => setNewProviderName(e.target.value)} />
                   <Button
                     className="w-full bg-[var(--c-orange)] text-black hover:bg-[#ff8f59] hover:shadow-[0_0_15px_rgba(255,107,53,0.4)] mt-2 cursor-pointer font-mono tracking-widest duration-300 transition-all border border-transparent"
-                    onClick={() => addProviderMutation.mutate({ provider: addKeyProvider })}
-                    disabled={addProviderMutation.isPending || !addKeyProvider}
+                    onClick={() => addProviderMutation.mutate({ provider: newProviderName })}
+                    disabled={addProviderMutation.isPending || !newProviderName}
                   >
                     {addProviderMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "[ ESTABLISH LINK ]"}
                   </Button>
@@ -168,7 +204,14 @@ export default function AdminDashboard() {
           <div className="glass-panel p-6">
             <h2 className="data-text data-cyan mb-4 tracking-widest uppercase border-b border-[var(--c-border)] pb-2 flex justify-between items-center">
               <span><span className="decorator"></span>PROVIDER FALLBACK CHAIN</span>
-              <Dialog>
+              {/* Fix 11: onOpenChange resets all ADD KEY fields when dialog is dismissed without submitting */}
+              <Dialog onOpenChange={(open) => {
+                if (!open) {
+                  setAddKeyProvider("");
+                  setAddKeyValue("");
+                  setAddKeyValidity("unknown");
+                }
+              }}>
                 <DialogTrigger asChild>
                   <Button variant="outline" className="h-8 border-[var(--c-cyan)] text-[var(--c-cyan)] hover:bg-[var(--c-cyan)] hover:text-black">
                     <Plus className="h-4 w-4 mr-2" /> ADD KEY
@@ -181,7 +224,7 @@ export default function AdminDashboard() {
                   <div className="grid gap-4 py-4 mt-2">
                     <Input placeholder="Provider (e.g. OpenAI)" className="glass-panel text-[var(--c-text)] data-text" value={addKeyProvider} onChange={e => setAddKeyProvider(e.target.value)} />
                     <Input placeholder="API Key Value" type="password" className="glass-panel text-[var(--c-text)] data-text" value={addKeyValue} onChange={e => setAddKeyValue(e.target.value)} />
-                    <Select onValueChange={setAddKeyValidity} value={addKeyValidity}>
+                    <Select onValueChange={(val) => setAddKeyValidity(val as KeyValidity)} value={addKeyValidity}>
                       <SelectTrigger className="glass-panel !mb-2 data-text">
                         <SelectValue placeholder="Validity Status" />
                       </SelectTrigger>
@@ -231,12 +274,20 @@ export default function AdminDashboard() {
           ) : (
             stats?.map((stat) => {
               const isActive = stat.provider === statusData?.currentProvider;
+              // Fix 10: health ratio for the bar visualisation
+              const healthRatio = stat.totalKeyCount > 0 ? stat.validKeyCount / stat.totalKeyCount : 0;
+              const barColor = healthRatio >= 0.5 ? "bg-green-500" : healthRatio >= 0.2 ? "bg-yellow-500" : "bg-[var(--c-magenta)]";
               return (
                 <div
                   key={stat.provider}
                   className={`glass-panel p-6 cursor-pointer group transition-all duration-300 ${selectedProvider === stat.provider ? "shadow-[0_0_15px_rgba(0,255,255,0.3)] border-[var(--c-cyan)]" : ""
                     } ${isActive ? "border-[var(--c-orange)] shadow-[0_0_15px_rgba(255,107,53,0.2)]" : ""}`}
-                  onClick={() => setSelectedProvider(stat.provider)}
+                  onClick={() => {
+                    // Fix 9: click-to-toggle — clicking the active provider collapses the panel
+                    // Fix 4: clear revealedKeys whenever switching providers
+                    setRevealedKeys(new Set());
+                    setSelectedProvider(prev => prev === stat.provider ? null : stat.provider);
+                  }}
                 >
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="hero-text text-xl flex items-center gap-2">
@@ -247,7 +298,7 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-6 data-text">
+                  <div className="grid grid-cols-2 gap-4 mb-2 data-text">
                     <div>
                       <p className="text-[11px] text-[var(--c-cyan-dim)] uppercase tracking-widest">Valid Keys</p>
                       <p className="text-2xl font-bold data-cyan">{stat.validKeyCount}</p>
@@ -255,6 +306,15 @@ export default function AdminDashboard() {
                     <div>
                       <p className="text-[11px] text-[var(--c-cyan-dim)] uppercase tracking-widest">Total Keys</p>
                       <p className="text-2xl font-bold data-cyan">{stat.totalKeyCount}</p>
+                    </div>
+                    {/* Fix 10: health ratio bar spanning both columns */}
+                    <div className="col-span-2 mb-2">
+                      <div className="w-full h-1 bg-[var(--c-border)] rounded-full overflow-hidden">
+                        <div
+                          className={`h-1 transition-all duration-500 ${barColor}`}
+                          style={{ width: `${healthRatio * 100}%` }}
+                        />
+                      </div>
                     </div>
                     <div>
                       <p className="text-[11px] text-[var(--c-cyan-dim)] uppercase tracking-widest">Requests</p>
@@ -266,9 +326,10 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="pt-4 border-t border-[var(--c-border)] flex flex-col gap-4">
+                    {/* Fix 8: consistent UTC timestamp instead of toLocaleTimeString() */}
                     <p className="text-[11px] text-[var(--c-cyan-dim)] flex items-center gap-2 uppercase tracking-widest data-text">
                       <Clock className="h-3 w-3" />
-                      LST_SYNC: {stat.lastRefreshAt ? new Date(stat.lastRefreshAt).toLocaleTimeString() : "N/A"}
+                      LST_SYNC: {fmtDate(stat.lastRefreshAt)}
                     </p>
                     <Button
                       size="sm"
@@ -276,11 +337,16 @@ export default function AdminDashboard() {
                       className="border-[var(--c-border)] text-[var(--c-cyan)] hover:bg-[var(--c-cyan)] hover:text-black font-mono tracking-widest text-xs h-8 cursor-pointer transition-colors duration-300"
                       onClick={(e) => {
                         e.stopPropagation();
-                        validateAllMutation.mutate({ provider: stat.provider });
+                        // Fix A: track which provider is running diagnostic so only that button spins
+                        setPendingDiagProvider(stat.provider);
+                        validateAllMutation.mutate(
+                          { provider: stat.provider },
+                          { onSettled: () => setPendingDiagProvider(null) }
+                        );
                       }}
-                      disabled={validateAllMutation.isPending}
+                      disabled={pendingDiagProvider === stat.provider}
                     >
-                      {validateAllMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+                      {pendingDiagProvider === stat.provider ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
                       RUN DIAGNOSTIC
                     </Button>
                   </div>
@@ -295,7 +361,17 @@ export default function AdminDashboard() {
           <div className="glass-panel p-6">
             <h2 className="data-text data-cyan mb-4 tracking-widest uppercase border-b border-[var(--c-border)] pb-2 flex items-center justify-between">
               <span><span className="decorator"></span>{selectedProvider} :: SYSTEM_KEYS</span>
-              {keysLoading && <Loader2 className="h-4 w-4 animate-spin data-cyan" />}
+              <div className="flex items-center gap-3">
+                {keysLoading && <Loader2 className="h-4 w-4 animate-spin data-cyan" />}
+                {/* Fix 9: close / deselect button so panel can be collapsed intentionally */}
+                <button
+                  className="text-[var(--c-cyan-dim)] hover:text-[var(--c-cyan)] transition-colors"
+                  title="Close panel"
+                  onClick={() => { setSelectedProvider(null); setRevealedKeys(new Set()); }}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </h2>
             <div className="mt-4">
               {keysLoading ? (
@@ -344,13 +420,16 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex gap-4 mt-2 data-text text-[11px] text-[var(--c-cyan-dim)] uppercase tracking-widest">
                           <p>PRB_COUNT: {key.usageCount}</p>
-                          <p>CHK_TIME: {new Date(key.lastCheckedAt).toLocaleString()}</p>
+                          {/* Fix 5: null guard so newly added keys show "—" instead of "Invalid Date" */}
+                          {/* Fix 8: consistent UTC format matching the provider card timestamp */}
+                          <p>CHK_TIME: {fmtDate(key.lastCheckedAt)}</p>
                         </div>
                       </div>
                       <div className="flex flex-row gap-2 w-full md:w-auto">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button size="icon" variant="outline" className="h-9 w-9 border-[var(--c-border)] text-[var(--c-text)] hover:text-[var(--c-cyan)] hover:border-[var(--c-cyan)] cursor-pointer transition-colors" onClick={() => setEditKeyObj({ id: key.id, provider: selectedProvider, validity: key.validity, keyValue: "" })}>
+                            {/* Fix D: stopPropagation so the edit button doesn't bubble up to the card */}
+                            <Button size="icon" variant="outline" className="h-9 w-9 border-[var(--c-border)] text-[var(--c-text)] hover:text-[var(--c-cyan)] hover:border-[var(--c-cyan)] cursor-pointer transition-colors" onClick={(e) => { e.stopPropagation(); setEditKeyObj({ id: key.id, provider: selectedProvider, validity: key.validity as KeyValidity, keyValue: "" }); }}>
                               <Edit2 className="h-4 w-4" />
                             </Button>
                           </DialogTrigger>
@@ -361,7 +440,7 @@ export default function AdminDashboard() {
                               </DialogHeader>
                               <div className="grid gap-4 py-4 mt-2">
                                 <Input placeholder="New Value (leave blank to keep current)" type="password" className="glass-panel text-[var(--c-text)] data-text" value={editKeyObj.keyValue} onChange={e => setEditKeyObj({ ...editKeyObj, keyValue: e.target.value })} />
-                                <Select onValueChange={(val) => setEditKeyObj({ ...editKeyObj, validity: val })} value={editKeyObj.validity}>
+                                <Select onValueChange={(val) => setEditKeyObj({ ...editKeyObj, validity: val as KeyValidity })} value={editKeyObj.validity}>
                                   <SelectTrigger className="glass-panel !mb-2 data-text">
                                     <SelectValue placeholder="Validity Status" />
                                   </SelectTrigger>
@@ -384,8 +463,23 @@ export default function AdminDashboard() {
                           )}
                         </Dialog>
 
-                        <Button size="icon" variant="outline" className="h-9 w-9 border-[var(--c-border)] text-[var(--c-text)] hover:text-[var(--c-cyan)] hover:border-[var(--c-cyan)] cursor-pointer transition-colors" onClick={() => validateKeyMutation.mutate({ provider: selectedProvider, keyId: key.id })} disabled={validateKeyMutation.isPending}>
-                          {validateKeyMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                        {/* Fix 6: per-key pending state so only this row's button spins */}
+                        {/* Fix D: stopPropagation on validate button */}
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="h-9 w-9 border-[var(--c-border)] text-[var(--c-text)] hover:text-[var(--c-cyan)] hover:border-[var(--c-cyan)] cursor-pointer transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPendingKeyId(key.id);
+                            validateKeyMutation.mutate(
+                              { provider: selectedProvider, keyId: key.id },
+                              { onSettled: () => setPendingKeyId(null) }
+                            );
+                          }}
+                          disabled={pendingKeyId === key.id}
+                        >
+                          {pendingKeyId === key.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                         </Button>
                       </div>
                     </div>
