@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Loader2 } from "lucide-react";
+import logo from "@/assets/home_logo.webp";
 
 export default function Home() {
   const { data: statusData, isLoading } = trpc.chessAI.getStatus.useQuery();
@@ -15,15 +16,18 @@ export default function Home() {
         {/* Brand mark */}
         <div className="flex justify-center mb-6">
           <div
-            className="w-16 h-16 grid place-items-center text-2xl"
+            className="w-16 h-16 grid place-items-center"
             style={{
               border: "1px solid rgba(79, 255, 240, 0.3)",
               borderRadius: "14px",
-              color: "var(--c-cyan)",
               boxShadow: "var(--shadow-cyan)",
             }}
           >
-            ◆
+            <img
+              src={logo}
+              alt="Softcurse Systems"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
 
