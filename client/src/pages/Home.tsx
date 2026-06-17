@@ -7,33 +7,89 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col relative items-center justify-center p-6">
-      <div className="glow-bloom" />
-      <main className="glass-panel p-10 max-w-2xl w-full text-center relative z-10">
-        <h1 className="hero-text mb-4 text-6xl">SOFTCURSE SYSTEMS</h1>
-        <div className="divider" />
-        <h2 className="text-xl font-mono text-[var(--c-cyan-dim)] mb-8 tracking-widest uppercase text-shadow-glow-cyan">
-          CREDENTIAL HUNTER VAULT
-        </h2>
+      <div className="glow-orb-cyan" />
+      <div className="glow-orb-red" />
+      <div className="noise-grid" />
 
-        <div className="flex flex-col gap-6 text-left mb-10 px-4">
-          <div className="flex justify-between border-b border-[var(--c-border)] pb-2 items-center">
-            <span className="data-text opacity-50 text-sm tracking-widest uppercase">Network Status</span>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin data-cyan" /> : (
-              <span className={`data-text font-bold data-cyan`}>
+      <main className="glass-panel p-10 max-w-2xl w-full text-center relative z-10">
+        {/* Brand mark */}
+        <div className="flex justify-center mb-6">
+          <div
+            className="w-16 h-16 grid place-items-center text-2xl"
+            style={{
+              border: "1px solid rgba(79, 255, 240, 0.3)",
+              borderRadius: "14px",
+              color: "var(--c-cyan)",
+              boxShadow: "var(--shadow-cyan)",
+            }}
+          >
+            ◆
+          </div>
+        </div>
+
+        <h1
+          className="hero-text mb-2"
+          style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", lineHeight: 1.02 }}
+        >
+          SOFTCURSE SYSTEMS
+        </h1>
+
+        <div className="kicker mb-2">CREDENTIAL HUNTER VAULT</div>
+        <div className="divider" />
+
+        <div className="flex flex-col gap-5 text-left mb-10 px-2 relative z-10">
+          <div
+            className="flex justify-between items-center pb-3"
+            style={{ borderBottom: "1px solid var(--c-border)" }}
+          >
+            <span className="data-text text-sm tracking-widest uppercase" style={{ color: "var(--c-text-muted)" }}>
+              Network Status
+            </span>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" style={{ color: "var(--c-cyan)" }} />
+            ) : (
+              <span className="data-text font-bold" style={{ color: "var(--c-cyan)" }}>
                 OPERATIONAL
               </span>
             )}
           </div>
-          <div className="flex justify-between border-b border-[var(--c-border)] pb-2 items-center">
-            <span className="data-text opacity-50 text-sm tracking-widest uppercase">Active Node</span>
-            <span className="data-text font-bold data-orange" style={{ animation: "pulse-orange 3s infinite" }}>
-              {statusData?.currentProvider || 'OFFLINE'}
+
+          <div
+            className="flex justify-between items-center pb-3"
+            style={{ borderBottom: "1px solid var(--c-border)" }}
+          >
+            <span className="data-text text-sm tracking-widest uppercase" style={{ color: "var(--c-text-muted)" }}>
+              Active Node
+            </span>
+            <span
+              className="data-text font-bold"
+              style={{ color: "var(--c-red)", animation: "pulse-red 3s infinite" }}
+            >
+              {statusData?.currentProvider || "OFFLINE"}
             </span>
           </div>
         </div>
 
         <Link href="/admin/keys">
-          <button className="bg-[var(--c-surface)] border border-[var(--c-border)] hover:border-[var(--c-cyan)] hover:text-[var(--c-cyan)] text-[var(--c-text)] font-mono tracking-widest px-8 py-3 uppercase transition-all duration-300 w-full shadow-[0_0_10px_rgba(0,255,255,0.0)] hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] cursor-pointer">
+          <button
+            className="w-full font-mono tracking-widest uppercase transition-all duration-300 cursor-pointer relative z-10"
+            style={{
+              padding: "14px 24px",
+              background: "linear-gradient(135deg, rgba(79,255,240,0.15), rgba(255,95,95,0.08))",
+              border: "1px solid rgba(79, 255, 240, 0.34)",
+              borderRadius: "12px",
+              color: "var(--c-text)",
+              fontSize: "0.9rem",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--shadow-cyan)";
+              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+              (e.currentTarget as HTMLButtonElement).style.transform = "none";
+            }}
+          >
             ACCESS ADMIN CORE
           </button>
         </Link>
