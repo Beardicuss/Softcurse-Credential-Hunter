@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Loader2, RefreshCw, AlertCircle, CheckCircle, Clock, Plus, Edit2, Lock } from "lucide-react";
+import { Loader2, RefreshCw, AlertCircle, CheckCircle, Clock, Plus, Edit2, Lock, Copy } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
   const [password, setPassword] = useState("");
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [revealedKeys, setRevealedKeys] = useState<Set<number>>(new Set());
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data) => {
@@ -307,7 +308,35 @@ export default function AdminDashboard() {
                     <div key={key.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border border-[var(--c-border)] bg-[#050810] glass-panel group transition-all duration-300 hover:border-[var(--c-cyan-dim)]">
                       <div className="flex-1 mb-4 md:mb-0">
                         <div className="flex items-center gap-3 data-text">
-                          <p className="text-lg text-[var(--c-text)]">{key.keyMasked}</p>
+                          <p
+                            className="text-lg text-[var(--c-text)] cursor-pointer hover:text-[var(--c-cyan)] transition-colors select-all"
+                            style={{ wordBreak: "break-all" }}
+                            title="Click to reveal/hide full key"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRevealedKeys(prev => {
+                                const next = new Set(prev);
+                                if (next.has(key.id)) next.delete(key.id);
+                                else next.add(key.id);
+                                return next;
+                              });
+                            }}
+                          >
+                            {revealedKeys.has(key.id) ? key.keyValue : key.keyMasked}
+                          </p>
+                          {revealedKeys.has(key.id) && (
+                            <button
+                              className="text-[var(--c-cyan)] hover:text-[var(--c-cyan-dim)] transition-colors flex-shrink-0"
+                              title="Copy to clipboard"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(key.keyValue);
+                                toast.success("Key copied to clipboard");
+                              }}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </button>
+                          )}
                           {key.validity === "valid" && <span className="text-xs border border-green-500 text-green-500 px-2 py-0.5 flex items-center gap-1 shadow-[0_0_8px_rgba(34,197,94,0.3)]"><CheckCircle className="h-3 w-3" /> VALID</span>}
                           {key.validity === "invalid" && <span className="text-xs border border-[var(--c-magenta)] text-[var(--c-magenta)] px-2 py-0.5 flex items-center gap-1 shadow-[0_0_8px_rgba(255,0,255,0.3)]"><AlertCircle className="h-3 w-3" /> INVALID</span>}
                           {key.validity === "rate_limited" && <span className="text-xs border border-yellow-500 text-yellow-500 px-2 py-0.5 flex items-center gap-1 shadow-[0_0_8px_rgba(234,179,8,0.3)]"><AlertCircle className="h-3 w-3" /> RATE_LMT</span>}

@@ -94,6 +94,7 @@ export const appRouter = router({
           id: k.id,
           provider: k.provider,
           keyMasked: k.keyMasked,
+          keyValue: k.keyValue,
           validity: k.validity,
           lastCheckedAt: k.lastCheckedAt,
           usageCount: k.usageCount,
