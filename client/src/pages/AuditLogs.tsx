@@ -189,16 +189,19 @@ function LogDetailPanel({ details }: { details: string | null | undefined }) {
                             ? <ProviderTable providers={validProviders} accentColor="#00ff88" />
                             : validKeys
                             ? <KeyList keys={validKeys} accentColor="#00ff88" />
-                            : providers
-                            ? (
-                                <>
-                                    <p className="font-mono text-[10px] text-[var(--c-cyan-dim)] mb-3">
-                                        No per-validity breakdown available — showing total provider distribution.
-                                    </p>
-                                    <ProviderTable providers={providers} accentColor="#00ff88" />
-                                </>
+                            : (
+                                <div className="flex items-start gap-3 py-5">
+                                    <div className="w-0.5 h-10 rounded-full mt-0.5 shrink-0" style={{ backgroundColor: "#00ff88" }} />
+                                    <div>
+                                        <p className="font-mono text-xs" style={{ color: "#00ff88" }}>
+                                            Per-validity breakdown not recorded for this log entry.
+                                        </p>
+                                        <p className="font-mono text-[10px] text-[var(--c-cyan-dim)] mt-1">
+                                            This is a legacy log. Run a new refresh to generate split provider data.
+                                        </p>
+                                    </div>
+                                </div>
                             )
-                            : <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No valid key data.</p>
                         }
                     </div>
                 )}
@@ -212,16 +215,19 @@ function LogDetailPanel({ details }: { details: string | null | undefined }) {
                             ? <ProviderTable providers={invalidProviders} accentColor="var(--c-magenta)" />
                             : invalidKeys
                             ? <KeyList keys={invalidKeys} accentColor="var(--c-magenta)" />
-                            : providers
-                            ? (
-                                <>
-                                    <p className="font-mono text-[10px] text-[var(--c-cyan-dim)] mb-3">
-                                        No per-validity breakdown available — showing total provider distribution.
-                                    </p>
-                                    <ProviderTable providers={providers} accentColor="var(--c-magenta)" />
-                                </>
+                            : (
+                                <div className="flex items-start gap-3 py-5">
+                                    <div className="w-0.5 h-10 rounded-full mt-0.5 shrink-0" style={{ backgroundColor: "var(--c-magenta)" }} />
+                                    <div>
+                                        <p className="font-mono text-xs" style={{ color: "var(--c-magenta)" }}>
+                                            Per-validity breakdown not recorded for this log entry.
+                                        </p>
+                                        <p className="font-mono text-[10px] text-[var(--c-cyan-dim)] mt-1">
+                                            This is a legacy log. Run a new refresh to generate split provider data.
+                                        </p>
+                                    </div>
+                                </div>
                             )
-                            : <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No invalid key data.</p>
                         }
                     </div>
                 )}
