@@ -11,58 +11,87 @@ function tryParseJson(raw: string | null | undefined): Record<string, unknown> |
     try { return JSON.parse(raw); } catch { return null; }
 }
 
-/** Render a single parsed-JSON detail value in a human-readable way */
-function DetailValue({ value }: { value: unknown }) {
-    if (Array.isArray(value)) {
-        if (value.length === 0) return <span className="text-[var(--c-cyan-dim)]">—</span>;
-        return (
-            <ul className="mt-1 space-y-1 pl-2 border-l border-[var(--c-border)]">
-                {value.map((item, i) => (
-                    <li key={i} className="font-mono text-xs text-[var(--c-text)]">
-                        {typeof item === "object" ? JSON.stringify(item) : String(item)}
-                    </li>
-                ))}
-            </ul>
-        );
-    }
-    if (typeof value === "object" && value !== null) {
-        return (
-            <pre className="text-xs font-mono text-[var(--c-text)] whitespace-pre-wrap break-all mt-1">
-                {JSON.stringify(value, null, 2)}
-            </pre>
-        );
-    }
-    return <span className="font-mono text-[var(--c-text)]">{String(value)}</span>;
-}
+// ── detail panel ─────────────────────────────────────────────────────────────
 
-/** Key-value summary grid for the top stats (imported / valid / invalid / …) */
-function StatsBadges({ data }: { data: Record<string, unknown> }) {
-    const numericKeys = Object.entries(data).filter(([, v]) => typeof v === "number");
-    if (numericKeys.length === 0) return null;
+type Tab = "all" | "valid" | "invalid";
+
+/**
+ * Renders a provider breakdown table.
+ * `providers`  – map of provider name → count
+ * `keys`       – optional list of key identifiers belonging to this tab
+ */
+function ProviderTable({
+    providers,
+    keys,
+    accentColor,
+}: {
+    providers: Record<string, number>;
+    keys?: string[];
+    accentColor: string;
+}) {
+    const entries = Object.entries(providers);
+    if (entries.length === 0)
+        return <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No entries.</p>;
+
     return (
-        <div className="flex flex-wrap gap-2 mb-4">
-            {numericKeys.map(([key, val]) => {
-                let color = "var(--c-cyan)";
-                if (key.toLowerCase().includes("invalid") || key.toLowerCase().includes("error")) color = "var(--c-magenta)";
-                else if (key.toLowerCase().includes("valid") && !key.toLowerCase().includes("invalid")) color = "#00ff88";
-                else if (key.toLowerCase().includes("import")) color = "var(--c-orange)";
-                return (
-                    <div
-                        key={key}
-                        className="px-3 py-1 border text-xs font-mono uppercase tracking-widest"
-                        style={{ borderColor: color, color }}
-                    >
-                        {key}: <span className="font-bold">{String(val)}</span>
-                    </div>
-                );
-            })}
-        </div>
+        <table className="w-full text-xs font-mono mt-2">
+            <thead>
+                <tr className="border-b border-[#1a1a2e]">
+                    <th className="text-left py-1 text-[var(--c-cyan-dim)] uppercase tracking-widest font-normal">Provider</th>
+                    <th className="text-right py-1 text-[var(--c-cyan-dim)] uppercase tracking-widest font-normal">Count</th>
+                    <th className="text-right py-1 text-[var(--c-cyan-dim)] uppercase tracking-widest font-normal">Share</th>
+                </tr>
+            </thead>
+            <tbody>
+                {entries
+                    .sort(([, a], [, b]) => b - a)
+                    .map(([name, count]) => {
+                        const total = entries.reduce((s, [, v]) => s + v, 0);
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                        return (
+                            <tr key={name} className="border-b border-[#0d0d14] hover:bg-[#050810]">
+                                <td className="py-2" style={{ color: accentColor }}>{name}</td>
+                                <td className="py-2 text-right text-[var(--c-text)]">{count}</td>
+                                <td className="py-2 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        <div className="w-20 h-1 bg-[#1a1a2e] rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full rounded-full"
+                                                style={{ width: `${pct}%`, backgroundColor: accentColor }}
+                                            />
+                                        </div>
+                                        <span className="text-[var(--c-cyan-dim)] w-8 text-right">{pct}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })}
+            </tbody>
+        </table>
     );
 }
 
-// ── detail panel ─────────────────────────────────────────────────────────────
+/** List of individual key IDs (validKeys / invalidKeys arrays) */
+function KeyList({ keys, accentColor }: { keys: string[]; accentColor: string }) {
+    if (keys.length === 0)
+        return <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No entries.</p>;
+    return (
+        <ul className="mt-2 space-y-1 max-h-48 overflow-y-auto pr-1">
+            {keys.map((k, i) => (
+                <li
+                    key={i}
+                    className="font-mono text-xs py-1 px-2 border-l-2 truncate"
+                    style={{ borderColor: accentColor, color: "var(--c-text)" }}
+                >
+                    {k}
+                </li>
+            ))}
+        </ul>
+    );
+}
 
 function LogDetailPanel({ details }: { details: string | null | undefined }) {
+    const [tab, setTab] = useState<Tab>("all");
     const parsed = tryParseJson(details);
 
     if (!parsed) {
@@ -73,27 +102,130 @@ function LogDetailPanel({ details }: { details: string | null | undefined }) {
         );
     }
 
-    // Separate numeric stats (shown as badges) from the rest
-    const nonNumeric = Object.entries(parsed).filter(([, v]) => typeof v !== "number");
+    const imported = typeof parsed.imported === "number" ? parsed.imported : null;
+    const valid    = typeof parsed.valid    === "number" ? parsed.valid    : null;
+    const invalid  = typeof parsed.invalid  === "number" ? parsed.invalid  : null;
+
+    // Provider breakdown — top-level object keyed by provider name
+    const providers = (
+        parsed.providers && typeof parsed.providers === "object" && !Array.isArray(parsed.providers)
+            ? parsed.providers as Record<string, number>
+            : null
+    );
+
+    // Optional per-validity provider maps (e.g. validProviders / invalidProviders)
+    const validProviders = (
+        parsed.validProviders && typeof parsed.validProviders === "object" && !Array.isArray(parsed.validProviders)
+            ? parsed.validProviders as Record<string, number>
+            : null
+    );
+    const invalidProviders = (
+        parsed.invalidProviders && typeof parsed.invalidProviders === "object" && !Array.isArray(parsed.invalidProviders)
+            ? parsed.invalidProviders as Record<string, number>
+            : null
+    );
+
+    // Optional key ID lists
+    const validKeys   = Array.isArray(parsed.validKeys)   ? (parsed.validKeys   as string[]) : null;
+    const invalidKeys = Array.isArray(parsed.invalidKeys) ? (parsed.invalidKeys as string[]) : null;
+
+    const TABS: { id: Tab; label: string; count: number | null; color: string }[] = [
+        { id: "all",     label: "ALL",     count: imported, color: "var(--c-orange)" },
+        { id: "valid",   label: "VALID",   count: valid,    color: "#00ff88"         },
+        { id: "invalid", label: "INVALID", count: invalid,  color: "var(--c-magenta)" },
+    ];
 
     return (
-        <div className="px-6 py-5 border-t border-[var(--c-border)] bg-[#02040a] space-y-4">
-            {/* Numeric summary badges */}
-            <StatsBadges data={parsed} />
+        <div className="border-t border-[var(--c-border)] bg-[#02040a]">
+            {/* Tab bar */}
+            <div className="flex border-b border-[#1a1a2e]">
+                {TABS.map((t) => (
+                    <button
+                        key={t.id}
+                        onClick={() => setTab(t.id)}
+                        className="px-5 py-3 text-xs font-mono uppercase tracking-widest transition-colors duration-200 focus:outline-none"
+                        style={{
+                            color: tab === t.id ? t.color : "var(--c-cyan-dim)",
+                            borderBottom: tab === t.id ? `2px solid ${t.color}` : "2px solid transparent",
+                            background: tab === t.id ? "rgba(255,255,255,0.02)" : "transparent",
+                        }}
+                    >
+                        {t.label}
+                        {t.count !== null && (
+                            <span
+                                className="ml-2 px-1.5 py-0.5 rounded-sm text-[10px]"
+                                style={{
+                                    backgroundColor: tab === t.id ? t.color + "22" : "#1a1a2e",
+                                    color: tab === t.id ? t.color : "var(--c-cyan-dim)",
+                                }}
+                            >
+                                {t.count}
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
 
-            {/* Remaining fields */}
-            {nonNumeric.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
-                    {nonNumeric.map(([key, val]) => (
-                        <div key={key}>
-                            <p className="data-text text-[var(--c-cyan-dim)] uppercase tracking-widest text-[10px] mb-0.5">
-                                {key}
-                            </p>
-                            <DetailValue value={val} />
-                        </div>
-                    ))}
-                </div>
-            )}
+            {/* Tab content */}
+            <div className="px-6 py-5">
+                {tab === "all" && (
+                    <div>
+                        <p className="data-text text-[var(--c-cyan-dim)] uppercase tracking-widest text-[10px] mb-1">
+                            Provider Breakdown
+                        </p>
+                        {providers
+                            ? <ProviderTable providers={providers} accentColor="var(--c-orange)" />
+                            : <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No provider data.</p>
+                        }
+                    </div>
+                )}
+
+                {tab === "valid" && (
+                    <div>
+                        <p className="data-text text-[10px] uppercase tracking-widest mb-1" style={{ color: "#00ff88" }}>
+                            Valid Keys by Provider
+                        </p>
+                        {validProviders
+                            ? <ProviderTable providers={validProviders} accentColor="#00ff88" />
+                            : validKeys
+                            ? <KeyList keys={validKeys} accentColor="#00ff88" />
+                            : providers
+                            ? (
+                                <>
+                                    <p className="font-mono text-[10px] text-[var(--c-cyan-dim)] mb-3">
+                                        No per-validity breakdown available — showing total provider distribution.
+                                    </p>
+                                    <ProviderTable providers={providers} accentColor="#00ff88" />
+                                </>
+                            )
+                            : <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No valid key data.</p>
+                        }
+                    </div>
+                )}
+
+                {tab === "invalid" && (
+                    <div>
+                        <p className="data-text text-[10px] uppercase tracking-widest mb-1" style={{ color: "var(--c-magenta)" }}>
+                            Invalid Keys by Provider
+                        </p>
+                        {invalidProviders
+                            ? <ProviderTable providers={invalidProviders} accentColor="var(--c-magenta)" />
+                            : invalidKeys
+                            ? <KeyList keys={invalidKeys} accentColor="var(--c-magenta)" />
+                            : providers
+                            ? (
+                                <>
+                                    <p className="font-mono text-[10px] text-[var(--c-cyan-dim)] mb-3">
+                                        No per-validity breakdown available — showing total provider distribution.
+                                    </p>
+                                    <ProviderTable providers={providers} accentColor="var(--c-magenta)" />
+                                </>
+                            )
+                            : <p className="font-mono text-xs text-[var(--c-cyan-dim)] py-4">No invalid key data.</p>
+                        }
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

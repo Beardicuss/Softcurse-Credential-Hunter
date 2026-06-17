@@ -38,12 +38,14 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
   valid: number;
   invalid: number;
   providers: Record<string, number>;
+  validProviders: Record<string, number>;
+  invalidProviders: Record<string, number>;
 }> {
   try {
     if (!fs.existsSync(jsonFilePath)) {
       console.warn(`[Credential Hunter] Payload file not found: ${jsonFilePath}`);
       console.warn(`[Credential Hunter] Assuming 0 items discovered due to GitHub edge rate-limits.`);
-      return { imported: 0, valid: 0, invalid: 0, providers: {} };
+      return { imported: 0, valid: 0, invalid: 0, providers: {}, validProviders: {}, invalidProviders: {} };
     }
 
     const fileContent = fs.readFileSync(jsonFilePath, "utf-8");
@@ -54,6 +56,8 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       valid: 0,
       invalid: 0,
       providers: {} as Record<string, number>,
+      validProviders: {} as Record<string, number>,
+      invalidProviders: {} as Record<string, number>,
     };
 
     // Extract all keys from all commits
@@ -77,8 +81,10 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
 
         if (key.validity === "valid") {
           stats.valid++;
+          stats.validProviders[normalizedProvider] = (stats.validProviders[normalizedProvider] || 0) + 1;
         } else if (key.validity === "invalid") {
           stats.invalid++;
+          stats.invalidProviders[normalizedProvider] = (stats.invalidProviders[normalizedProvider] || 0) + 1;
         }
 
         stats.providers[normalizedProvider] = (stats.providers[normalizedProvider] || 0) + 1;
@@ -98,6 +104,8 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       valid: stats.valid,
       invalid: stats.invalid,
       providers: stats.providers,
+      validProviders: stats.validProviders,
+      invalidProviders: stats.invalidProviders,
     });
 
     console.log(`[Credential Hunter] Synced ${stats.imported} keys (${stats.valid} valid, ${stats.invalid} invalid)`);
