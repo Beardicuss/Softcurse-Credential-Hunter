@@ -18,4 +18,5 @@ export const ENV = {
   get isProduction() { return getEnvVar("NODE_ENV") === "production"; },
   get forgeApiUrl() { return getEnvVar("BUILT_IN_FORGE_API_URL") ?? ""; },
   get forgeApiKey() { return getEnvVar("BUILT_IN_FORGE_API_KEY") ?? ""; },
+  get hexBridgeToken() { return getEnvVar("HEX_BRIDGE_TOKEN") ?? ""; },
 };

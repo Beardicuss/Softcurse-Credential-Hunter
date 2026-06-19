@@ -4,12 +4,9 @@ import { trpcServer } from '@hono/trpc-server';
 import { appRouter } from '../../server/routers';
 import { createContext } from '../../server/_core/context';
 import { aiProviderService } from '../../server/aiProviderService';
-import { logAuditEvent, upsertUser } from '../../server/db';
-import { sdk } from '../../server/_core/sdk';
-import { getSessionCookieOptions } from '../../server/_core/cookies';
-import { COOKIE_NAME, ONE_YEAR_MS } from '@shared/const';
+import { getAllProviderStats, getAuditLogs, getKeysByProvider, logAuditEvent } from '../../server/db';
 import { cors } from 'hono/cors';
-import { setCookie } from 'hono/cookie';
+import { ENV } from '../../server/_core/env';
 
 const app = new Hono().basePath('/api');
 
@@ -17,7 +14,6 @@ app.use('*', async (c, next) => {
     if (c.env) {
         (globalThis as any).__PAGES_ENV__ = c.env;
     }
-    // Also try to inject to process for dev parity if it exists playfully
     if (c.env && typeof process !== 'undefined') {
         Object.assign(process.env, c.env);
     }
@@ -26,9 +22,6 @@ app.use('*', async (c, next) => {
 
 app.use('*', cors());
 
-// OAuth has been stripped out. Auth is purely handled by TRPC password validation now.
-
-// Raw Endpoint for Chess AI
 app.post('/chess-ai', async (c) => {
     try {
         const body = await c.req.json();
@@ -64,11 +57,10 @@ app.post('/chess-ai', async (c) => {
     }
 });
 
-// Status endpoint
 app.get('/chess-ai/status', async (c) => {
     try {
         const response = await aiProviderService.getMoveFromAI({
-            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', // Starting position
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
             moveHistory: [],
         });
 
@@ -88,10 +80,76 @@ app.get('/chess-ai/status', async (c) => {
     }
 });
 
-// tRPC integration
+app.get('/hunter/provider-stats', async (c) => {
+    if (!isBridgeAuthorized(c.req.header('authorization'), c.req.header('x-hex-token'))) {
+        return c.json({ success: false, error: 'Unauthorized' }, 401);
+    }
+
+    const stats = await getAllProviderStats();
+    return c.json({ success: true, stats });
+});
+
+app.get('/hunter/audit', async (c) => {
+    if (!isBridgeAuthorized(c.req.header('authorization'), c.req.header('x-hex-token'))) {
+        return c.json({ success: false, error: 'Unauthorized' }, 401);
+    }
+
+    const limit = Math.max(1, Math.min(100, Number(c.req.query('limit') || '20') || 20));
+    const logs = await getAuditLogs();
+    return c.json({ success: true, logs: logs.slice(0, limit) });
+});
+
+app.get('/hunter/key-summary', async (c) => {
+    if (!isBridgeAuthorized(c.req.header('authorization'), c.req.header('x-hex-token'))) {
+        return c.json({ success: false, error: 'Unauthorized' }, 401);
+    }
+
+    const providers = ['OpenAI', 'Anthropic', 'Google Gemini', 'xAI', 'Mistral', 'Cohere', 'Groq', 'OpenRouter'];
+    const keysByProvider = await Promise.all(providers.map(async (provider) => ({
+        provider,
+        keys: await getKeysByProvider(provider),
+    })));
+
+    const providerSummary = keysByProvider.flatMap(({ provider, keys }) => {
+        const counts = new Map<string, number>();
+        for (const key of keys) {
+            const validity = String(key.validity || 'unknown');
+            counts.set(validity, (counts.get(validity) || 0) + 1);
+        }
+        return Array.from(counts.entries()).map(([validity, count]) => ({ provider, validity, count }));
+    });
+
+    const allKeys = keysByProvider.flatMap((entry) => entry.keys);
+    const totals = {
+        total_keys: allKeys.length,
+        valid_keys: allKeys.filter((key) => key.validity === 'valid').length,
+        invalid_keys: allKeys.filter((key) => key.validity === 'invalid').length,
+        unknown_keys: allKeys.filter((key) => key.validity === 'unknown').length,
+        rate_limited_keys: allKeys.filter((key) => key.validity === 'rate_limited').length,
+    };
+
+    return c.json({
+        success: true,
+        summary: {
+            totals,
+            providers: providerSummary,
+        },
+    });
+});
+
 app.use('/trpc/*', trpcServer({
     router: appRouter,
     createContext: createContext,
 }));
+
+function isBridgeAuthorized(authorizationHeader?: string, altTokenHeader?: string) {
+    const expected = ENV.hexBridgeToken;
+    if (!expected) return false;
+
+    const auth = authorizationHeader || '';
+    const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+    const alt = String(altTokenHeader || '').trim();
+    return bearer === expected || alt === expected;
+}
 
 export const onRequest = handle(app);
