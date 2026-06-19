@@ -137,6 +137,30 @@ app.get('/hunter/key-summary', async (c) => {
     });
 });
 
+app.get('/hunter/valid-keys', async (c) => {
+    if (!isBridgeAuthorized(c.req.header('authorization'), c.req.header('x-hex-token'))) {
+        return c.json({ success: false, error: 'Unauthorized' }, 401);
+    }
+
+    const providers = ['OpenAI', 'Anthropic', 'Google Gemini', 'xAI', 'Mistral', 'Cohere', 'Groq', 'OpenRouter'];
+    const keysByProvider = await Promise.all(providers.map(async (provider) => ({
+        provider,
+        keys: await getKeysByProvider(provider),
+    })));
+
+    const mapped = {} as Record<string, string[]>;
+    for (const { provider, keys } of keysByProvider) {
+        const validKeys = keys
+            .filter((key) => key.validity === 'valid' && key.keyValue)
+            .map((key) => String(key.keyValue));
+        if (validKeys.length > 0) {
+            mapped[provider] = Array.from(new Set(validKeys));
+        }
+    }
+
+    return c.json({ success: true, keys: mapped });
+});
+
 app.use('/trpc/*', trpcServer({
     router: appRouter,
     createContext: createContext,
@@ -153,3 +177,4 @@ function isBridgeAuthorized(authorizationHeader?: string, altTokenHeader?: strin
 }
 
 export const onRequest = handle(app);
+
