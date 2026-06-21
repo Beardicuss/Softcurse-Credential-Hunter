@@ -1,8 +1,14 @@
 import { eq, sql, and, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/tidb-serverless";
 import { connect } from "@tidbcloud/serverless";
-import { InsertUser, users, apiKeys, auditLogs, providerStats } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import {
+  InsertUser,
+  users,
+  apiKeys,
+  auditLogs,
+  providerStats,
+} from "../drizzle/schema";
+import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let client: any = null;
@@ -62,8 +68,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
+      values.role = "admin";
+      updateSet.role = "admin";
     }
 
     if (!values.lastSignedIn) {
@@ -90,7 +96,11 @@ export async function getUserByOpenId(openId: string) {
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
 
   return result.length > 0 ? result[0] : undefined;
 }
@@ -116,6 +126,16 @@ export async function getAllKeys() {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(apiKeys);
+}
+export async function getKeyById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(apiKeys)
+    .where(eq(apiKeys.id, id))
+    .limit(1);
+  return result[0];
 }
 export async function getKeysByProvider(provider: string) {
   const db = await getDb();
@@ -253,7 +273,11 @@ export async function logAuditEvent(
 export async function getAuditLogs() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(100);
+  return db
+    .select()
+    .from(auditLogs)
+    .orderBy(desc(auditLogs.createdAt))
+    .limit(100);
 }
 
 function maskApiKey(key: string): string {

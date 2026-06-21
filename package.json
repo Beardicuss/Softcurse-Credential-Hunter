@@ -13,7 +13,9 @@
     "test": "vitest run --passWithNoTests",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:migrate": "tsx server/migrateHunterMetadata.ts",
+    "hunt:check": "node --check scripts/credential-hunter.cjs",
     "hunt": "node scripts/credential-hunter.cjs",
+    "hunt:verify": "node scripts/verify-hunter-output.cjs",
     "hunt:sync": "tsx server/credentialHunterIntegration.ts"
   },
   "dependencies": {

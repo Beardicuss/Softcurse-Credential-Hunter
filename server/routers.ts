@@ -5,6 +5,7 @@ import {
   getAllProviderStats,
   getAllKeys,
   getKeysByProvider,
+  getKeyById,
   upsertApiKey,
   logAuditEvent,
   updateKeyById,
@@ -14,6 +15,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { validateKeyForProvider } from "./keyValidator";
 import { buildHunterDatabaseSnapshot } from "./hunterContract";
+import { toMaskedKeyRecord, toSafeEditAuditDetails } from "./keyAccess";
 import { getDefaultCredentialHunterPath } from "./credentialHunterIntegration";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
@@ -24,19 +26,31 @@ export const appRouter = router({
       .input(z.object({ password: z.string() }))
       .mutation(async ({ input, ctx }) => {
         if (!ENV.adminPassword) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "System is not configured. Missing ADMIN_PASSWORD edge variable." });
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "System is not configured. Missing ADMIN_PASSWORD edge variable.",
+          });
         }
         if (input.password !== ENV.adminPassword) {
-          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid access credentials" });
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid access credentials",
+          });
         }
-        const token = await sdk.createSessionToken("local_admin", { name: "System Administrator" });
+        const token = await sdk.createSessionToken("local_admin", {
+          name: "System Administrator",
+        });
         const cookieStr = `${COOKIE_NAME}=${token}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure`;
-        ctx.resHeaders.append('Set-Cookie', cookieStr);
+        ctx.resHeaders.append("Set-Cookie", cookieStr);
         return { success: true, token };
       }),
-    me: publicProcedure.query((opts) => opts.ctx.user),
+    me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
-      ctx.resHeaders.append('Set-Cookie', `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;`);
+      ctx.resHeaders.append(
+        "Set-Cookie",
+        `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;`
+      );
       return {
         success: true,
       } as const;
@@ -50,7 +64,11 @@ export const appRouter = router({
         service: "softcurse-credential-hunter",
         status: "operational" as const,
         providers: stats?.length || 0,
-        validKeys: stats?.reduce((total, item) => total + Number(item.validKeyCount || 0), 0) || 0,
+        validKeys:
+          stats?.reduce(
+            (total, item) => total + Number(item.validKeyCount || 0),
+            0
+          ) || 0,
         stats: stats || [],
       };
     }),
@@ -69,17 +87,40 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         const keys = await getKeysByProvider(input.provider);
-        return keys.map((k) => ({
-          id: k.id,
-          provider: k.provider,
-          keyMasked: k.keyMasked,
-          keyValue: k.keyValue,
-          validity: k.validity,
-          lastCheckedAt: k.lastCheckedAt,
-          usageCount: k.usageCount,
-        }));
+        return keys.map(toMaskedKeyRecord);
       }),
 
+    revealKey: protectedProcedure
+      .input(
+        z.object({ provider: z.string(), keyId: z.number().int().positive() })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin")
+          throw new TRPCError({ code: "FORBIDDEN" });
+        const key = await getKeyById(input.keyId);
+        if (!key || key.provider !== input.provider)
+          throw new TRPCError({ code: "NOT_FOUND" });
+        await logAuditEvent("key_revealed", key.provider, key.id, {
+          access: "admin_dashboard",
+        });
+        return { id: key.id, keyValue: key.keyValue };
+      }),
+
+    auditKeyCopy: protectedProcedure
+      .input(
+        z.object({ provider: z.string(), keyId: z.number().int().positive() })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin")
+          throw new TRPCError({ code: "FORBIDDEN" });
+        const key = await getKeyById(input.keyId);
+        if (!key || key.provider !== input.provider)
+          throw new TRPCError({ code: "NOT_FOUND" });
+        await logAuditEvent("key_copied", key.provider, key.id, {
+          access: "admin_dashboard",
+        });
+        return { success: true };
+      }),
     validateKey: protectedProcedure
       .input(z.object({ provider: z.string(), keyId: z.number() }))
       .mutation(async ({ input, ctx }) => {
@@ -87,13 +128,18 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         const keys = await getKeysByProvider(input.provider);
-        const key = keys.find((k) => k.id === input.keyId);
+        const key = keys.find(k => k.id === input.keyId);
         if (!key) {
           throw new TRPCError({ code: "NOT_FOUND" });
         }
-        const validity = await validateKeyForProvider(input.provider, key.keyValue);
+        const validity = await validateKeyForProvider(
+          input.provider,
+          key.keyValue
+        );
         await upsertApiKey(input.provider, key.keyValue, validity);
-        await logAuditEvent("key_validated", input.provider, input.keyId, { validity });
+        await logAuditEvent("key_validated", input.provider, input.keyId, {
+          validity,
+        });
         return { id: input.keyId, validity };
       }),
 
@@ -106,13 +152,21 @@ export const appRouter = router({
         const keys = await getKeysByProvider(input.provider);
         const results = { valid: 0, invalid: 0, rateLimited: 0 };
         for (const key of keys) {
-          const validity = await validateKeyForProvider(input.provider, key.keyValue);
+          const validity = await validateKeyForProvider(
+            input.provider,
+            key.keyValue
+          );
           await upsertApiKey(input.provider, key.keyValue, validity);
           if (validity === "valid") results.valid++;
           else if (validity === "invalid") results.invalid++;
           else if (validity === "rate_limited") results.rateLimited++;
         }
-        await logAuditEvent("refresh_completed", input.provider, undefined, results);
+        await logAuditEvent(
+          "refresh_completed",
+          input.provider,
+          undefined,
+          results
+        );
         return results;
       }),
 
@@ -121,7 +175,9 @@ export const appRouter = router({
         z.object({
           provider: z.string(),
           keyValue: z.string().min(1),
-          validity: z.enum(["valid", "invalid", "rate_limited", "unknown"]).default("unknown"),
+          validity: z
+            .enum(["valid", "invalid", "rate_limited", "unknown"])
+            .default("unknown"),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -129,7 +185,9 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         await upsertApiKey(input.provider, input.keyValue, input.validity);
-        await logAuditEvent("key_added_manually", input.provider, undefined, { validity: input.validity });
+        await logAuditEvent("key_added_manually", input.provider, undefined, {
+          validity: input.validity,
+        });
         return { success: true };
       }),
 
@@ -139,7 +197,9 @@ export const appRouter = router({
           id: z.number(),
           provider: z.string(),
           keyValue: z.string().optional(),
-          validity: z.enum(["valid", "invalid", "rate_limited", "unknown"]).optional(),
+          validity: z
+            .enum(["valid", "invalid", "rate_limited", "unknown"])
+            .optional(),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -148,28 +208,39 @@ export const appRouter = router({
         }
         await updateKeyById(input.id, {
           keyValue: input.keyValue,
-          validity: input.validity
+          validity: input.validity,
         });
-        await logAuditEvent("key_edited_manually", input.provider, input.id, { updates: input });
+        await logAuditEvent(
+          "key_edited_manually",
+          input.provider,
+          input.id,
+          toSafeEditAuditDetails(input)
+        );
         return { success: true };
       }),
 
     addProvider: protectedProcedure
       .input(z.object({ provider: z.string().min(1) }))
       .mutation(async ({ input, ctx }) => {
-        if (ctx.user?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+        if (ctx.user?.role !== "admin")
+          throw new TRPCError({ code: "FORBIDDEN" });
         await updateProviderStats(input.provider);
         return { success: true };
       }),
 
     getAuditLogs: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      if (ctx.user?.role !== "admin")
+        throw new TRPCError({ code: "FORBIDDEN" });
       return await getAuditLogs();
     }),
 
     getHunterSnapshot: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
-      const [stats, keys] = await Promise.all([getAllProviderStats(), getAllKeys()]);
+      if (ctx.user?.role !== "admin")
+        throw new TRPCError({ code: "FORBIDDEN" });
+      const [stats, keys] = await Promise.all([
+        getAllProviderStats(),
+        getAllKeys(),
+      ]);
       return buildHunterDatabaseSnapshot(stats, keys);
     }),
   }),
