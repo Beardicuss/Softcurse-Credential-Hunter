@@ -28,6 +28,7 @@ const DELAY_BETWEEN_REQUESTS_MS = 3000; // Increased delay to be more polite to 
 const RETRY_DELAY_MS = 10000; // Increased retry delay
 const MAX_RETRIES = 5; // Increased max retries
 const HTTP_TIMEOUT_MS = 15000; // Timeout for HTTP requests
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Minimum entropy for a string to be considered a potential key
 const MIN_ENTROPY = 3.5;

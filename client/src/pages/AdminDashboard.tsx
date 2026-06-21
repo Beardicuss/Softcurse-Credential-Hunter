@@ -10,6 +10,8 @@ import {
   Edit2,
   Lock,
   Copy,
+  Eye,
+  EyeOff,
   X,
   Activity,
   Database,
@@ -282,7 +284,7 @@ export default function AdminDashboard() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="data-text text-[11px] text-[var(--c-cyan-dim)] uppercase tracking-[0.35em] mb-2">Snapshot Core</p>
-                <h2 className="hero-text text-5xl leading-none">Mega Hunter Surface</h2>
+                <h2 className="hero-text text-5xl leading-none">Softcurse Hunter Surface</h2>
                 <p className="text-[var(--c-cyan-dim)] mt-3 max-w-2xl text-sm">
                   This panel now reads the frozen contract snapshot instead of scraping UI-local assumptions. It shows source yield,
                   freshness pressure, validation confidence, and which provider families are actually worth attention.
@@ -582,9 +584,25 @@ export default function AdminDashboard() {
                           >
                             {revealedKeys.has(key.id) ? key.keyValue : key.keyMasked}
                           </p>
+                          <button
+                            className="text-[var(--c-cyan)] hover:text-[var(--c-cyan-dim)] transition-colors flex items-center gap-1 text-xs font-mono border border-[var(--c-border)] px-2 py-1"
+                            title={revealedKeys.has(key.id) ? "Hide full key" : "Reveal full key"}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRevealedKeys((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(key.id)) next.delete(key.id);
+                                else next.add(key.id);
+                                return next;
+                              });
+                            }}
+                          >
+                            {revealedKeys.has(key.id) ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                            {revealedKeys.has(key.id) ? "HIDE" : "REVEAL"}
+                          </button>
                           {revealedKeys.has(key.id) && (
                             <button
-                              className="text-[var(--c-cyan)] hover:text-[var(--c-cyan-dim)] transition-colors flex-shrink-0"
+                              className="text-[var(--c-cyan)] hover:text-[var(--c-cyan-dim)] transition-colors flex items-center gap-1 text-xs font-mono border border-[var(--c-border)] px-2 py-1"
                               title="Copy to clipboard"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -592,7 +610,7 @@ export default function AdminDashboard() {
                                 toast.success("Key copied to clipboard");
                               }}
                             >
-                              <Copy className="h-4 w-4" />
+                              <Copy className="h-3.5 w-3.5" /> COPY
                             </button>
                           )}
                           {key.validity === "valid" && <span className="text-xs border border-green-500 text-green-500 px-2 py-0.5 flex items-center gap-1 shadow-[0_0_8px_rgba(34,197,94,0.3)]"><CheckCircle className="h-3 w-3" /> VALID</span>}
