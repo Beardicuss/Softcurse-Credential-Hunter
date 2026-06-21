@@ -3,6 +3,7 @@ import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import {
   getAllProviderStats,
+  getAllKeys,
   getKeysByProvider,
   upsertApiKey,
   logAuditEvent,
@@ -12,7 +13,7 @@ import {
 } from "./db";
 import { TRPCError } from "@trpc/server";
 import { validateKeyForProvider } from "./keyValidator";
-import { buildHunterContractSnapshot, readHunterOutputSnapshot } from "./hunterContract";
+import { buildHunterDatabaseSnapshot } from "./hunterContract";
 import { getDefaultCredentialHunterPath } from "./credentialHunterIntegration";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
@@ -168,19 +169,8 @@ export const appRouter = router({
 
     getHunterSnapshot: protectedProcedure.query(async ({ ctx }) => {
       if (ctx.user?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
-      const payload = readHunterOutputSnapshot(getDefaultCredentialHunterPath());
-      if (!payload) {
-        return {
-          contractVersion: "hunter.v1",
-          generatedAt: null,
-          totals: { candidates: 0, confirmedKeys: 0, confirmedCommits: 0, providers: 0 },
-          freshness: { fresh: 0, warm: 0, stale: 0, revalidationSuggested: 0 },
-          validation: { valid: 0, invalid: 0, unknown: 0, byTier: { high: 0, medium: 0, low: 0, unknown: 0 } },
-          providers: [],
-          failedQueries: [],
-        };
-      }
-      return buildHunterContractSnapshot(payload);
+      const [stats, keys] = await Promise.all([getAllProviderStats(), getAllKeys()]);
+      return buildHunterDatabaseSnapshot(stats, keys);
     }),
   }),
 });

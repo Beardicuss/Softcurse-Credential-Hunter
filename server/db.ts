@@ -112,6 +112,11 @@ export async function getAllValidKeys() {
   return db.select().from(apiKeys).where(eq(apiKeys.validity, "valid"));
 }
 
+export async function getAllKeys() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(apiKeys);
+}
 export async function getKeysByProvider(provider: string) {
   const db = await getDb();
   if (!db) return [];

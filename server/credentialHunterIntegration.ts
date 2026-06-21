@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { upsertApiKey, updateProviderStats, logAuditEvent } from "./db";
 import { normalizeProviderName } from "../shared/providerRegistry";
+import { HunterOutputSchema } from "./hunterContract";
 
 interface LeakedKey {
   provider: string;
@@ -49,7 +50,7 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
     }
 
     const fileContent = fs.readFileSync(jsonFilePath, "utf-8");
-    const data = JSON.parse(fileContent) as LeakedKeysOutput;
+    const data = HunterOutputSchema.parse(JSON.parse(fileContent)) as LeakedKeysOutput;
 
     const stats = {
       imported: 0,
