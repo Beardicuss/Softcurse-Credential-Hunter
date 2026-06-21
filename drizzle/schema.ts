@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, double, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -34,6 +34,17 @@ export const apiKeys = mysqlTable("api_keys", {
   keyValue: text("key_value").notNull(), // Full API key (encrypted in production)
   keyMasked: varchar("key_masked", { length: 64 }).notNull(), // Masked version for display (e.g., "sk-...abc123")
   validity: mysqlEnum("validity", ["valid", "invalid", "unknown", "rate_limited"]).default("unknown").notNull(),
+  confidence: double("confidence"),
+  matchStrength: varchar("match_strength", { length: 32 }),
+  validationTier: varchar("validation_tier", { length: 16 }),
+  validationStatus: varchar("validation_status", { length: 64 }),
+  validationReason: text("validation_reason"),
+  source: varchar("source", { length: 64 }),
+  evidenceUrl: text("evidence_url"),
+  discoveredAt: timestamp("discovered_at"),
+  lastValidatedAt: timestamp("last_validated_at"),
+  freshness: varchar("freshness", { length: 16 }),
+  revalidationSuggested: boolean("revalidation_suggested").default(false).notNull(),
   lastCheckedAt: timestamp("last_checked_at").defaultNow().notNull(),
   lastUsedAt: timestamp("last_used_at"),
   usageCount: int("usage_count").default(0).notNull(),

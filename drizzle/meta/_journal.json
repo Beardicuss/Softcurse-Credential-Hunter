@@ -15,6 +15,13 @@
       "when": 1777306119351,
       "tag": "0001_true_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1782055195957,
+      "tag": "0002_persist_hunter_metadata",
+      "breakpoints": true
     }
   ]
 }

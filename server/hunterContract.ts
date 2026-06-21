@@ -147,7 +147,12 @@ export interface HunterFailedQuery {
 export interface HunterDatabaseKey {
   provider: string;
   validity: string;
+  confidence?: number | null;
+  validationTier?: string | null;
+  freshness?: string | null;
+  revalidationSuggested?: boolean | null;
   lastCheckedAt: Date | string | null;
+  lastValidatedAt?: Date | string | null;
 }
 
 export interface HunterDatabaseProviderStat {
@@ -161,35 +166,51 @@ export function buildHunterDatabaseSnapshot(
   stats: HunterDatabaseProviderStat[],
   keys: HunterDatabaseKey[],
 ) {
-  const generatedAt = stats
-    .map((item) => item.lastRefreshAt ? new Date(item.lastRefreshAt) : null)
+  const generatedAt = [...stats.map((item) => item.lastRefreshAt), ...keys.map((item) => item.lastValidatedAt || item.lastCheckedAt)]
+    .map((value) => value ? new Date(value) : null)
     .filter((item): item is Date => item !== null && !Number.isNaN(item.getTime()))
     .sort((a, b) => b.getTime() - a.getTime())[0]?.toISOString() || null;
 
-  const providers = stats
-    .map((stat) => {
-      const providerKeys = keys.filter((key) => key.provider === stat.provider);
+  const providerNames = Array.from(new Set([
+    ...stats.map((item) => item.provider),
+    ...keys.map((item) => item.provider),
+  ])).filter(Boolean);
+
+  const providers = providerNames
+    .map((provider) => {
+      const providerKeys = keys.filter((key) => key.provider === provider);
+      const fallback = stats.find((item) => item.provider === provider);
       const valid = providerKeys.filter((key) => key.validity === "valid").length;
       const invalid = providerKeys.filter((key) => key.validity === "invalid").length;
       const rateLimited = providerKeys.filter((key) => key.validity === "rate_limited").length;
       const unknown = Math.max(0, providerKeys.length - valid - invalid - rateLimited);
+      const confidences = providerKeys
+        .map((key) => key.confidence)
+        .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
 
       return {
-        provider: stat.provider,
-        total: providerKeys.length || Number(stat.totalKeyCount || 0),
-        valid: providerKeys.length ? valid : Number(stat.validKeyCount || 0),
+        provider,
+        total: providerKeys.length || Number(fallback?.totalKeyCount || 0),
+        valid: providerKeys.length ? valid : Number(fallback?.validKeyCount || 0),
         invalid,
         unknown,
         rateLimited,
-        freshness: { fresh: 0, warm: 0, stale: 0 },
-        revalidationSuggested: 0,
-        avgConfidence: 0,
+        freshness: {
+          fresh: providerKeys.filter((key) => key.freshness === "fresh").length,
+          warm: providerKeys.filter((key) => key.freshness === "warm").length,
+          stale: providerKeys.filter((key) => key.freshness === "stale").length,
+        },
+        revalidationSuggested: providerKeys.filter((key) => key.revalidationSuggested).length,
+        avgConfidence: confidences.length
+          ? Number((confidences.reduce((sum, value) => sum + value, 0) / confidences.length).toFixed(3))
+          : 0,
       };
     })
-    .sort((a, b) => b.total - a.total || b.valid - a.valid || a.provider.localeCompare(b.provider));
+    .sort((a, b) => b.valid - a.valid || b.total - a.total || a.provider.localeCompare(b.provider));
 
   const valid = keys.filter((key) => key.validity === "valid").length;
   const invalid = keys.filter((key) => key.validity === "invalid").length;
+  const tierCount = (tier: string) => keys.filter((key) => key.validationTier === tier).length;
 
   return {
     contractVersion: "hunter.v1",
@@ -200,12 +221,22 @@ export function buildHunterDatabaseSnapshot(
       confirmedCommits: 0,
       providers: providers.length,
     },
-    freshness: { fresh: 0, warm: 0, stale: 0, revalidationSuggested: 0 },
+    freshness: {
+      fresh: keys.filter((key) => key.freshness === "fresh").length,
+      warm: keys.filter((key) => key.freshness === "warm").length,
+      stale: keys.filter((key) => key.freshness === "stale").length,
+      revalidationSuggested: keys.filter((key) => key.revalidationSuggested).length,
+    },
     validation: {
       valid,
       invalid,
       unknown: Math.max(0, keys.length - valid - invalid),
-      byTier: { high: 0, medium: 0, low: 0, unknown: keys.length },
+      byTier: {
+        high: tierCount("high"),
+        medium: tierCount("medium"),
+        low: tierCount("low"),
+        unknown: keys.filter((key) => !key.validationTier || key.validationTier === "unknown").length,
+      },
     },
     providers,
     failedQueries: [] as HunterFailedQuery[],

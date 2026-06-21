@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "test": "vitest run --passWithNoTests",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
+    "db:migrate": "drizzle-kit migrate",
     "hunt": "node scripts/credential-hunter.cjs",
     "hunt:sync": "tsx server/credentialHunterIntegration.ts"
   },

@@ -25,11 +25,15 @@ interface LeakedKey {
   validationAgeMs?: number;
   freshness?: string;
   revalidationSuggested?: boolean;
+  source?: string;
+  evidenceUrl?: string | null;
 }
 
 interface LeakedKeysOutput {
   generated_at: string;
   commits: Array<{
+    source?: string;
+    commit_url?: string | null;
     leaked_keys: LeakedKey[];
   }>;
 }
@@ -63,7 +67,11 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
 
     const allKeys: LeakedKey[] = [];
     for (const commit of data.commits || []) {
-      allKeys.push(...(commit.leaked_keys || []));
+      allKeys.push(...(commit.leaked_keys || []).map((key) => ({
+        ...key,
+        source: commit.source || "unknown",
+        evidenceUrl: commit.commit_url || null,
+      })));
     }
 
     const touchedProviders = new Set<string>();
@@ -75,7 +83,19 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       }
 
       try {
-        await upsertApiKey(normalizedProvider, key.value_full, key.validity);
+        await upsertApiKey(normalizedProvider, key.value_full, key.validity, {
+          confidence: key.confidence ?? null,
+          matchStrength: key.matchStrength ?? null,
+          validationTier: key.validationTier ?? null,
+          validationStatus: key.validationStatus ?? null,
+          validationReason: key.validationReason ?? null,
+          source: key.source ?? null,
+          evidenceUrl: key.evidenceUrl ?? null,
+          discoveredAt: parseOptionalDate(key.discoveredAt),
+          lastValidatedAt: parseOptionalDate(key.lastValidatedAt),
+          freshness: key.freshness ?? null,
+          revalidationSuggested: Boolean(key.revalidationSuggested),
+        });
         touchedProviders.add(normalizedProvider);
         stats.imported++;
 
@@ -120,6 +140,12 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
   }
 }
 
+
+function parseOptionalDate(value?: string): Date | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 export async function validateAllKeys(): Promise<void> {
   console.log("[Credential Hunter] Key validation completed");
 }

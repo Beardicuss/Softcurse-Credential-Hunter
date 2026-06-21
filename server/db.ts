@@ -123,10 +123,24 @@ export async function getKeysByProvider(provider: string) {
   return db.select().from(apiKeys).where(eq(apiKeys.provider, provider));
 }
 
+export interface ApiKeyMetadata {
+  confidence?: number | null;
+  matchStrength?: string | null;
+  validationTier?: string | null;
+  validationStatus?: string | null;
+  validationReason?: string | null;
+  source?: string | null;
+  evidenceUrl?: string | null;
+  discoveredAt?: Date | null;
+  lastValidatedAt?: Date | null;
+  freshness?: string | null;
+  revalidationSuggested?: boolean;
+}
 export async function upsertApiKey(
   provider: string,
   keyValue: string,
-  validity: "valid" | "invalid" | "unknown" | "rate_limited"
+  validity: "valid" | "invalid" | "unknown" | "rate_limited",
+  metadata: ApiKeyMetadata = {}
 ) {
   const db = await getDb();
   if (!db) return null;
@@ -141,7 +155,7 @@ export async function upsertApiKey(
   if (existing.length > 0) {
     await db
       .update(apiKeys)
-      .set({ validity, lastCheckedAt: new Date() })
+      .set({ validity, lastCheckedAt: new Date(), ...metadata })
       .where(eq(apiKeys.keyValue, keyValue));
     return existing[0];
   }
@@ -152,6 +166,7 @@ export async function upsertApiKey(
     keyMasked: masked,
     validity,
     lastCheckedAt: new Date(),
+    ...metadata,
   });
   return result;
 }

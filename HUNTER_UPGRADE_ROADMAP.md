@@ -1,9 +1,11 @@
 # Hunter Upgrade Roadmap
 
 ## Goal
+
 Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-source exposure intelligence pipeline that can feed HEX Server and desktop HEX with richer, safer, more dynamic data.
 
 ## Phase 1 — Registry and Hardcoded Ceiling Removal
+
 - Create a shared provider registry for canonical provider names, aliases, validation support, and AI routing priority.
 - Normalize provider names at sync/import time instead of discarding anything outside a tiny whitelist.
 - Move provider fallback order out of hardcoded arrays and into the shared registry.
@@ -11,6 +13,7 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
 - Start extracting giant script sections into small reusable modules.
 
 ## Phase 2 — Hunter Core Modularization
+
 - Split the monolith hunt script into small modules:
   - `scripts/hunter/core/provider-patterns.cjs`
   - `scripts/hunter/core/source-record.cjs`
@@ -20,6 +23,7 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
 - Keep the current GitHub source working while moving logic into modules.
 
 ## Phase 3 — Multi-Source Hunting
+
 - Keep GitHub as one source module, not the whole hunter.
 - Add GrayHatWarfare source ingestion as discovery-only.
 - Later sources:
@@ -31,16 +35,19 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
 - All sources must emit one normalized record shape.
 
 ## Phase 4 — Query Packs and Detection Expansion
+
 - Replace static query lists with provider-aware query packs.
 - Add filename, extension, path, and regex hints per provider.
 - Expand detection to support more providers and unknown-but-valuable credential classes instead of only a fixed short list.
 
 ## Phase 5 — Confidence and Deduplication
+
 - Score candidates before expensive validation.
 - Merge duplicates found across multiple sources into one entity with multiple evidence links.
 - Track freshness, source confidence, and matched pattern strength.
 
 ## Phase 6 — Validation Pipeline Upgrade
+
 - Keep provider-specific validators modular.
 - Add staged validation:
   - format validation
@@ -50,6 +57,7 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
 - Unknown providers must still be stored and surfaced even if no validator exists yet.
 
 ## Phase 7 — Hunter-to-Server Contract Freeze
+
 - Define stable output for HEX Server:
   - canonical provider
   - aliases
@@ -60,23 +68,53 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
   - last validation state
 - Server should consume Hunter through this contract rather than Hunter internals.
 
-## Phase 8 — Final Testing
-- Syntax checks for all extracted modules.
-- Smoke test GitHub hunt path.
-- Smoke test sync/import path.
-- Smoke test unknown provider retention.
-- Smoke test AI-capable provider rotation.
-- Validate that new providers are stored instead of discarded.
+## Phase 8 — Server Data Fidelity and Operator UI
+
+- Persist discovery metadata in TiDB instead of losing it after JSON sync:
+  - confidence and validation tier
+  - match strength and validation reason
+  - discovery and validation timestamps
+  - freshness and revalidation state
+  - source/evidence references
+- Make `hunter.v1` build its complete snapshot from persisted data on Cloudflare Pages.
+- Add source-health, validation queue, stale-key, and unknown-provider views.
+- Add a protected **Valid Key Vault** tab:
+  - group valid keys by provider
+  - masked by default
+  - explicit reveal/hide per key
+  - copy individual key
+  - copy provider group with confirmation
+  - audit every reveal and copy action without logging key values
+- Clarify dashboard semantics and use one canonical live query for provider counts.
+- Rank Top Provider Yield by valid-key count first, then total candidates and provider name.
+- Split the dashboard into small components and lazy-load heavy admin views.
+
+## Phase 9 — Reliability, Lifecycle, and Security
+
+- Extract remaining monolithic runner logic, including output writing.
+- Add bounded retry/backoff, per-source quotas, and structured scheduled-run summaries.
+- Add candidate lifecycle states, retention rules, stale-record cleanup, and revalidation scheduling.
+- Restrict CORS, add rate limiting, and use safer audited key-access procedures.
+- Keep raw key material out of logs, artifacts, metrics, and error responses.
+
+## Phase 10 — Final Testing
+
+- Add unit tests for source normalization, dedupe, scoring, freshness, validation stages, and output contracts.
+- Add integration tests for hunt output, TiDB sync, unknown-provider retention, and Pages Functions bundling.
+- Add an authorized-source smoke suite for GitHub, GitLab, Gist, GrayHat, and WebText adapters.
+- Add deployment checks for dashboard authentication and HEX bridge compatibility.
+- Add regression tests for scheduled workflow execution.
 
 ## Immediate Next Steps
+
 1. Extract a normalized source-record module.
 2. Extract dedupe + scoring modules.
 3. Convert GitHub hunt path to emit normalized records.
 4. Add the first GrayHatWarfare source module.
 5. Expand provider/query packs without rebuilding a monolith.
 
-
 ## Current Progress
+
 - Shared provider registry added and hardcoded provider discard path removed.
 - Hunter sync now stores normalized providers instead of silently dropping unknown-but-valuable discoveries.
 - GitHub hunting now flows through normalized source records, scoring, and dedupe helpers.
