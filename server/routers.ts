@@ -1,11 +1,8 @@
 import { COOKIE_NAME } from "@shared/const";
-import { getSessionCookieOptions } from "./_core/cookies";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { aiProviderService } from "./aiProviderService";
 import {
   getAllProviderStats,
-  getValidKeysByProvider,
   getKeysByProvider,
   upsertApiKey,
   logAuditEvent,
@@ -15,6 +12,8 @@ import {
 } from "./db";
 import { TRPCError } from "@trpc/server";
 import { validateKeyForProvider } from "./keyValidator";
+import { buildHunterContractSnapshot, readHunterOutputSnapshot } from "./hunterContract";
+import { getDefaultCredentialHunterPath } from "./credentialHunterIntegration";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
 
@@ -43,38 +42,17 @@ export const appRouter = router({
     }),
   }),
 
-  chessAI: router({
-    getMove: publicProcedure
-      .input(
-        z.object({
-          fen: z.string(),
-          moveHistory: z.array(z.string()).optional(),
-        })
-      )
-      .mutation(async ({ input }) => {
-        try {
-          const response = await aiProviderService.getMoveFromAI({
-            fen: input.fen,
-            moveHistory: input.moveHistory,
-          });
-          return response;
-        } catch (error) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: `AI move generation failed: ${(error as Error).message}`,
-          });
-        }
-      }),
-
+  hunter: router({
     getStatus: publicProcedure.query(async () => {
       const stats = await getAllProviderStats();
       return {
-        currentProvider: aiProviderService.getCurrentProvider(),
-        providerChain: aiProviderService.getProviderChain(),
+        service: "softcurse-credential-hunter",
+        status: "operational" as const,
+        providers: stats?.length || 0,
+        validKeys: stats?.reduce((total, item) => total + Number(item.validKeyCount || 0), 0) || 0,
         stats: stats || [],
       };
     }),
-
     getProviderStats: protectedProcedure.query(async ({ ctx }) => {
       if (ctx.user?.role !== "admin") {
         throw new TRPCError({ code: "FORBIDDEN" });
@@ -186,6 +164,23 @@ export const appRouter = router({
     getAuditLogs: protectedProcedure.query(async ({ ctx }) => {
       if (ctx.user?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
       return await getAuditLogs();
+    }),
+
+    getHunterSnapshot: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const payload = readHunterOutputSnapshot(getDefaultCredentialHunterPath());
+      if (!payload) {
+        return {
+          contractVersion: "hunter.v1",
+          generatedAt: null,
+          totals: { candidates: 0, confirmedKeys: 0, confirmedCommits: 0, providers: 0 },
+          freshness: { fresh: 0, warm: 0, stale: 0, revalidationSuggested: 0 },
+          validation: { valid: 0, invalid: 0, unknown: 0, byTier: { high: 0, medium: 0, low: 0, unknown: 0 } },
+          providers: [],
+          failedQueries: [],
+        };
+      }
+      return buildHunterContractSnapshot(payload);
     }),
   }),
 });

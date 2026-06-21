@@ -1,9 +1,12 @@
 /**
  * Key Validator
- * Validates API keys for each provider
+ * Validates API keys for each provider via a registry-based dispatch.
  */
 
+import { canValidateProvider, normalizeProviderName } from "../shared/providerRegistry";
+
 type ValidityStatus = "valid" | "invalid" | "rate_limited" | "unknown";
+type Validator = (key: string) => Promise<ValidityStatus>;
 
 export async function validateOpenAIKey(key: string): Promise<ValidityStatus> {
   try {
@@ -19,7 +22,7 @@ export async function validateOpenAIKey(key: string): Promise<ValidityStatus> {
     if (response.status === 429) return "rate_limited";
     if (response.ok) return "valid";
     return "unknown";
-  } catch (error) {
+  } catch {
     return "unknown";
   }
 }
@@ -43,9 +46,9 @@ export async function validateAnthropicKey(key: string): Promise<ValidityStatus>
 
     if (response.status === 401) return "invalid";
     if (response.status === 429) return "rate_limited";
-    if (response.ok || response.status === 400) return "valid"; // 400 might be from test message
+    if (response.ok || response.status === 400) return "valid";
     return "unknown";
-  } catch (error) {
+  } catch {
     return "unknown";
   }
 }
@@ -70,7 +73,7 @@ export async function validateGoogleGeminiKey(key: string): Promise<ValidityStat
     if (response.status === 429) return "rate_limited";
     if (response.ok) return "valid";
     return "unknown";
-  } catch (error) {
+  } catch {
     return "unknown";
   }
 }
@@ -95,7 +98,7 @@ export async function validateXAIKey(key: string): Promise<ValidityStatus> {
     if (response.status === 429) return "rate_limited";
     if (response.ok) return "valid";
     return "unknown";
-  } catch (error) {
+  } catch {
     return "unknown";
   }
 }
@@ -120,7 +123,7 @@ export async function validateMistralKey(key: string): Promise<ValidityStatus> {
     if (response.status === 429) return "rate_limited";
     if (response.ok) return "valid";
     return "unknown";
-  } catch (error) {
+  } catch {
     return "unknown";
   }
 }
@@ -134,7 +137,7 @@ export async function validateCohereKey(key: string): Promise<ValidityStatus> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "command-light",
+        model: "command-r",
         prompt: "test",
         max_tokens: 1,
       }),
@@ -145,29 +148,30 @@ export async function validateCohereKey(key: string): Promise<ValidityStatus> {
     if (response.status === 429) return "rate_limited";
     if (response.ok) return "valid";
     return "unknown";
-  } catch (error) {
+  } catch {
     return "unknown";
   }
 }
 
-export async function validateKeyForProvider(
-  provider: string,
-  key: string
-): Promise<ValidityStatus> {
-  switch (provider) {
-    case "OpenAI":
-      return validateOpenAIKey(key);
-    case "Anthropic":
-      return validateAnthropicKey(key);
-    case "Google Gemini":
-      return validateGoogleGeminiKey(key);
-    case "xAI":
-      return validateXAIKey(key);
-    case "Mistral":
-      return validateMistralKey(key);
-    case "Cohere":
-      return validateCohereKey(key);
-    default:
-      return "unknown";
+const VALIDATORS: Record<string, Validator> = {
+  "OpenAI": validateOpenAIKey,
+  "Anthropic": validateAnthropicKey,
+  "Google Gemini": validateGoogleGeminiKey,
+  "xAI": validateXAIKey,
+  "Mistral": validateMistralKey,
+  "Cohere": validateCohereKey,
+};
+
+export async function validateKeyForProvider(provider: string, key: string): Promise<ValidityStatus> {
+  const normalized = normalizeProviderName(provider);
+  if (!canValidateProvider(normalized)) {
+    return "unknown";
   }
+
+  const validator = VALIDATORS[normalized];
+  if (!validator) {
+    return "unknown";
+  }
+
+  return validator(key);
 }

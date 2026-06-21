@@ -397,7 +397,7 @@ function LogRow({ log }: { log: LogEntry }) {
 
 export default function AuditLogs() {
     const { user, isAuthenticated } = useAuth();
-    const { data: logs, isLoading } = trpc.chessAI.getAuditLogs.useQuery(undefined, {
+    const { data: logs, isLoading } = trpc.hunter.getAuditLogs.useQuery(undefined, {
         enabled: isAuthenticated && user?.role === "admin",
     });
 

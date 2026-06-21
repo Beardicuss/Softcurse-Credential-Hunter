@@ -2,6 +2,21 @@ const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { KEY_PATTERNS, FALSE_POSITIVE_PATTERNS, SEARCH_QUERIES } = require("./hunter/core/provider-patterns.cjs");
+const { createSourceRecord } = require("./hunter/core/source-record.cjs");
+const { scoreSourceRecord } = require("./hunter/core/scoring.cjs");
+const { dedupeRecords } = require("./hunter/core/dedupe.cjs");
+const { rankValidationCandidates, summarizeValidationPlan } = require("./hunter/core/validation-priority.cjs");
+const { assessValidationCandidate } = require("./hunter/core/validation-stages.cjs");
+const { buildFreshnessMeta } = require("./hunter/core/freshness.cjs");
+const { collectSources, mergeSourceErrors, mergeSourceSummaries } = require("./hunter/core/source-orchestrator.cjs");
+const { collectGitHubCandidates } = require("./hunter/sources/github-source.cjs");
+const { collectGrayhatCandidates } = require("./hunter/sources/grayhat-source.cjs");
+const { collectGitLabCandidates } = require("./hunter/sources/gitlab-source.cjs");
+const { collectGistCandidates } = require("./hunter/sources/gist-source.cjs");
+const { collectWebTextCandidates } = require("./hunter/sources/webtext-source.cjs");
+const { getHunterSourceConfig } = require("./hunter/core/source-config.cjs");
+const { extractKeysFromText } = require("./hunter/core/text-key-extractor.cjs");
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 
@@ -19,70 +34,7 @@ const MIN_ENTROPY = 3.5;
 
 // Concurrency limit for parallel operations (e.g., fetching diffs, validating keys)
 const CONCURRENCY_LIMIT = 5;
-
-// ─── Real key patterns (regex must match an actual key value, not just a var name) ───
-
-const KEY_PATTERNS = [
-  // Anthropic  — sk-ant-…
-  { provider: "Anthropic", re: /sk-ant-[a-zA-Z0-9\-_]{20,}/g },
-  // OpenAI     — sk-… or sk-proj-…
-  { provider: "OpenAI", re: /sk-(?:proj-)?[a-zA-Z0-9]{20,}/g },
-  // xAI / Grok — xai-…
-  { provider: "xAI / Grok", re: /xai-[a-zA-Z0-9\-_]{20,}/g },
-  // Google     — AIza…
-  { provider: "Google Gemini", re: /AIza[a-zA-Z0-9\-_]{30,}/g },
-  // Mistral    — long hex/alphanum after assignment
-  { provider: "Mistral", re: /(?:MISTRAL_API_KEY\s*=\s*["']?)([a-zA-Z0-9]{30,})/g },
-  // Cohere     — long alphanum string
-  { provider: "Cohere", re: /(?:COHERE_API_KEY\s*=\s*["']?)([a-zA-Z0-9]{40,})/g },
-  // Hugging Face — hf_…
-  { provider: "Hugging Face", re: /hf_[a-zA-Z0-9]{20,}/g },
-  // Together AI — long hex
-  { provider: "Together AI", re: /(?:TOGETHER_API_KEY\s*=\s*["']?)([a-f0-9]{40,})/g },
-  // Replicate  — r8_…
-  { provider: "Replicate", re: /r8_[a-zA-Z0-9]{30,}/g },
-  // AWS        — AKIA… or ASIA…
-  { provider: "AWS", re: /(?:AKIA|ASIA)[0-9A-Z]{16}/g },
-  { provider: "AWS Secret", re: /(?:AWS_SECRET_ACCESS_KEY|SECRET_ACCESS_KEY|AWS_SECRET|SECRET_KEY)\s*[:=]\s*["']?([a-zA-Z0-9\/\+=]{40})["']?/ig },
-  // Azure      — Client ID, Client Secret, Tenant ID, or storage hex
-  { provider: "Azure Client ID", re: /(?:AZURE_CLIENT_ID|CLIENT_ID|clientid)\s*[:=]\s*["']?([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})["']?/ig },
-  { provider: "Azure Client Secret", re: /(?:AZURE_CLIENT_SECRET|CLIENT_SECRET|clientsecret)\s*[:=]\s*["']?([a-zA-Z0-9\/\+=~\-]{34,40})["']?/ig },
-  { provider: "Azure Tenant ID", re: /(?:AZURE_TENANT_ID|TENANT_ID|tenantid)\s*[:=]\s*["']?([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})["']?/ig },
-  { provider: "Azure Hex", re: /(?:AZURE_CLIENT_SECRET|AZURE_STORAGE_KEY)[a-f0-9]{64,}/ig },
-  // Stripe     — sk_live_… or rk_live_…
-  { provider: "Stripe", re: /(?:sk_live_|rk_live_)[a-zA-Z0-9]{24,}/g },
-  // Twilio     — Account SID (AC...) and Auth Token
-  { provider: "Twilio SID", re: /AC[a-f0-9]{32}/ig },
-  { provider: "Twilio Token", re: /(?:TWILIO_AUTH_TOKEN|AUTH_TOKEN|twilio_token)\s*[:=]\s*["']?([a-f0-9]{32})["']?/ig },
-  { provider: "Twilio Bare Token", re: /[^a-f0-9]([a-f0-9]{32})[^a-f0-9]/ig },
-  // GitHub Personal Access Token — ghp_… or github_pat_…
-  { provider: "GitHub PAT", re: /(?:ghp_|github_pat_)[a-zA-Z0-9_]{36,}/g },
-  // Generic JWT — eyJ…
-  { provider: "JWT", re: /eyJ[a-zA-Z0-9-_]+\.eyJ[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+/g },
-];
-
-// Values that look like keys but are just placeholder/example text
-const FALSE_POSITIVE_PATTERNS = [
-  /your[_-]?api[_-]?key/i,
-  /insert[_-]?key/i,
-  /replace[_-]?me/i,
-  /example/i,
-  /placeholder/i,
-  /xxxx/i,
-  /1234/,
-  /test/i,
-  /<.*>/, // <YOUR_KEY>
-  /\$\{/, // ${VAR}
-  /process\.env/,
-  /os\.environ/,
-  /st\.secrets/,
-  /getenv/i,
-  /dummy/i,
-  /secret_key_here/i,
-  /api_key_here/i,
-  /password/i,
-  /token/i,
-];
+// ─── Real key patterns moved to small module ───────────────────────────────
 
 /**
  * Calculates the Shannon entropy of a string.
@@ -108,69 +60,46 @@ function calculateShannonEntropy(str) {
   return entropy;
 }
 
-function extractKeysFromDiff(diff) {
+function extractKeysFromDiff(diff, context = {}) {
   const found = [];
   const lines = diff.split("\n");
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    // Only look at added lines (+ prefix) to avoid flagging deletions
     if (line.startsWith("+") && !line.startsWith("+++")) {
       const content = line.substring(1);
       for (const { provider, re } of KEY_PATTERNS) {
         re.lastIndex = 0;
         let match;
         while ((match = re.exec(content)) !== null) {
-          // For patterns with a capture group, use group 1; otherwise group 0
           const value = match[1] ?? match[0];
-          const isFalsePositive = FALSE_POSITIVE_PATTERNS.some((fp) =>
-            fp.test(value),
-          );
-
-          // Apply entropy analysis
+          const isFalsePositive = FALSE_POSITIVE_PATTERNS.some((fp) => fp.test(value));
           const entropy = calculateShannonEntropy(value);
 
           if (!isFalsePositive && entropy >= MIN_ENTROPY) {
-            found.push({ provider, value, line: i + 1, lineContent: content, entropy: entropy });
+            const record = createSourceRecord({
+              provider,
+              value,
+              line: i + 1,
+              lineContent: content,
+              entropy,
+              source: context.source || "github",
+              sourceType: context.sourceType || "commit",
+              sourceUrl: context.sourceUrl || null,
+              repo: context.repo || null,
+              query: context.query || null,
+              evidence: [context.sourceUrl || context.repo?.repo_url || null].filter(Boolean),
+              discoveredAt: context.discoveredAt || new Date().toISOString(),
+            });
+            record.confidence = scoreSourceRecord(record);
+            found.push(record);
           }
         }
       }
     }
   }
+
   return found;
-}
-
-// ─── Search queries ───────────────────────────────────────────────────────────
-
-const SEARCH_QUERIES = [
-  { provider: "Anthropic", query: "ANTHROPIC_API_KEY" },
-  { provider: "Anthropic", query: "CLAUDE_API_KEY" },
-  { provider: "OpenAI", query: "OPENAI_API_KEY" },
-  { provider: "OpenAI", query: "sk-proj-" },
-  { provider: "xAI / Grok", query: "XAI_API_KEY" },
-  { provider: "xAI / Grok", query: "GROK_API_KEY" },
-  { provider: "Google Gemini", query: "GEMINI_API_KEY" },
-  { provider: "Google Gemini", query: "GOOGLE_API_KEY" },
-  { provider: "Mistral", query: "MISTRAL_API_KEY" },
-  { provider: "Cohere", query: "COHERE_API_KEY" },
-  { provider: "Hugging Face", query: "HUGGINGFACE_API_KEY" },
-  { provider: "Hugging Face", query: "HF_TOKEN" },
-  { provider: "Together AI", query: "TOGETHER_API_KEY" },
-  { provider: "Replicate", query: "REPLICATE_API_TOKEN" },
-  { provider: "AWS", query: "AWS_ACCESS_KEY_ID" },
-  { provider: "AWS", query: "AWS_SECRET_ACCESS_KEY" },
-  { provider: "Azure", query: "AZURE_CLIENT_SECRET" },
-  { provider: "Azure", query: "AZURE_STORAGE_KEY" },
-  { provider: "Stripe", query: "sk_live_" },
-  { provider: "Twilio", query: "AC" },
-  { provider: "GitHub PAT", query: "ghp_" },
-  { provider: "GitHub PAT", query: "github_pat_" },
-];
-
-// ─── HTTP helpers ─────────────────────────────────────────────────────────────
-
-function delay(ms) {
-  return new Promise((res) => setTimeout(res, ms));
 }
 
 function httpGet(hostname, path, headers = {}) {
@@ -180,9 +109,7 @@ function httpGet(hostname, path, headers = {}) {
       (res) => {
         let data = "";
         res.on("data", (c) => (data += c));
-        res.on("end", () =>
-          resolve({ statusCode: res.statusCode, body: data }),
-        );
+        res.on("end", () => resolve({ statusCode: res.statusCode, body: data }));
       },
     );
     req.on("error", reject);
@@ -547,35 +474,48 @@ async function pLimit(fn, limit, items) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function run() {
-  console.log("🔍 Searching GitHub commits for leaked API keys...\n");
+  console.log("🔍 Searching configured sources for leaked API keys...\n");
 
-  const candidates = [];
-  const summary = {};
-  const errors = [];
+  const sourceConfig = getHunterSourceConfig(process.env);
+  const sourceResults = await collectSources([
+    () => collectGitHubCandidates({
+      searchQueries: SEARCH_QUERIES,
+      searchGitHub,
+      delay,
+      delayBetweenRequestsMs: DELAY_BETWEEN_REQUESTS_MS,
+    }),
+    () => collectGrayhatCandidates({
+      config: sourceConfig.grayhat,
+      logger: console,
+    }),
+    () => collectGitLabCandidates({
+      config: sourceConfig.gitlab,
+      searchQueries: SEARCH_QUERIES,
+      logger: console,
+    }),
+    () => collectGistCandidates({
+      config: sourceConfig.gist,
+      searchQueries: SEARCH_QUERIES,
+      logger: console,
+    }),
+    () => collectWebTextCandidates({
+      config: sourceConfig.webtext,
+      logger: console,
+    }),
+  ]);
 
-  for (const { provider, query } of SEARCH_QUERIES) {
-    const result = await searchGitHub(provider, query);
-    candidates.push(...result.results);
-    if (!summary[provider]) summary[provider] = { candidates: 0, confirmed: 0, valid: 0, invalid: 0, unknown: 0 };
-    summary[provider].candidates += result.results.length;
-    if (result.error) errors.push({ provider, query, error: result.error });
-    await delay(DELAY_BETWEEN_REQUESTS_MS);
-  }
+  const summary = mergeSourceSummaries(sourceResults);
+  const errors = mergeSourceErrors(sourceResults);
+  const githubSource = sourceResults.find((item) => item.source === "github") || { unique: [] };
+  const derivedSources = sourceResults.filter((item) => item.source !== "github");
+  const unique = githubSource.unique || [];
+  const derivedExtractedKeys = dedupeRecords(derivedSources.flatMap((item) => item.extractedKeys || []));
+  const derivedSourceNames = derivedSources.map((item) => item.source).join(', ') || 'derived';
 
-  const seen = new Set();
-  const unique = candidates.filter((r) => {
-    if (!r.sha || seen.has(r.sha)) return false;
-    seen.add(r.sha);
-    return true;
-  });
-
-  console.log(
-    `\n🔎 Verifying ${unique.length} unique commits for real key values...\n`,
-  );
+  console.log(`\n🔎 Verifying ${unique.length} unique GitHub commits and ${derivedExtractedKeys.length} ${derivedSourceNames} extracted key candidate(s)...\n`);
 
   const confirmed = [];
 
-  // Phase 2: fetch each diff and look for actual key patterns in parallel
   const diffResults = await pLimit(async (commit) => {
     if (!commit.repo_owner || !commit.repo_name || !commit.sha) {
       console.warn(`  ⚠ Skipping malformed commit: ${JSON.stringify(commit)}`);
@@ -587,33 +527,55 @@ async function run() {
       commit.repo_name,
       commit.sha,
     );
-    // Introduce a small delay to be polite, even with concurrency
     await delay(600);
 
     if (!diff) {
-      process.stdout.write(
-        `  ⚠  ${commit.sha.slice(0, 8)} — could not fetch diff\n`,
-      );
+      process.stdout.write(`  ⚠  ${commit.sha.slice(0, 8)} — could not fetch diff\n`);
       return { commit, diff: null, keys: [] };
     }
 
-    const keys = extractKeysFromDiff(diff);
+    const keys = extractKeysFromDiff(diff, {
+      source: "github",
+      sourceType: "commit",
+      sourceUrl: commit.commit_url || null,
+      repo: commit,
+      query: commit.query || null,
+      discoveredAt: commit.author_date || new Date().toISOString(),
+    });
 
     if (keys.length === 0) {
-      process.stdout.write(
-        `  ✗  ${commit.sha.slice(0, 8)} — no real key found\n`,
-      );
+      process.stdout.write(`  ✗  ${commit.sha.slice(0, 8)} — no real key found\n`);
       return { commit, diff, keys: [] };
     }
     return { commit, diff, keys };
   }, CONCURRENCY_LIMIT, unique);
 
+  const derivedResults = derivedExtractedKeys.map((record, index) => ({
+    commit: {
+      sha: `${record.source || 'derived'}-${index + 1}`,
+      provider: record.provider || 'Derived',
+      repo_owner: record.metadata?.project_path?.split('/')?.[0] || record.metadata?.bucket || record.source || 'derived',
+      repo_name: record.metadata?.project_path?.split('/')?.slice(1).join('/') || record.metadata?.file_path || record.metadata?.bucket || 'source',
+      commit_url: record.sourceUrl || null,
+      query: record.query || null,
+      author_date: record.discoveredAt || new Date().toISOString(),
+      message: record.lineContent || null,
+      source: record.source || 'derived',
+    },
+    diff: null,
+    keys: [record],
+  }));
+
+  const verificationResults = [...diffResults, ...derivedResults];
+
   // Phase 3: Process diff results and validate keys
-  for (const { commit, keys } of diffResults) {
+  for (const { commit, keys } of verificationResults) {
     if (keys.length > 0) {
       console.log(
         `  ✅ ${commit.sha.slice(0, 8)} — ${keys.length} key(s) found! [${commit.repo_owner}/${commit.repo_name}]`,
       );
+
+      const leakedKeysWithValidity = [];
 
       // Pairing Logic
       const awsAccessKeys = keys.filter(k => k.provider === "AWS");
@@ -626,21 +588,33 @@ async function run() {
       const twilioSids = keys.filter(k => k.provider === "Twilio SID");
       const allTwilioTokens = keys.filter(k => k.provider === "Twilio Token" || k.provider === "Twilio Bare Token");
 
-      const leakedKeysWithValidity = [];
-      const keysToValidate = [...keys];
+      const normalizedKeys = dedupeRecords(keys);
+      const keysToValidate = [...normalizedKeys];
 
       // AWS Pairs
       if (awsAccessKeys.length > 0 && awsSecretKeys.length > 0) {
         console.log(`    🔗 Found potential AWS Access/Secret pair(s) in this commit!`);
         for (const id of awsAccessKeys) {
           for (const secret of awsSecretKeys) {
-            keysToValidate.push({
+            const pairedRecord = {
               provider: "AWS Pair",
               value: { id: id.value, secret: secret.value },
+              valueText: JSON.stringify({ id: id.value, secret: secret.value }),
               line: id.line,
               lineContent: `ID: ${id.value.slice(0, 8)}... Secret: ...${secret.value.slice(-4)}`,
-              entropy: (id.entropy + secret.entropy) / 2
-            });
+              entropy: (id.entropy + secret.entropy) / 2,
+              source: id.source || commit.source || 'derived',
+              sourceType: id.sourceType || 'paired-secret',
+              sourceUrl: id.sourceUrl || commit.commit_url || null,
+              repo: commit,
+              query: id.query || commit.query || null,
+              evidence: Array.from(new Set([...(id.evidence || []), ...(secret.evidence || [])])),
+              discoveredAt: id.discoveredAt || commit.author_date || new Date().toISOString(),
+              matchStrength: 'paired-secret',
+              metadata: { matchStrength: 'paired-secret' },
+            };
+            pairedRecord.confidence = scoreSourceRecord(pairedRecord);
+            keysToValidate.push(pairedRecord);
           }
         }
       }
@@ -650,15 +624,26 @@ async function run() {
         console.log(`    🔗 Found potential Azure Client ID/Secret pair(s) in this commit!`);
         for (const id of azureIds) {
           for (const secret of azureSecrets) {
-            // Azure also often needs a Tenant ID. If not found, use a default common one or report as unknown.
             const tenant = azureTenants[0]?.value || "common";
-            keysToValidate.push({
+            const pairedRecord = {
               provider: "Azure Pair",
               value: { id: id.value, secret: secret.value, tenant: tenant },
+              valueText: JSON.stringify({ id: id.value, secret: secret.value, tenant }),
               line: id.line,
               lineContent: `ID: ${id.value.slice(0, 8)}... Secret: ...${secret.value.slice(-4)}`,
-              entropy: (id.entropy + secret.entropy) / 2
-            });
+              entropy: (id.entropy + secret.entropy) / 2,
+              source: id.source || commit.source || 'derived',
+              sourceType: id.sourceType || 'paired-secret',
+              sourceUrl: id.sourceUrl || commit.commit_url || null,
+              repo: commit,
+              query: id.query || commit.query || null,
+              evidence: Array.from(new Set([...(id.evidence || []), ...(secret.evidence || []), ...(azureTenants[0]?.evidence || [])])),
+              discoveredAt: id.discoveredAt || commit.author_date || new Date().toISOString(),
+              matchStrength: 'paired-secret',
+              metadata: { matchStrength: 'paired-secret' },
+            };
+            pairedRecord.confidence = scoreSourceRecord(pairedRecord);
+            keysToValidate.push(pairedRecord);
           }
         }
       }
@@ -668,23 +653,52 @@ async function run() {
         console.log(`    🔗 Found potential Twilio SID/Token pair(s) in this commit!`);
         for (const sid of twilioSids) {
           for (const token of allTwilioTokens) {
-            keysToValidate.push({
+            const pairedRecord = {
               provider: "Twilio Pair",
               value: { sid: sid.value, token: token.value },
+              valueText: JSON.stringify({ sid: sid.value, token: token.value }),
               line: sid.line,
               lineContent: `SID: ${sid.value.slice(0, 8)}... Token: ...${token.value.slice(-4)}`,
-              entropy: (sid.entropy + token.entropy) / 2
-            });
+              entropy: (sid.entropy + token.entropy) / 2,
+              source: sid.source || commit.source || 'derived',
+              sourceType: sid.sourceType || 'paired-secret',
+              sourceUrl: sid.sourceUrl || commit.commit_url || null,
+              repo: commit,
+              query: sid.query || commit.query || null,
+              evidence: Array.from(new Set([...(sid.evidence || []), ...(token.evidence || [])])),
+              discoveredAt: sid.discoveredAt || commit.author_date || new Date().toISOString(),
+              matchStrength: 'paired-secret',
+              metadata: { matchStrength: 'paired-secret' },
+            };
+            pairedRecord.confidence = scoreSourceRecord(pairedRecord);
+            keysToValidate.push(pairedRecord);
           }
         }
       }
 
+      const prioritizedKeysToValidate = rankValidationCandidates(dedupeRecords(keysToValidate));
+      const validationPlan = summarizeValidationPlan(prioritizedKeysToValidate);
+      console.log(`    · Validation priority -> high: ${validationPlan.high}, medium: ${validationPlan.medium}, low: ${validationPlan.low}`);
+
+      const stagedCandidates = prioritizedKeysToValidate.map((k) => {
+        const decision = assessValidationCandidate(k);
+        k.validationStage = decision.validationStage;
+        k.validationStatus = decision.validationStatus;
+        k.validationReason = decision.reason;
+        return k;
+      });
+      const probeCandidates = stagedCandidates.filter((k) => k.validationStage === 'probe');
+      const skippedCandidates = stagedCandidates.filter((k) => k.validationStage !== 'probe');
+      console.log(`    · Validation stages -> probe: ${probeCandidates.length}, preflight-only: ${skippedCandidates.length}`);
+
       // Validate keys in parallel as well
-      const validatedKeys = await pLimit(async (k) => {
+      const probedKeys = await pLimit(async (k) => {
         const validity = await checkKeyValidity(k.provider, k.value);
         k.validity = validity;
+        k.validationStatus = validity;
         return k;
-      }, CONCURRENCY_LIMIT, keysToValidate);
+      }, CONCURRENCY_LIMIT, probeCandidates);
+      const validatedKeys = [...probedKeys, ...skippedCandidates];
 
       for (const k of validatedKeys) {
         // Skip individual parts if we are using the pair
@@ -732,26 +746,41 @@ async function run() {
 
       confirmed.push({
         ...commit,
-        leaked_keys: leakedKeysWithValidity.map((k) => ({
-          provider: k.provider,
-          value_masked: (k.provider === "AWS Pair" || k.provider === "Azure Pair")
-            ? k.value.id.slice(0, 8) + "..."
-            : k.provider === "Twilio Pair"
-              ? k.value.sid.slice(0, 8) + "..."
-              : k.value.toString().slice(0, 8) + "..." + k.value.toString().slice(-4),
-          value_full: k.value,
-          validity: k.validity,
-          line: k.line,
-          lineContent: k.lineContent,
-          entropy: k.entropy,
-        })),
+        leaked_keys: leakedKeysWithValidity.map((k) => {
+          const freshness = buildFreshnessMeta(k, generatedAt);
+          return {
+            provider: k.provider,
+            value_masked: (k.provider === "AWS Pair" || k.provider === "Azure Pair")
+              ? k.value.id.slice(0, 8) + "..."
+              : k.provider === "Twilio Pair"
+                ? k.value.sid.slice(0, 8) + "..."
+                : k.value.toString().slice(0, 8) + "..." + k.value.toString().slice(-4),
+            value_full: k.value,
+            validity: k.validity,
+            validationStatus: k.validationStatus || k.validity || 'unknown',
+            validationReason: k.validationReason || null,
+            line: k.line,
+            lineContent: k.lineContent,
+            entropy: k.entropy,
+            confidence: k.confidence,
+            matchStrength: k.matchStrength || k.metadata?.matchStrength || 'unknown',
+            validationTier: k.validationTier || 'unknown',
+            discoveredAt: freshness.discoveredAt,
+            lastValidatedAt: freshness.lastValidatedAt,
+            ageMs: freshness.ageMs,
+            validationAgeMs: freshness.validationAgeMs,
+            freshness: freshness.freshness,
+            revalidationSuggested: freshness.revalidationSuggested,
+          };
+        }),
       });
     }
   }
 
+  const generatedAt = new Date().toISOString();
   const output = {
-    generated_at: new Date().toISOString(),
-    total_candidates: unique.length,
+    generated_at: generatedAt,
+    total_candidates: unique.length + derivedExtractedKeys.length,
     total_confirmed: confirmed.length,
     total_confirmed_commits: confirmed.length,
     summary_by_provider: summary,

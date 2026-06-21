@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import logo from "@/assets/home_logo.webp";
 
 export default function Home() {
-  const { data: statusData, isLoading } = trpc.chessAI.getStatus.useQuery();
+  const { data: statusData, isLoading, isError } = trpc.hunter.getStatus.useQuery();
 
   return (
     <div className="min-h-screen flex flex-col relative items-center justify-center p-6">
@@ -53,7 +53,7 @@ export default function Home() {
               <Loader2 className="h-4 w-4 animate-spin" style={{ color: "var(--c-cyan)" }} />
             ) : (
               <span className="data-text font-bold" style={{ color: "var(--c-cyan)" }}>
-                OPERATIONAL
+                {isError ? "OFFLINE" : "OPERATIONAL"}
               </span>
             )}
           </div>
@@ -63,13 +63,13 @@ export default function Home() {
             style={{ borderBottom: "1px solid var(--c-border)" }}
           >
             <span className="data-text text-sm tracking-widest uppercase" style={{ color: "var(--c-text-muted)" }}>
-              Active Node
+              Valid Key Pool
             </span>
             <span
               className="data-text font-bold"
               style={{ color: "var(--c-red)", animation: "pulse-red 3s infinite" }}
             >
-              {statusData?.currentProvider || "OFFLINE"}
+              {statusData ? `${statusData.validKeys} KEYS` : "OFFLINE"}
             </span>
           </div>
         </div>

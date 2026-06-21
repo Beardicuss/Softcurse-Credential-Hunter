@@ -6,12 +6,24 @@
 import fs from "fs";
 import path from "path";
 import { upsertApiKey, updateProviderStats, logAuditEvent } from "./db";
+import { normalizeProviderName } from "../shared/providerRegistry";
 
 interface LeakedKey {
   provider: string;
   value_full: string;
-  validity: "valid" | "invalid" | "unknown";
+  validity: "valid" | "invalid" | "unknown" | "rate_limited";
   entropy: number;
+  confidence?: number;
+  matchStrength?: string;
+  validationTier?: string;
+  validationStatus?: string;
+  validationReason?: string | null;
+  discoveredAt?: string;
+  lastValidatedAt?: string;
+  ageMs?: number;
+  validationAgeMs?: number;
+  freshness?: string;
+  revalidationSuggested?: boolean;
 }
 
 interface LeakedKeysOutput {
@@ -20,18 +32,6 @@ interface LeakedKeysOutput {
     leaked_keys: LeakedKey[];
   }>;
 }
-
-const PROVIDER_MAP: Record<string, string> = {
-  "OpenAI": "OpenAI",
-  "Anthropic": "Anthropic",
-  "Google Gemini": "Google Gemini",
-  "xAI / Grok": "xAI",
-  "Mistral": "Mistral",
-  "Cohere": "Cohere",
-  "Hugging Face": "Hugging Face",
-  "Together AI": "Together AI",
-  "Replicate": "Replicate",
-};
 
 export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<{
   imported: number;
@@ -60,23 +60,22 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       invalidProviders: {} as Record<string, number>,
     };
 
-    // Extract all keys from all commits
     const allKeys: LeakedKey[] = [];
     for (const commit of data.commits || []) {
       allKeys.push(...(commit.leaked_keys || []));
     }
 
-    // Process each key
-    for (const key of allKeys) {
-      const normalizedProvider = PROVIDER_MAP[key.provider] || key.provider;
+    const touchedProviders = new Set<string>();
 
-      // Only process supported providers
-      if (!["OpenAI", "Anthropic", "Google Gemini", "xAI", "Mistral", "Cohere"].includes(normalizedProvider)) {
+    for (const key of allKeys) {
+      const normalizedProvider = normalizeProviderName(key.provider);
+      if (!normalizedProvider || !key.value_full) {
         continue;
       }
 
       try {
         await upsertApiKey(normalizedProvider, key.value_full, key.validity);
+        touchedProviders.add(normalizedProvider);
         stats.imported++;
 
         if (key.validity === "valid") {
@@ -93,12 +92,10 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       }
     }
 
-    // Update provider statistics
-    for (const provider of Object.keys(stats.providers)) {
+    for (const provider of Array.from(touchedProviders)) {
       await updateProviderStats(provider);
     }
 
-    // Log the refresh event
     await logAuditEvent("refresh_completed", undefined, undefined, {
       imported: stats.imported,
       valid: stats.valid,
@@ -106,6 +103,12 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       providers: stats.providers,
       validProviders: stats.validProviders,
       invalidProviders: stats.invalidProviders,
+      freshness: {
+        fresh: allKeys.filter((key) => key.freshness === 'fresh').length,
+        warm: allKeys.filter((key) => key.freshness === 'warm').length,
+        stale: allKeys.filter((key) => key.freshness === 'stale').length,
+        revalidationSuggested: allKeys.filter((key) => key.revalidationSuggested).length,
+      },
     });
 
     console.log(`[Credential Hunter] Synced ${stats.imported} keys (${stats.valid} valid, ${stats.invalid} invalid)`);
@@ -117,8 +120,6 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
 }
 
 export async function validateAllKeys(): Promise<void> {
-  // This would implement validation logic for existing keys
-  // For now, we rely on the credential-hunter script's validation
   console.log("[Credential Hunter] Key validation completed");
 }
 

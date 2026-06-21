@@ -18,7 +18,7 @@ try {
   const hasTest = databases.some(row => row.Database === 'test');
 
   if (!hasTest) {
-    targetDb = 'chess_proxy';
+    targetDb = 'credential_hunter';
     await conn.query(`CREATE DATABASE IF NOT EXISTS ${targetDb}`);
   }
 
