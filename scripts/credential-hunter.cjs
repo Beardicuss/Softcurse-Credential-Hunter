@@ -475,6 +475,7 @@ async function pLimit(fn, limit, items) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function run() {
+  const generatedAt = new Date().toISOString();
   console.log("🔍 Searching configured sources for leaked API keys...\n");
 
   const sourceConfig = getHunterSourceConfig(process.env);
@@ -778,7 +779,7 @@ async function run() {
     }
   }
 
-  const generatedAt = new Date().toISOString();
+
   const output = {
     generated_at: generatedAt,
     total_candidates: unique.length + derivedExtractedKeys.length,
