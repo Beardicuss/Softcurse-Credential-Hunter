@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   getAllProviderStats,
   getAllKeys,
+  getAllValidKeys,
   getKeysByProvider,
   getKeyById,
   upsertApiKey,
@@ -15,7 +16,14 @@ import {
 import { TRPCError } from "@trpc/server";
 import { validateKeyForProvider } from "./keyValidator";
 import { buildHunterDatabaseSnapshot } from "./hunterContract";
-import { toMaskedKeyRecord, toSafeEditAuditDetails } from "./keyAccess";
+import { buildHunterOperations } from "./hunterOperations";
+import { buildLifecyclePreview, planCandidateLifecycle } from "./candidateLifecycle";
+import { lifecyclePolicyFromEnv } from "./runHunterLifecycle";
+import {
+  groupValidKeyRecords,
+  toMaskedKeyRecord,
+  toSafeEditAuditDetails,
+} from "./keyAccess";
 import { getDefaultCredentialHunterPath } from "./credentialHunterIntegration";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
@@ -80,6 +88,32 @@ export const appRouter = router({
       return stats;
     }),
 
+    getHunterOperations: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user?.role !== "admin")
+        throw new TRPCError({ code: "FORBIDDEN" });
+      const keys = await getAllKeys();
+      const lifecyclePlan = planCandidateLifecycle(
+        keys,
+        new Date(),
+        lifecyclePolicyFromEnv()
+      );
+      return {
+        ...buildHunterOperations(keys),
+        lifecycle: buildLifecyclePreview(
+          lifecyclePlan,
+          process.env.HUNTER_RETENTION_APPLY === "true"
+        ),
+      };
+    }),
+    getValidKeyVault: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user?.role !== "admin")
+        throw new TRPCError({ code: "FORBIDDEN" });
+      const keys = await getAllValidKeys();
+      return {
+        total: keys.length,
+        providers: groupValidKeyRecords(keys),
+      };
+    }),
     getProviderKeys: protectedProcedure
       .input(z.object({ provider: z.string() }))
       .query(async ({ input, ctx }) => {

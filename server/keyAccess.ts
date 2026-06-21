@@ -29,3 +29,17 @@ export function toSafeEditAuditDetails(input: {
     validity: input.validity,
   };
 }
+export function groupValidKeyRecords(keys: StoredKeyRecord[]) {
+  const groups = new Map<string, ReturnType<typeof toMaskedKeyRecord>[]>();
+  for (const key of keys) {
+    if (key.validity !== "valid") continue;
+    const records = groups.get(key.provider) || [];
+    records.push(toMaskedKeyRecord(key));
+    groups.set(key.provider, records);
+  }
+  return Array.from(groups, ([provider, records]) => ({
+    provider,
+    count: records.length,
+    keys: records,
+  })).sort((a, b) => b.count - a.count || a.provider.localeCompare(b.provider));
+}

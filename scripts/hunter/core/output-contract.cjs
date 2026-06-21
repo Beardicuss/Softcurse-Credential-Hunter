@@ -7,6 +7,20 @@ function verifyHunterOutputPayload(payload) {
 
   if (!isIsoDate(payload.generated_at)) errors.push('generated_at_must_be_iso_date');
   if (!Array.isArray(payload.commits)) errors.push('commits_must_be_array');
+  if (payload.source_runs != null && !Array.isArray(payload.source_runs)) {
+    errors.push('source_runs_must_be_array');
+  }
+  for (const [index, run] of (Array.isArray(payload.source_runs) ? payload.source_runs : []).entries()) {
+    if (!run || typeof run.source !== 'string' || !run.source.trim()) {
+      errors.push(`source_runs[${index}].source_required`);
+    }
+    if (!run || !['completed', 'failed'].includes(String(run.status))) {
+      errors.push(`source_runs[${index}].status_invalid`);
+    }
+    if (!Number.isFinite(Number(run?.attempts)) || Number(run.attempts) < 1) {
+      errors.push(`source_runs[${index}].attempts_invalid`);
+    }
+  }
 
   const commits = Array.isArray(payload.commits) ? payload.commits : [];
   let keys = 0;

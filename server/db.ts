@@ -1,4 +1,4 @@
-import { eq, sql, and, desc } from "drizzle-orm";
+import { eq, sql, and, desc, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/tidb-serverless";
 import { connect } from "@tidbcloud/serverless";
 import {
@@ -212,6 +212,13 @@ export async function updateKeyById(
   return updated;
 }
 
+export async function deleteApiKeysByIds(ids: number[]) {
+  if (ids.length === 0) return 0;
+  const db = await getDb();
+  if (!db) return 0;
+  await db.delete(apiKeys).where(inArray(apiKeys.id, ids));
+  return ids.length;
+}
 export async function updateProviderStats(provider: string) {
   const db = await getDb();
   if (!db) return null;

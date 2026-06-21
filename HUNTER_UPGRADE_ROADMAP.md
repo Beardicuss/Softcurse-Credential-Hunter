@@ -155,3 +155,25 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
 - Stable contract helper added with versioned `hunter.v1` snapshot building.
 - Stable protected snapshot endpoint added: `hunter.getHunterSnapshot`.
 - Contract document added so the frontend rebuild can target one fixed backend surface.
+- Bounded source-level retry/backoff added with permanent-error detection and secret-safe failure messages.
+- Scheduled hunt output now includes structured `source_runs` telemetry with attempts, duration, candidate counts, and error counts.
+- Source retry policy is configurable through `HUNTER_SOURCE_MAX_ATTEMPTS` and `HUNTER_SOURCE_RETRY_DELAY_MS`.
+- Output assembly, atomic snapshot persistence, and final summary logging extracted into `output-writer.cjs`.
+- Hunter snapshots now write to a temporary file and rename atomically to avoid partial/corrupt output.
+- Output writer coverage added for stable shape, atomic replacement, temporary-file cleanup, and secret-free summaries.
+- Provider validation dispatch, generic probes, AWS SigV4, Azure client credentials, and Twilio pair validation extracted into `provider-validator.cjs`.
+- Validator transport is injectable for deterministic network-free tests while production keeps the same HTTPS behavior.
+- Provider and pair-specific status mappings are covered without exposing or logging credential values.
+- GitHub HTTPS transport, commit search retry, result normalization, HTML/rate-limit detection, and diff retrieval extracted into `github-client.cjs`.
+- GitHub search nonce, retry count, retry delay, and HTTP timeout are now environment-configurable.
+- GitHub client behavior is covered with injected network-free tests.
+- GitHub diff added-line parsing, Shannon entropy calculation, false-positive filtering, source-record creation, and confidence scoring extracted into `diff-key-extractor.cjs`.
+- Diff extractor dependencies are injectable and covered for context preservation, low entropy, and false-positive rejection.
+- AWS, Azure, and Twilio candidate pairing extracted into `candidate-pairing.cjs` with pair-part suppression kept explicit.
+- Staged validation, prioritization, summary accounting, masking, and freshness projection extracted into `validation-processor.cjs`.
+- Pairing and validation orchestration now have deterministic tests with injected validators and concurrency runners.
+- Candidate lifecycle planning added with revalidation scheduling and conservative invalid/unknown retention windows.
+- Scheduled lifecycle execution is dry-run by default and requires explicit `HUNTER_RETENTION_APPLY=true` before deleting records.
+- Valid keys are never automatically deleted; used invalid/unknown keys are retained, and lifecycle actions are audited without key material.
+- Hunter Operations now exposes a masked lifecycle preview with active retention policy, dry-run/apply mode, revalidation totals, and deletion candidates.
+- Lifecycle preview serialization is regression-tested to ensure raw key values never cross the operator API.

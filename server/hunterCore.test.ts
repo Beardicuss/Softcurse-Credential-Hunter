@@ -184,4 +184,53 @@ describe("Hunter core pipeline", () => {
       "commits[0].leaked_keys[0].validity_invalid"
     );
   });
+  it("retries transient source failures and records execution diagnostics", async () => {
+    let attempts = 0;
+    const results = await collectSources(
+      [{
+        name: "transient-source",
+        run: async () => {
+          attempts += 1;
+          if (attempts === 1) throw new Error("temporary upstream failure");
+          return { source: "transient-source", records: [{ id: 1 }], errors: [] };
+        },
+      }],
+      { maxAttempts: 2, baseDelayMs: 1, sleep: async () => undefined }
+    );
+
+    expect(attempts).toBe(2);
+    expect(results).toHaveLength(1);
+    expect(results.diagnostics).toEqual([
+      expect.objectContaining({
+        source: "transient-source",
+        status: "completed",
+        attempts: 2,
+        candidates: 1,
+        errors: 0,
+      }),
+    ]);
+  });
+
+  it("does not retry permanent source failures and redacts secrets", async () => {
+    const operation = vi.fn(async () => {
+      const error = new Error("request failed token=sk-test-secret-value-123456789");
+      Object.assign(error, { status: 401 });
+      throw error;
+    });
+    const results = await collectSources(
+      [{ name: "protected-source", run: operation }],
+      { maxAttempts: 3, sleep: async () => undefined }
+    );
+
+    expect(operation).toHaveBeenCalledTimes(1);
+    expect(results).toHaveLength(0);
+    expect(results.diagnostics[0]).toMatchObject({
+      source: "protected-source",
+      status: "failed",
+      attempts: 1,
+      errors: 1,
+    });
+    expect(results.diagnostics[0].error).toContain("[REDACTED]");
+    expect(results.diagnostics[0].error).not.toContain("secret-value");
+  });
 });
