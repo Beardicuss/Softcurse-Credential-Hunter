@@ -1,4 +1,5 @@
 import { defineConfig } from "drizzle-kit";
+import { ensureMysqlTls } from "./server/_core/databaseUrl";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -10,7 +11,6 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "mysql",
   dbCredentials: {
-    url: connectionString,
-    ssl: { rejectUnauthorized: true },
+    url: ensureMysqlTls(connectionString),
   },
 });
