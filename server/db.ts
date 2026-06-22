@@ -9,6 +9,7 @@ import {
   providerStats,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
+import { assertApplicationDatabaseUrl } from "./_core/databaseUrl";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let client: any = null;
@@ -17,6 +18,7 @@ let client: any = null;
 export async function getDb() {
   const dbUrl = ENV.databaseUrl;
   if (!_db && dbUrl) {
+    assertApplicationDatabaseUrl(dbUrl);
     try {
       if (!client) {
         client = connect({ url: dbUrl });

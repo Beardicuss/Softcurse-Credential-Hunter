@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ensureMysqlTls } from "./databaseUrl";
+import { assertApplicationDatabaseUrl, ensureMysqlTls } from "./databaseUrl";
 
 describe("ensureMysqlTls", () => {
   it("adds verified TLS configuration for mysql2 URLs", () => {
@@ -25,5 +25,18 @@ describe("ensureMysqlTls", () => {
     expect(() =>
       ensureMysqlTls("postgres://user:pass@example.com/app")
     ).toThrow("must use mysql://");
+  });
+  it("rejects TiDB system databases", () => {
+    for (const database of ["sys", "mysql", "information_schema", "performance_schema"]) {
+      expect(() =>
+        assertApplicationDatabaseUrl("mysql://user:pass@example.com:4000/" + database)
+      ).toThrow("reserved TiDB system database");
+    }
+  });
+
+  it("accepts an application database", () => {
+    expect(
+      assertApplicationDatabaseUrl("mysql://user:pass@example.com:4000/test")
+    ).toContain("/test");
   });
 });
