@@ -62,6 +62,7 @@ function buildDiagnostic(name, result, execution) {
     candidates: countResultItems(result),
     errors: Array.isArray(result?.errors) ? result.errors.length : execution.error ? 1 : 0,
     error: execution.error || undefined,
+    health: result?.meta?.health || undefined,
   };
 }
 

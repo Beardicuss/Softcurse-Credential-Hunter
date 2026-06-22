@@ -14,11 +14,13 @@ const { buildHunterOutput, logHunterRunSummary, writeHunterOutput } = require(".
 const { checkKeyValidity } = require("./hunter/core/provider-validator.cjs");
 const { extractKeysFromDiff } = require("./hunter/core/diff-key-extractor.cjs");
 const { processVerificationResults } = require("./hunter/core/validation-processor.cjs");
+const { loadGrayhatState, saveGrayhatState } = require("./hunter/core/grayhat-state.cjs");
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 
 const userDataPath = process.env.HEX_USER_DATA || __dirname;
 const OUTPUT_FILE = path.join(userDataPath, "leaked-api-keys.json");
+const GRAYHAT_STATE_FILE = process.env.GRAYHAT_STATE_FILE || path.join(__dirname, ".hunter-state", "grayhat.json");
 
 const DELAY_BETWEEN_REQUESTS_MS = 3000; // Increased delay to be more polite to APIs
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -70,7 +72,18 @@ async function run() {
         delayBetweenRequestsMs: DELAY_BETWEEN_REQUESTS_MS,
       }),
     },
-    { name: "grayhat", run: () => collectGrayhatCandidates({ config: sourceConfig.grayhat, logger: console }) },
+    {
+      name: "grayhat",
+      run: async () => {
+        const result = await collectGrayhatCandidates({
+          config: sourceConfig.grayhat,
+          logger: console,
+          state: loadGrayhatState(GRAYHAT_STATE_FILE),
+        });
+        saveGrayhatState(GRAYHAT_STATE_FILE, result.meta?.nextState || {});
+        return result;
+      },
+    },
     { name: "gitlab", run: () => collectGitLabCandidates({ config: sourceConfig.gitlab, searchQueries: SEARCH_QUERIES, logger: console }) },
     { name: "gist", run: () => collectGistCandidates({ config: sourceConfig.gist, searchQueries: SEARCH_QUERIES, logger: console }) },
     { name: "webtext", run: () => collectWebTextCandidates({ config: sourceConfig.webtext, logger: console }) },

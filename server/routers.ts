@@ -31,6 +31,7 @@ import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
 import { authorizeLifecycleAction } from "./lifecycleActions";
 import { enforceSensitiveRateLimit, type SensitiveAction } from "./sensitiveRateLimit";
+import { dispatchHunterWorkflow } from "./githubWorkflowDispatch";
 
 async function requireSensitiveCapacity(userId: string, action: SensitiveAction) {
   const result = await enforceSensitiveRateLimit({
@@ -83,6 +84,35 @@ export const appRouter = router({
   }),
 
   hunter: router({
+    dispatchWorkflow: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user?.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      await requireSensitiveCapacity(ctx.user.openId, "workflow_dispatch");
+      try {
+        const result = await dispatchHunterWorkflow({
+          token: ENV.githubWorkflowToken,
+          repository: ENV.githubWorkflowRepository,
+          workflow: ENV.githubWorkflowName,
+          ref: ENV.githubWorkflowRef,
+        });
+        await logAuditEvent("workflow_dispatch_requested", undefined, undefined, {
+          repository: result.repository,
+          workflow: result.workflow,
+          ref: result.ref,
+          actor: ctx.user.openId,
+        });
+        return result;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "workflow_dispatch_failed";
+        throw new TRPCError({
+          code: message.startsWith("missing_") || message.startsWith("invalid_")
+            ? "PRECONDITION_FAILED"
+            : "BAD_GATEWAY",
+          message,
+        });
+      }
+    }),
     getStatus: publicProcedure.query(async () => {
       const database = await getDatabaseDiagnostics();
       const stats = database.connected ? await getAllProviderStats() : [];
@@ -96,6 +126,7 @@ export const appRouter = router({
         ),
         stats,
         database,
+        manualDispatchConfigured: Boolean(ENV.githubWorkflowToken && ENV.githubWorkflowRepository),
       };
     }),
     getProviderStats: protectedProcedure.query(async ({ ctx }) => {

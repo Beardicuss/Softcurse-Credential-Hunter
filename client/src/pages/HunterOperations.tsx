@@ -27,6 +27,7 @@ export default function HunterOperations() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [queue, setQueue] = useState<QueueName>("validationQueue");
   const [pendingId, setPendingId] = useState<number | null>(null);
+  const status = trpc.hunter.getStatus.useQuery();
   const operations = trpc.hunter.getHunterOperations.useQuery(undefined, {
     enabled: isAuthenticated && user?.role === "admin",
     refetchOnWindowFocus: false,
@@ -45,6 +46,10 @@ export default function HunterOperations() {
     },
     onError: error => toast.error(`Lifecycle action failed: ${error.message}`),
     onSettled: () => setPendingLifecycleAction(null),
+  });
+  const dispatchWorkflow = trpc.hunter.dispatchWorkflow.useMutation({
+    onSuccess: () => toast.success("Manual hunt accepted by GitHub Actions"),
+    onError: error => toast.error("Manual hunt failed: " + error.message),
   });
   const validate = trpc.hunter.validateKey.useMutation({
     onSuccess: async () => {
@@ -93,6 +98,21 @@ export default function HunterOperations() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
+            <Button
+              className="bg-[var(--c-cyan)] text-black hover:bg-[var(--c-cyan)]/80"
+              disabled={dispatchWorkflow.isPending || status.data?.manualDispatchConfigured === false}
+              onClick={() => {
+                if (!window.confirm("Start the Credential Hunter workflow now?")) return;
+                dispatchWorkflow.mutate();
+              }}
+            >
+              {dispatchWorkflow.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Radar className="h-4 w-4 mr-2" />
+              )}
+              {status.data?.manualDispatchConfigured === false ? "CONFIGURE DISPATCH" : "RUN HUNT NOW"}
+            </Button>
             <Button
               variant="outline"
               className="border-[var(--c-cyan)] text-[var(--c-cyan)]"

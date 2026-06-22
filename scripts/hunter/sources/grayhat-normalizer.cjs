@@ -33,6 +33,7 @@ function normalizeGrayhatResults(payload, query) {
       lineContent,
       evidence: [url, bucket, filePath].filter(Boolean),
       discoveredAt: new Date().toISOString(),
+      fingerprint: ['grayhat', query.provider, bucket, filePath].join('::').toLowerCase(),
       metadata: {
         bucket,
         filePath,

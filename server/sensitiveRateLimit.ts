@@ -11,6 +11,7 @@ export const SENSITIVE_LIMITS = {
   validate_key: { limit: 30, windowMs: 60_000 },
   validate_provider: { limit: 5, windowMs: 600_000 },
   lifecycle_action: { limit: 3, windowMs: 3_600_000 },
+  workflow_dispatch: { limit: 2, windowMs: 600_000 },
 } as const satisfies Record<string, SensitiveLimit>;
 
 export type SensitiveAction = keyof typeof SENSITIVE_LIMITS;

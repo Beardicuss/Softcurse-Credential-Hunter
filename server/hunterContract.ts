@@ -42,6 +42,7 @@ export const HunterOutputSchema = z.object({
     unknown: z.number().default(0),
   })).default({}),
   failed_queries: z.array(z.any()).optional(),
+  source_runs: z.array(z.any()).optional(),
   commits: z.array(HunterCommitSchema).default([]),
 });
 

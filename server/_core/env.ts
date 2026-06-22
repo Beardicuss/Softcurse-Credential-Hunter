@@ -39,6 +39,18 @@ export const ENV = {
   get hexBridgeToken() {
     return getEnvVar("HEX_BRIDGE_TOKEN") ?? "";
   },
+  get githubWorkflowToken() {
+    return getEnvVar("GITHUB_WORKFLOW_TOKEN") ?? "";
+  },
+  get githubWorkflowRepository() {
+    return getEnvVar("GITHUB_WORKFLOW_REPOSITORY") ?? "";
+  },
+  get githubWorkflowName() {
+    return getEnvVar("GITHUB_WORKFLOW_NAME") ?? "credential-hunter.yml";
+  },
+  get githubWorkflowRef() {
+    return getEnvVar("GITHUB_WORKFLOW_REF") ?? "main";
+  },
   get corsAllowedOrigins() {
     return getEnvVar("CORS_ALLOWED_ORIGINS") ?? "";
   },

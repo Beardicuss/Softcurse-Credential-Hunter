@@ -31,6 +31,7 @@ interface LeakedKey {
 
 interface LeakedKeysOutput {
   generated_at: string;
+  source_runs?: Array<Record<string, unknown>>;
   commits: Array<{
     source?: string;
     commit_url?: string | null;
@@ -148,6 +149,7 @@ export async function syncCredentialHunterPayload(
       providers: stats.providers,
       validProviders: stats.validProviders,
       invalidProviders: stats.invalidProviders,
+      sourceRuns: data.source_runs || [],
       freshness: {
         fresh: allKeys.filter((key) => key.freshness === 'fresh').length,
         warm: allKeys.filter((key) => key.freshness === 'warm').length,

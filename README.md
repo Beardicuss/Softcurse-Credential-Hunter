@@ -24,6 +24,8 @@ Use it only for systems, repositories, buckets, and data you are authorized to a
 - A TiDB-compatible `DATABASE_URL`
 - `ADMIN_PASSWORD` for dashboard access
 - `HEX_BRIDGE_TOKEN` for the HEX-to-Hunter bridge
+- `GITHUB_WORKFLOW_TOKEN` as a Cloudflare Pages secret with Actions write access for manual hunts
+- `GITHUB_WORKFLOW_REPOSITORY` as `owner/repository` and optional workflow ref/name Pages variables
 - Optional source credentials such as `GITLAB_TOKEN` and `GRAYHAT_TOKEN`
 
 ## Local setup
