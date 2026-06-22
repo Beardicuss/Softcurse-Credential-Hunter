@@ -1,4 +1,3 @@
-import { fileURLToPath } from "node:url";
 import { cleanupExpiredAuditLogs } from "./runAuditRetention";
 import {
   deleteApiKeysByIds,
@@ -67,15 +66,4 @@ export function lifecyclePolicyFromEnv(): LifecyclePolicy {
 function positiveInt(value: string | undefined, fallback: number) {
   const parsed = Number.parseInt(String(value || ""), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  runCandidateLifecycle({ apply: process.env.HUNTER_RETENTION_APPLY === "true" })
-    .then(result => {
-      console.log(`[Hunter Lifecycle] ${result.applied ? "Applied" : "Dry run"}: ${result.totals.revalidate} revalidation, ${result.totals.deleteCandidates} deletion candidate(s).`);
-    })
-    .catch(error => {
-      console.error("[Hunter Lifecycle] Failed:", error);
-      process.exitCode = 1;
-    });
 }

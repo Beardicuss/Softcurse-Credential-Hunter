@@ -12,6 +12,17 @@ describe("Cloudflare Pages configuration", () => {
     expect(Date.parse(config.compatibility_date)).not.toBeNaN();
   });
 
+  it("keeps Worker-imported modules free of CLI URL detection", () => {
+    for (const modulePath of [
+      "server/runHunterLifecycle.ts",
+      "server/credentialHunterIntegration.ts",
+    ]) {
+      const source = fs.readFileSync(path.join(process.cwd(), modulePath), "utf8");
+      expect(source).not.toContain("fileURLToPath(import.meta.url)");
+      expect(source).not.toContain("process.argv[1]");
+    }
+  });
+
   it("does not ship the obsolete infinite-loop SPA redirect", () => {
     expect(fs.existsSync(path.join(process.cwd(), "client", "public", "_redirects"))).toBe(false);
   });

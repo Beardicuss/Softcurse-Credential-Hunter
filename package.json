@@ -19,8 +19,8 @@
     "hunt:check": "node --check scripts/credential-hunter.cjs",
     "hunt": "node scripts/credential-hunter.cjs",
     "hunt:verify": "node scripts/verify-hunter-output.cjs",
-    "hunt:sync": "tsx server/credentialHunterIntegration.ts",
-    "hunt:lifecycle": "tsx server/runHunterLifecycle.ts"
+    "hunt:sync": "tsx server/cli/syncCredentialHunter.ts",
+    "hunt:lifecycle": "tsx server/cli/runHunterLifecycle.ts"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.4.2",

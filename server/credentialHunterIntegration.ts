@@ -173,17 +173,3 @@ export async function validateAllKeys(): Promise<void> {
 export function getDefaultCredentialHunterPath(): string {
   return path.join(process.cwd(), "scripts", "leaked-api-keys.json");
 }
-
-import { fileURLToPath } from "url";
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  console.log("[Credential Hunter Sync] Starting database integration...");
-  syncCredentialHunterOutput(getDefaultCredentialHunterPath())
-    .then(() => {
-      console.log("[Credential Hunter Sync] Complete.");
-      process.exit(0);
-    })
-    .catch((err) => {
-      console.error("[Credential Hunter Sync] Fatal error:", err);
-      process.exit(1);
-    });
-}
