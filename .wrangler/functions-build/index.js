@@ -41,50 +41,1125 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
+// ../node_modules/unenv/dist/runtime/_internal/utils.mjs
+// @__NO_SIDE_EFFECTS__
+function createNotImplementedError(name) {
+  return new Error(`[unenv] ${name} is not implemented yet!`);
+}
+// @__NO_SIDE_EFFECTS__
+function notImplemented(name) {
+  const fn = /* @__PURE__ */ __name(() => {
+    throw /* @__PURE__ */ createNotImplementedError(name);
+  }, "fn");
+  return Object.assign(fn, { __unenv__: true });
+}
+// @__NO_SIDE_EFFECTS__
+function notImplementedClass(name) {
+  return class {
+    __unenv__ = true;
+    constructor() {
+      throw new Error(`[unenv] ${name} is not implemented yet!`);
+    }
+  };
+}
+var init_utils = __esm({
+  "../node_modules/unenv/dist/runtime/_internal/utils.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    __name(createNotImplementedError, "createNotImplementedError");
+    __name(notImplemented, "notImplemented");
+    __name(notImplementedClass, "notImplementedClass");
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/internal/perf_hooks/performance.mjs
+var _timeOrigin, _performanceNow, nodeTiming, PerformanceEntry, PerformanceMark, PerformanceMeasure, PerformanceResourceTiming, PerformanceObserverEntryList, Performance, PerformanceObserver, performance;
+var init_performance = __esm({
+  "../node_modules/unenv/dist/runtime/node/internal/perf_hooks/performance.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_utils();
+    _timeOrigin = globalThis.performance?.timeOrigin ?? Date.now();
+    _performanceNow = globalThis.performance?.now ? globalThis.performance.now.bind(globalThis.performance) : () => Date.now() - _timeOrigin;
+    nodeTiming = {
+      name: "node",
+      entryType: "node",
+      startTime: 0,
+      duration: 0,
+      nodeStart: 0,
+      v8Start: 0,
+      bootstrapComplete: 0,
+      environment: 0,
+      loopStart: 0,
+      loopExit: 0,
+      idleTime: 0,
+      uvMetricsInfo: {
+        loopCount: 0,
+        events: 0,
+        eventsWaiting: 0
+      },
+      detail: void 0,
+      toJSON() {
+        return this;
+      }
+    };
+    PerformanceEntry = class {
+      static {
+        __name(this, "PerformanceEntry");
+      }
+      __unenv__ = true;
+      detail;
+      entryType = "event";
+      name;
+      startTime;
+      constructor(name, options) {
+        this.name = name;
+        this.startTime = options?.startTime || _performanceNow();
+        this.detail = options?.detail;
+      }
+      get duration() {
+        return _performanceNow() - this.startTime;
+      }
+      toJSON() {
+        return {
+          name: this.name,
+          entryType: this.entryType,
+          startTime: this.startTime,
+          duration: this.duration,
+          detail: this.detail
+        };
+      }
+    };
+    PerformanceMark = class PerformanceMark2 extends PerformanceEntry {
+      static {
+        __name(this, "PerformanceMark");
+      }
+      entryType = "mark";
+      constructor() {
+        super(...arguments);
+      }
+      get duration() {
+        return 0;
+      }
+    };
+    PerformanceMeasure = class extends PerformanceEntry {
+      static {
+        __name(this, "PerformanceMeasure");
+      }
+      entryType = "measure";
+    };
+    PerformanceResourceTiming = class extends PerformanceEntry {
+      static {
+        __name(this, "PerformanceResourceTiming");
+      }
+      entryType = "resource";
+      serverTiming = [];
+      connectEnd = 0;
+      connectStart = 0;
+      decodedBodySize = 0;
+      domainLookupEnd = 0;
+      domainLookupStart = 0;
+      encodedBodySize = 0;
+      fetchStart = 0;
+      initiatorType = "";
+      name = "";
+      nextHopProtocol = "";
+      redirectEnd = 0;
+      redirectStart = 0;
+      requestStart = 0;
+      responseEnd = 0;
+      responseStart = 0;
+      secureConnectionStart = 0;
+      startTime = 0;
+      transferSize = 0;
+      workerStart = 0;
+      responseStatus = 0;
+    };
+    PerformanceObserverEntryList = class {
+      static {
+        __name(this, "PerformanceObserverEntryList");
+      }
+      __unenv__ = true;
+      getEntries() {
+        return [];
+      }
+      getEntriesByName(_name, _type) {
+        return [];
+      }
+      getEntriesByType(type) {
+        return [];
+      }
+    };
+    Performance = class {
+      static {
+        __name(this, "Performance");
+      }
+      __unenv__ = true;
+      timeOrigin = _timeOrigin;
+      eventCounts = /* @__PURE__ */ new Map();
+      _entries = [];
+      _resourceTimingBufferSize = 0;
+      navigation = void 0;
+      timing = void 0;
+      timerify(_fn, _options) {
+        throw createNotImplementedError("Performance.timerify");
+      }
+      get nodeTiming() {
+        return nodeTiming;
+      }
+      eventLoopUtilization() {
+        return {};
+      }
+      markResourceTiming() {
+        return new PerformanceResourceTiming("");
+      }
+      onresourcetimingbufferfull = null;
+      now() {
+        if (this.timeOrigin === _timeOrigin) {
+          return _performanceNow();
+        }
+        return Date.now() - this.timeOrigin;
+      }
+      clearMarks(markName) {
+        this._entries = markName ? this._entries.filter((e) => e.name !== markName) : this._entries.filter((e) => e.entryType !== "mark");
+      }
+      clearMeasures(measureName) {
+        this._entries = measureName ? this._entries.filter((e) => e.name !== measureName) : this._entries.filter((e) => e.entryType !== "measure");
+      }
+      clearResourceTimings() {
+        this._entries = this._entries.filter((e) => e.entryType !== "resource" || e.entryType !== "navigation");
+      }
+      getEntries() {
+        return this._entries;
+      }
+      getEntriesByName(name, type) {
+        return this._entries.filter((e) => e.name === name && (!type || e.entryType === type));
+      }
+      getEntriesByType(type) {
+        return this._entries.filter((e) => e.entryType === type);
+      }
+      mark(name, options) {
+        const entry = new PerformanceMark(name, options);
+        this._entries.push(entry);
+        return entry;
+      }
+      measure(measureName, startOrMeasureOptions, endMark) {
+        let start;
+        let end;
+        if (typeof startOrMeasureOptions === "string") {
+          start = this.getEntriesByName(startOrMeasureOptions, "mark")[0]?.startTime;
+          end = this.getEntriesByName(endMark, "mark")[0]?.startTime;
+        } else {
+          start = Number.parseFloat(startOrMeasureOptions?.start) || this.now();
+          end = Number.parseFloat(startOrMeasureOptions?.end) || this.now();
+        }
+        const entry = new PerformanceMeasure(measureName, {
+          startTime: start,
+          detail: {
+            start,
+            end
+          }
+        });
+        this._entries.push(entry);
+        return entry;
+      }
+      setResourceTimingBufferSize(maxSize) {
+        this._resourceTimingBufferSize = maxSize;
+      }
+      addEventListener(type, listener, options) {
+        throw createNotImplementedError("Performance.addEventListener");
+      }
+      removeEventListener(type, listener, options) {
+        throw createNotImplementedError("Performance.removeEventListener");
+      }
+      dispatchEvent(event) {
+        throw createNotImplementedError("Performance.dispatchEvent");
+      }
+      toJSON() {
+        return this;
+      }
+    };
+    PerformanceObserver = class {
+      static {
+        __name(this, "PerformanceObserver");
+      }
+      __unenv__ = true;
+      static supportedEntryTypes = [];
+      _callback = null;
+      constructor(callback) {
+        this._callback = callback;
+      }
+      takeRecords() {
+        return [];
+      }
+      disconnect() {
+        throw createNotImplementedError("PerformanceObserver.disconnect");
+      }
+      observe(options) {
+        throw createNotImplementedError("PerformanceObserver.observe");
+      }
+      bind(fn) {
+        return fn;
+      }
+      runInAsyncScope(fn, thisArg, ...args) {
+        return fn.call(thisArg, ...args);
+      }
+      asyncId() {
+        return 0;
+      }
+      triggerAsyncId() {
+        return 0;
+      }
+      emitDestroy() {
+        return this;
+      }
+    };
+    performance = globalThis.performance && "addEventListener" in globalThis.performance ? globalThis.performance : new Performance();
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/perf_hooks.mjs
+var init_perf_hooks = __esm({
+  "../node_modules/unenv/dist/runtime/node/perf_hooks.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_performance();
+  }
+});
+
+// ../node_modules/@cloudflare/unenv-preset/dist/runtime/polyfill/performance.mjs
+var init_performance2 = __esm({
+  "../node_modules/@cloudflare/unenv-preset/dist/runtime/polyfill/performance.mjs"() {
+    init_perf_hooks();
+    if (!("__unenv__" in performance)) {
+      const proto = Performance.prototype;
+      for (const key of Object.getOwnPropertyNames(proto)) {
+        if (key !== "constructor" && !(key in performance)) {
+          const desc2 = Object.getOwnPropertyDescriptor(proto, key);
+          if (desc2) {
+            Object.defineProperty(performance, key, desc2);
+          }
+        }
+      }
+    }
+    globalThis.performance = performance;
+    globalThis.Performance = Performance;
+    globalThis.PerformanceEntry = PerformanceEntry;
+    globalThis.PerformanceMark = PerformanceMark;
+    globalThis.PerformanceMeasure = PerformanceMeasure;
+    globalThis.PerformanceObserver = PerformanceObserver;
+    globalThis.PerformanceObserverEntryList = PerformanceObserverEntryList;
+    globalThis.PerformanceResourceTiming = PerformanceResourceTiming;
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/mock/noop.mjs
+var noop_default;
+var init_noop = __esm({
+  "../node_modules/unenv/dist/runtime/mock/noop.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    noop_default = Object.assign(() => {
+    }, { __unenv__: true });
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/console.mjs
+import { Writable } from "node:stream";
+var _console, _ignoreErrors, _stderr, _stdout, log, info, trace, debug, table, error, warn, createTask, clear, count, countReset, dir, dirxml, group, groupEnd, groupCollapsed, profile, profileEnd, time, timeEnd, timeLog, timeStamp, Console, _times, _stdoutErrorHandler, _stderrErrorHandler;
+var init_console = __esm({
+  "../node_modules/unenv/dist/runtime/node/console.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_noop();
+    init_utils();
+    _console = globalThis.console;
+    _ignoreErrors = true;
+    _stderr = new Writable();
+    _stdout = new Writable();
+    log = _console?.log ?? noop_default;
+    info = _console?.info ?? log;
+    trace = _console?.trace ?? info;
+    debug = _console?.debug ?? log;
+    table = _console?.table ?? log;
+    error = _console?.error ?? log;
+    warn = _console?.warn ?? error;
+    createTask = _console?.createTask ?? /* @__PURE__ */ notImplemented("console.createTask");
+    clear = _console?.clear ?? noop_default;
+    count = _console?.count ?? noop_default;
+    countReset = _console?.countReset ?? noop_default;
+    dir = _console?.dir ?? noop_default;
+    dirxml = _console?.dirxml ?? noop_default;
+    group = _console?.group ?? noop_default;
+    groupEnd = _console?.groupEnd ?? noop_default;
+    groupCollapsed = _console?.groupCollapsed ?? noop_default;
+    profile = _console?.profile ?? noop_default;
+    profileEnd = _console?.profileEnd ?? noop_default;
+    time = _console?.time ?? noop_default;
+    timeEnd = _console?.timeEnd ?? noop_default;
+    timeLog = _console?.timeLog ?? noop_default;
+    timeStamp = _console?.timeStamp ?? noop_default;
+    Console = _console?.Console ?? /* @__PURE__ */ notImplementedClass("console.Console");
+    _times = /* @__PURE__ */ new Map();
+    _stdoutErrorHandler = noop_default;
+    _stderrErrorHandler = noop_default;
+  }
+});
+
+// ../node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs
+var workerdConsole, assert, clear2, context, count2, countReset2, createTask2, debug2, dir2, dirxml2, error2, group2, groupCollapsed2, groupEnd2, info2, log2, profile2, profileEnd2, table2, time2, timeEnd2, timeLog2, timeStamp2, trace2, warn2, console_default;
+var init_console2 = __esm({
+  "../node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_console();
+    workerdConsole = globalThis["console"];
+    ({
+      assert,
+      clear: clear2,
+      context: (
+        // @ts-expect-error undocumented public API
+        context
+      ),
+      count: count2,
+      countReset: countReset2,
+      createTask: (
+        // @ts-expect-error undocumented public API
+        createTask2
+      ),
+      debug: debug2,
+      dir: dir2,
+      dirxml: dirxml2,
+      error: error2,
+      group: group2,
+      groupCollapsed: groupCollapsed2,
+      groupEnd: groupEnd2,
+      info: info2,
+      log: log2,
+      profile: profile2,
+      profileEnd: profileEnd2,
+      table: table2,
+      time: time2,
+      timeEnd: timeEnd2,
+      timeLog: timeLog2,
+      timeStamp: timeStamp2,
+      trace: trace2,
+      warn: warn2
+    } = workerdConsole);
+    Object.assign(workerdConsole, {
+      Console,
+      _ignoreErrors,
+      _stderr,
+      _stderrErrorHandler,
+      _stdout,
+      _stdoutErrorHandler,
+      _times
+    });
+    console_default = workerdConsole;
+  }
+});
+
+// ../node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-console
+var init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console = __esm({
+  "../node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-console"() {
+    init_console2();
+    globalThis.console = console_default;
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/internal/process/hrtime.mjs
+var hrtime;
+var init_hrtime = __esm({
+  "../node_modules/unenv/dist/runtime/node/internal/process/hrtime.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    hrtime = /* @__PURE__ */ Object.assign(/* @__PURE__ */ __name(function hrtime2(startTime) {
+      const now = Date.now();
+      const seconds = Math.trunc(now / 1e3);
+      const nanos = now % 1e3 * 1e6;
+      if (startTime) {
+        let diffSeconds = seconds - startTime[0];
+        let diffNanos = nanos - startTime[0];
+        if (diffNanos < 0) {
+          diffSeconds = diffSeconds - 1;
+          diffNanos = 1e9 + diffNanos;
+        }
+        return [diffSeconds, diffNanos];
+      }
+      return [seconds, nanos];
+    }, "hrtime"), { bigint: /* @__PURE__ */ __name(function bigint() {
+      return BigInt(Date.now() * 1e6);
+    }, "bigint") });
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/internal/tty/read-stream.mjs
+var ReadStream;
+var init_read_stream = __esm({
+  "../node_modules/unenv/dist/runtime/node/internal/tty/read-stream.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    ReadStream = class {
+      static {
+        __name(this, "ReadStream");
+      }
+      fd;
+      isRaw = false;
+      isTTY = false;
+      constructor(fd) {
+        this.fd = fd;
+      }
+      setRawMode(mode) {
+        this.isRaw = mode;
+        return this;
+      }
+    };
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/internal/tty/write-stream.mjs
+var WriteStream;
+var init_write_stream = __esm({
+  "../node_modules/unenv/dist/runtime/node/internal/tty/write-stream.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    WriteStream = class {
+      static {
+        __name(this, "WriteStream");
+      }
+      fd;
+      columns = 80;
+      rows = 24;
+      isTTY = false;
+      constructor(fd) {
+        this.fd = fd;
+      }
+      clearLine(dir3, callback) {
+        callback && callback();
+        return false;
+      }
+      clearScreenDown(callback) {
+        callback && callback();
+        return false;
+      }
+      cursorTo(x, y, callback) {
+        callback && typeof callback === "function" && callback();
+        return false;
+      }
+      moveCursor(dx, dy, callback) {
+        callback && callback();
+        return false;
+      }
+      getColorDepth(env2) {
+        return 1;
+      }
+      hasColors(count3, env2) {
+        return false;
+      }
+      getWindowSize() {
+        return [this.columns, this.rows];
+      }
+      write(str, encoding, cb) {
+        if (str instanceof Uint8Array) {
+          str = new TextDecoder().decode(str);
+        }
+        try {
+          console.log(str);
+        } catch {
+        }
+        cb && typeof cb === "function" && cb();
+        return false;
+      }
+    };
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/tty.mjs
+var init_tty = __esm({
+  "../node_modules/unenv/dist/runtime/node/tty.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_read_stream();
+    init_write_stream();
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/internal/process/node-version.mjs
+var NODE_VERSION;
+var init_node_version = __esm({
+  "../node_modules/unenv/dist/runtime/node/internal/process/node-version.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    NODE_VERSION = "22.14.0";
+  }
+});
+
+// ../node_modules/unenv/dist/runtime/node/internal/process/process.mjs
+import { EventEmitter } from "node:events";
+var Process;
+var init_process = __esm({
+  "../node_modules/unenv/dist/runtime/node/internal/process/process.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_tty();
+    init_utils();
+    init_node_version();
+    Process = class _Process extends EventEmitter {
+      static {
+        __name(this, "Process");
+      }
+      env;
+      hrtime;
+      nextTick;
+      constructor(impl) {
+        super();
+        this.env = impl.env;
+        this.hrtime = impl.hrtime;
+        this.nextTick = impl.nextTick;
+        for (const prop of [...Object.getOwnPropertyNames(_Process.prototype), ...Object.getOwnPropertyNames(EventEmitter.prototype)]) {
+          const value = this[prop];
+          if (typeof value === "function") {
+            this[prop] = value.bind(this);
+          }
+        }
+      }
+      // --- event emitter ---
+      emitWarning(warning, type, code) {
+        console.warn(`${code ? `[${code}] ` : ""}${type ? `${type}: ` : ""}${warning}`);
+      }
+      emit(...args) {
+        return super.emit(...args);
+      }
+      listeners(eventName) {
+        return super.listeners(eventName);
+      }
+      // --- stdio (lazy initializers) ---
+      #stdin;
+      #stdout;
+      #stderr;
+      get stdin() {
+        return this.#stdin ??= new ReadStream(0);
+      }
+      get stdout() {
+        return this.#stdout ??= new WriteStream(1);
+      }
+      get stderr() {
+        return this.#stderr ??= new WriteStream(2);
+      }
+      // --- cwd ---
+      #cwd = "/";
+      chdir(cwd2) {
+        this.#cwd = cwd2;
+      }
+      cwd() {
+        return this.#cwd;
+      }
+      // --- dummy props and getters ---
+      arch = "";
+      platform = "";
+      argv = [];
+      argv0 = "";
+      execArgv = [];
+      execPath = "";
+      title = "";
+      pid = 200;
+      ppid = 100;
+      get version() {
+        return `v${NODE_VERSION}`;
+      }
+      get versions() {
+        return { node: NODE_VERSION };
+      }
+      get allowedNodeEnvironmentFlags() {
+        return /* @__PURE__ */ new Set();
+      }
+      get sourceMapsEnabled() {
+        return false;
+      }
+      get debugPort() {
+        return 0;
+      }
+      get throwDeprecation() {
+        return false;
+      }
+      get traceDeprecation() {
+        return false;
+      }
+      get features() {
+        return {};
+      }
+      get release() {
+        return {};
+      }
+      get connected() {
+        return false;
+      }
+      get config() {
+        return {};
+      }
+      get moduleLoadList() {
+        return [];
+      }
+      constrainedMemory() {
+        return 0;
+      }
+      availableMemory() {
+        return 0;
+      }
+      uptime() {
+        return 0;
+      }
+      resourceUsage() {
+        return {};
+      }
+      // --- noop methods ---
+      ref() {
+      }
+      unref() {
+      }
+      // --- unimplemented methods ---
+      umask() {
+        throw createNotImplementedError("process.umask");
+      }
+      getBuiltinModule() {
+        return void 0;
+      }
+      getActiveResourcesInfo() {
+        throw createNotImplementedError("process.getActiveResourcesInfo");
+      }
+      exit() {
+        throw createNotImplementedError("process.exit");
+      }
+      reallyExit() {
+        throw createNotImplementedError("process.reallyExit");
+      }
+      kill() {
+        throw createNotImplementedError("process.kill");
+      }
+      abort() {
+        throw createNotImplementedError("process.abort");
+      }
+      dlopen() {
+        throw createNotImplementedError("process.dlopen");
+      }
+      setSourceMapsEnabled() {
+        throw createNotImplementedError("process.setSourceMapsEnabled");
+      }
+      loadEnvFile() {
+        throw createNotImplementedError("process.loadEnvFile");
+      }
+      disconnect() {
+        throw createNotImplementedError("process.disconnect");
+      }
+      cpuUsage() {
+        throw createNotImplementedError("process.cpuUsage");
+      }
+      setUncaughtExceptionCaptureCallback() {
+        throw createNotImplementedError("process.setUncaughtExceptionCaptureCallback");
+      }
+      hasUncaughtExceptionCaptureCallback() {
+        throw createNotImplementedError("process.hasUncaughtExceptionCaptureCallback");
+      }
+      initgroups() {
+        throw createNotImplementedError("process.initgroups");
+      }
+      openStdin() {
+        throw createNotImplementedError("process.openStdin");
+      }
+      assert() {
+        throw createNotImplementedError("process.assert");
+      }
+      binding() {
+        throw createNotImplementedError("process.binding");
+      }
+      // --- attached interfaces ---
+      permission = { has: /* @__PURE__ */ notImplemented("process.permission.has") };
+      report = {
+        directory: "",
+        filename: "",
+        signal: "SIGUSR2",
+        compact: false,
+        reportOnFatalError: false,
+        reportOnSignal: false,
+        reportOnUncaughtException: false,
+        getReport: /* @__PURE__ */ notImplemented("process.report.getReport"),
+        writeReport: /* @__PURE__ */ notImplemented("process.report.writeReport")
+      };
+      finalization = {
+        register: /* @__PURE__ */ notImplemented("process.finalization.register"),
+        unregister: /* @__PURE__ */ notImplemented("process.finalization.unregister"),
+        registerBeforeExit: /* @__PURE__ */ notImplemented("process.finalization.registerBeforeExit")
+      };
+      memoryUsage = Object.assign(() => ({
+        arrayBuffers: 0,
+        rss: 0,
+        external: 0,
+        heapTotal: 0,
+        heapUsed: 0
+      }), { rss: /* @__PURE__ */ __name(() => 0, "rss") });
+      // --- undefined props ---
+      mainModule = void 0;
+      domain = void 0;
+      // optional
+      send = void 0;
+      exitCode = void 0;
+      channel = void 0;
+      getegid = void 0;
+      geteuid = void 0;
+      getgid = void 0;
+      getgroups = void 0;
+      getuid = void 0;
+      setegid = void 0;
+      seteuid = void 0;
+      setgid = void 0;
+      setgroups = void 0;
+      setuid = void 0;
+      // internals
+      _events = void 0;
+      _eventsCount = void 0;
+      _exiting = void 0;
+      _maxListeners = void 0;
+      _debugEnd = void 0;
+      _debugProcess = void 0;
+      _fatalException = void 0;
+      _getActiveHandles = void 0;
+      _getActiveRequests = void 0;
+      _kill = void 0;
+      _preload_modules = void 0;
+      _rawDebug = void 0;
+      _startProfilerIdleNotifier = void 0;
+      _stopProfilerIdleNotifier = void 0;
+      _tickCallback = void 0;
+      _disconnect = void 0;
+      _handleQueue = void 0;
+      _pendingMessage = void 0;
+      _channel = void 0;
+      _send = void 0;
+      _linkedBinding = void 0;
+    };
+  }
+});
+
+// ../node_modules/@cloudflare/unenv-preset/dist/runtime/node/process.mjs
+var globalProcess, getBuiltinModule, workerdProcess, unenvProcess, exit, features, platform, _channel, _debugEnd, _debugProcess, _disconnect, _events, _eventsCount, _exiting, _fatalException, _getActiveHandles, _getActiveRequests, _handleQueue, _kill, _linkedBinding, _maxListeners, _pendingMessage, _preload_modules, _rawDebug, _send, _startProfilerIdleNotifier, _stopProfilerIdleNotifier, _tickCallback, abort, addListener, allowedNodeEnvironmentFlags, arch, argv, argv0, assert2, availableMemory, binding, channel, chdir, config, connected, constrainedMemory, cpuUsage, cwd, debugPort, disconnect, dlopen, domain, emit, emitWarning, env, eventNames, execArgv, execPath, exitCode, finalization, getActiveResourcesInfo, getegid, geteuid, getgid, getgroups, getMaxListeners, getuid, hasUncaughtExceptionCaptureCallback, hrtime3, initgroups, kill, listenerCount, listeners, loadEnvFile, mainModule, memoryUsage, moduleLoadList, nextTick, off, on, once, openStdin, permission, pid, ppid, prependListener, prependOnceListener, rawListeners, reallyExit, ref, release, removeAllListeners, removeListener, report, resourceUsage, send, setegid, seteuid, setgid, setgroups, setMaxListeners, setSourceMapsEnabled, setuid, setUncaughtExceptionCaptureCallback, sourceMapsEnabled, stderr, stdin, stdout, throwDeprecation, title, traceDeprecation, umask, unref, uptime, version, versions, _process, process_default;
+var init_process2 = __esm({
+  "../node_modules/@cloudflare/unenv-preset/dist/runtime/node/process.mjs"() {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_hrtime();
+    init_process();
+    globalProcess = globalThis["process"];
+    getBuiltinModule = globalProcess.getBuiltinModule;
+    workerdProcess = getBuiltinModule("node:process");
+    unenvProcess = new Process({
+      env: globalProcess.env,
+      hrtime,
+      // `nextTick` is available from workerd process v1
+      nextTick: workerdProcess.nextTick
+    });
+    ({ exit, features, platform } = workerdProcess);
+    ({
+      _channel,
+      _debugEnd,
+      _debugProcess,
+      _disconnect,
+      _events,
+      _eventsCount,
+      _exiting,
+      _fatalException,
+      _getActiveHandles,
+      _getActiveRequests,
+      _handleQueue,
+      _kill,
+      _linkedBinding,
+      _maxListeners,
+      _pendingMessage,
+      _preload_modules,
+      _rawDebug,
+      _send,
+      _startProfilerIdleNotifier,
+      _stopProfilerIdleNotifier,
+      _tickCallback,
+      abort,
+      addListener,
+      allowedNodeEnvironmentFlags,
+      arch,
+      argv,
+      argv0,
+      assert: assert2,
+      availableMemory,
+      binding,
+      channel,
+      chdir,
+      config,
+      connected,
+      constrainedMemory,
+      cpuUsage,
+      cwd,
+      debugPort,
+      disconnect,
+      dlopen,
+      domain,
+      emit,
+      emitWarning,
+      env,
+      eventNames,
+      execArgv,
+      execPath,
+      exitCode,
+      finalization,
+      getActiveResourcesInfo,
+      getegid,
+      geteuid,
+      getgid,
+      getgroups,
+      getMaxListeners,
+      getuid,
+      hasUncaughtExceptionCaptureCallback,
+      hrtime: hrtime3,
+      initgroups,
+      kill,
+      listenerCount,
+      listeners,
+      loadEnvFile,
+      mainModule,
+      memoryUsage,
+      moduleLoadList,
+      nextTick,
+      off,
+      on,
+      once,
+      openStdin,
+      permission,
+      pid,
+      ppid,
+      prependListener,
+      prependOnceListener,
+      rawListeners,
+      reallyExit,
+      ref,
+      release,
+      removeAllListeners,
+      removeListener,
+      report,
+      resourceUsage,
+      send,
+      setegid,
+      seteuid,
+      setgid,
+      setgroups,
+      setMaxListeners,
+      setSourceMapsEnabled,
+      setuid,
+      setUncaughtExceptionCaptureCallback,
+      sourceMapsEnabled,
+      stderr,
+      stdin,
+      stdout,
+      throwDeprecation,
+      title,
+      traceDeprecation,
+      umask,
+      unref,
+      uptime,
+      version,
+      versions
+    } = unenvProcess);
+    _process = {
+      abort,
+      addListener,
+      allowedNodeEnvironmentFlags,
+      hasUncaughtExceptionCaptureCallback,
+      setUncaughtExceptionCaptureCallback,
+      loadEnvFile,
+      sourceMapsEnabled,
+      arch,
+      argv,
+      argv0,
+      chdir,
+      config,
+      connected,
+      constrainedMemory,
+      availableMemory,
+      cpuUsage,
+      cwd,
+      debugPort,
+      dlopen,
+      disconnect,
+      emit,
+      emitWarning,
+      env,
+      eventNames,
+      execArgv,
+      execPath,
+      exit,
+      finalization,
+      features,
+      getBuiltinModule,
+      getActiveResourcesInfo,
+      getMaxListeners,
+      hrtime: hrtime3,
+      kill,
+      listeners,
+      listenerCount,
+      memoryUsage,
+      nextTick,
+      on,
+      off,
+      once,
+      pid,
+      platform,
+      ppid,
+      prependListener,
+      prependOnceListener,
+      rawListeners,
+      release,
+      removeAllListeners,
+      removeListener,
+      report,
+      resourceUsage,
+      setMaxListeners,
+      setSourceMapsEnabled,
+      stderr,
+      stdin,
+      stdout,
+      title,
+      throwDeprecation,
+      traceDeprecation,
+      umask,
+      uptime,
+      version,
+      versions,
+      // @ts-expect-error old API
+      domain,
+      initgroups,
+      moduleLoadList,
+      reallyExit,
+      openStdin,
+      assert: assert2,
+      binding,
+      send,
+      exitCode,
+      channel,
+      getegid,
+      geteuid,
+      getgid,
+      getgroups,
+      getuid,
+      setegid,
+      seteuid,
+      setgid,
+      setgroups,
+      setuid,
+      permission,
+      mainModule,
+      _events,
+      _eventsCount,
+      _exiting,
+      _maxListeners,
+      _debugEnd,
+      _debugProcess,
+      _fatalException,
+      _getActiveHandles,
+      _getActiveRequests,
+      _kill,
+      _preload_modules,
+      _rawDebug,
+      _startProfilerIdleNotifier,
+      _stopProfilerIdleNotifier,
+      _tickCallback,
+      _disconnect,
+      _handleQueue,
+      _pendingMessage,
+      _channel,
+      _send,
+      _linkedBinding
+    };
+    process_default = _process;
+  }
+});
+
+// ../node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-process
+var init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process = __esm({
+  "../node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-process"() {
+    init_process2();
+    globalThis.process = process_default;
+  }
+});
+
 // ../node_modules/hono/dist/compose.js
 var compose;
 var init_compose = __esm({
   "../node_modules/hono/dist/compose.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     compose = /* @__PURE__ */ __name((middleware, onError, onNotFound) => {
-      return (context, next) => {
-        let index = -1;
+      return (context2, next) => {
+        let index2 = -1;
         return dispatch(0);
         async function dispatch(i) {
-          if (i <= index) {
+          if (i <= index2) {
             throw new Error("next() called multiple times");
           }
-          index = i;
+          index2 = i;
           let res;
           let isError2 = false;
           let handler;
           if (middleware[i]) {
             handler = middleware[i][0][0];
-            context.req.routeIndex = i;
+            context2.req.routeIndex = i;
           } else {
             handler = i === middleware.length && next || void 0;
           }
           if (handler) {
             try {
-              res = await handler(context, () => dispatch(i + 1));
+              res = await handler(context2, () => dispatch(i + 1));
             } catch (err) {
               if (err instanceof Error && onError) {
-                context.error = err;
-                res = await onError(err, context);
+                context2.error = err;
+                res = await onError(err, context2);
                 isError2 = true;
               } else {
                 throw err;
               }
             }
           } else {
-            if (context.finalized === false && onNotFound) {
-              res = await onNotFound(context);
+            if (context2.finalized === false && onNotFound) {
+              res = await onNotFound(context2);
             }
           }
-          if (res && (context.finalized === false || isError2)) {
-            context.res = res;
+          if (res && (context2.finalized === false || isError2)) {
+            context2.res = res;
           }
-          return context;
+          return context2;
         }
         __name(dispatch, "dispatch");
       };
@@ -95,7 +1170,10 @@ var init_compose = __esm({
 // ../node_modules/hono/dist/http-exception.js
 var init_http_exception = __esm({
   "../node_modules/hono/dist/http-exception.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
@@ -103,7 +1181,10 @@ var init_http_exception = __esm({
 var GET_MATCH_RESULT;
 var init_constants = __esm({
   "../node_modules/hono/dist/request/constants.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     GET_MATCH_RESULT = /* @__PURE__ */ Symbol();
   }
 });
@@ -140,7 +1221,10 @@ function convertFormDataToBodyData(formData, options) {
 var parseBody, handleParsingAllValues, handleParsingNestedValues;
 var init_body = __esm({
   "../node_modules/hono/dist/utils/body.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_request();
     parseBody = /* @__PURE__ */ __name(async (request, options = /* @__PURE__ */ Object.create(null)) => {
       const { all = false, dot = false } = options;
@@ -175,8 +1259,8 @@ var init_body = __esm({
       }
       let nestedForm = form;
       const keys = key.split(".");
-      keys.forEach((key2, index) => {
-        if (index === keys.length - 1) {
+      keys.forEach((key2, index2) => {
+        if (index2 === keys.length - 1) {
           nestedForm[key2] = value;
         } else {
           if (!nestedForm[key2] || typeof nestedForm[key2] !== "object" || Array.isArray(nestedForm[key2]) || nestedForm[key2] instanceof File) {
@@ -193,7 +1277,10 @@ var init_body = __esm({
 var splitPath, splitRoutingPath, extractGroupsFromPath, replaceGroupMarks, patternCache, getPattern, tryDecode, tryDecodeURI, getPath, getPathNoStrict, mergePath, checkOptionalParameter, _decodeURI, _getQueryParam, getQueryParam, getQueryParams, decodeURIComponent_;
 var init_url = __esm({
   "../node_modules/hono/dist/utils/url.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     splitPath = /* @__PURE__ */ __name((path) => {
       const paths = path.split("/");
       if (paths[0] === "") {
@@ -208,8 +1295,8 @@ var init_url = __esm({
     }, "splitRoutingPath");
     extractGroupsFromPath = /* @__PURE__ */ __name((path) => {
       const groups = [];
-      path = path.replace(/\{[^}]+\}/g, (match3, index) => {
-        const mark = `@${index}`;
+      path = path.replace(/\{[^}]+\}/g, (match3, index2) => {
+        const mark = `@${index2}`;
         groups.push([mark, match3]);
         return mark;
       });
@@ -403,7 +1490,10 @@ var init_url = __esm({
 var tryDecodeURIComponent, HonoRequest;
 var init_request = __esm({
   "../node_modules/hono/dist/request.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_http_exception();
     init_constants();
     init_body();
@@ -699,7 +1789,10 @@ var init_request = __esm({
 var HtmlEscapedCallbackPhase, raw, resolveCallback;
 var init_html = __esm({
   "../node_modules/hono/dist/utils/html.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     HtmlEscapedCallbackPhase = {
       Stringify: 1,
       BeforeStream: 2,
@@ -711,7 +1804,7 @@ var init_html = __esm({
       escapedString.callbacks = callbacks;
       return escapedString;
     }, "raw");
-    resolveCallback = /* @__PURE__ */ __name(async (str, phase, preserveCallbacks, context, buffer) => {
+    resolveCallback = /* @__PURE__ */ __name(async (str, phase, preserveCallbacks, context2, buffer) => {
       if (typeof str === "object" && !(str instanceof String)) {
         if (!(str instanceof Promise)) {
           str = str.toString();
@@ -729,9 +1822,9 @@ var init_html = __esm({
       } else {
         buffer = [str];
       }
-      const resStr = Promise.all(callbacks.map((c) => c({ phase, buffer, context }))).then(
+      const resStr = Promise.all(callbacks.map((c) => c({ phase, buffer, context: context2 }))).then(
         (res) => Promise.all(
-          res.filter(Boolean).map((str2) => resolveCallback(str2, phase, false, context, buffer))
+          res.filter(Boolean).map((str2) => resolveCallback(str2, phase, false, context2, buffer))
         ).then(() => buffer[0])
       );
       if (preserveCallbacks) {
@@ -747,7 +1840,10 @@ var init_html = __esm({
 var TEXT_PLAIN, setDefaultContentType, createResponseInstance, Context;
 var init_context = __esm({
   "../node_modules/hono/dist/context.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_request();
     init_html();
     TEXT_PLAIN = "text/plain; charset=UTF-8";
@@ -1165,7 +2261,10 @@ var init_context = __esm({
 var METHOD_NAME_ALL, METHOD_NAME_ALL_LOWERCASE, METHODS, MESSAGE_MATCHER_IS_ALREADY_BUILT, UnsupportedPathError;
 var init_router = __esm({
   "../node_modules/hono/dist/router.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     METHOD_NAME_ALL = "ALL";
     METHOD_NAME_ALL_LOWERCASE = "all";
     METHODS = ["get", "post", "put", "delete", "options", "patch"];
@@ -1182,7 +2281,10 @@ var init_router = __esm({
 var COMPOSED_HANDLER;
 var init_constants2 = __esm({
   "../node_modules/hono/dist/utils/constants.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     COMPOSED_HANDLER = "__COMPOSED_HANDLER";
   }
 });
@@ -1191,7 +2293,10 @@ var init_constants2 = __esm({
 var notFoundHandler, errorHandler, Hono;
 var init_hono_base = __esm({
   "../node_modules/hono/dist/hono-base.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_compose();
     init_context();
     init_router();
@@ -1470,16 +2575,16 @@ var init_hono_base = __esm({
         }
         throw err;
       }
-      #dispatch(request, executionCtx, env, method) {
+      #dispatch(request, executionCtx, env2, method) {
         if (method === "HEAD") {
-          return (async () => new Response(null, await this.#dispatch(request, executionCtx, env, "GET")))();
+          return (async () => new Response(null, await this.#dispatch(request, executionCtx, env2, "GET")))();
         }
-        const path = this.getPath(request, { env });
+        const path = this.getPath(request, { env: env2 });
         const matchResult = this.router.match(method, path);
         const c = new Context(request, {
           path,
           matchResult,
-          env,
+          env: env2,
           executionCtx,
           notFoundHandler: this.#notFoundHandler
         });
@@ -1499,13 +2604,13 @@ var init_hono_base = __esm({
         const composed = compose(matchResult[0], this.errorHandler, this.#notFoundHandler);
         return (async () => {
           try {
-            const context = await composed(c);
-            if (!context.finalized) {
+            const context2 = await composed(c);
+            if (!context2.finalized) {
               throw new Error(
                 "Context is not finalized. Did you forget to return a Response object or `await next()`?"
               );
             }
-            return context.res;
+            return context2.res;
           } catch (err) {
             return this.#handleError(err, c);
           }
@@ -1590,8 +2695,8 @@ function match(method, path) {
     if (!match3) {
       return [[], emptyParam];
     }
-    const index = match3.indexOf("", 1);
-    return [matcher[1][index], match3];
+    const index2 = match3.indexOf("", 1);
+    return [matcher[1][index2], match3];
   }), "match2");
   this.match = match22;
   return match22(method, path);
@@ -1599,7 +2704,10 @@ function match(method, path) {
 var emptyParam;
 var init_matcher = __esm({
   "../node_modules/hono/dist/router/reg-exp-router/matcher.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router();
     emptyParam = [];
     __name(match, "match");
@@ -1629,7 +2737,10 @@ function compareKey(a, b) {
 var LABEL_REG_EXP_STR, ONLY_WILDCARD_REG_EXP_STR, TAIL_WILDCARD_REG_EXP_STR, PATH_ERROR, regExpMetaChars, Node;
 var init_node = __esm({
   "../node_modules/hono/dist/router/reg-exp-router/node.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     LABEL_REG_EXP_STR = "[^/]+";
     ONLY_WILDCARD_REG_EXP_STR = ".*";
     TAIL_WILDCARD_REG_EXP_STR = "(?:|/.*)";
@@ -1643,7 +2754,7 @@ var init_node = __esm({
       #index;
       #varIndex;
       #children = /* @__PURE__ */ Object.create(null);
-      insert(tokens, index, paramMap, context, pathErrorCheckOnly) {
+      insert(tokens, index2, paramMap, context2, pathErrorCheckOnly) {
         if (tokens.length === 0) {
           if (this.#index !== void 0) {
             throw PATH_ERROR;
@@ -1651,7 +2762,7 @@ var init_node = __esm({
           if (pathErrorCheckOnly) {
             return;
           }
-          this.#index = index;
+          this.#index = index2;
           return;
         }
         const [token, ...restTokens] = tokens;
@@ -1681,7 +2792,7 @@ var init_node = __esm({
             }
             node = this.#children[regexpStr] = new _Node();
             if (name !== "") {
-              node.#varIndex = context.varIndex++;
+              node.#varIndex = context2.varIndex++;
             }
           }
           if (!pathErrorCheckOnly && name !== "") {
@@ -1701,7 +2812,7 @@ var init_node = __esm({
             node = this.#children[token] = new _Node();
           }
         }
-        node.insert(restTokens, index, paramMap, context, pathErrorCheckOnly);
+        node.insert(restTokens, index2, paramMap, context2, pathErrorCheckOnly);
       }
       buildRegExpStr() {
         const childKeys = Object.keys(this.#children).sort(compareKey);
@@ -1728,7 +2839,10 @@ var init_node = __esm({
 var Trie;
 var init_trie = __esm({
   "../node_modules/hono/dist/router/reg-exp-router/trie.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_node();
     Trie = class {
       static {
@@ -1736,7 +2850,7 @@ var init_trie = __esm({
       }
       #context = { varIndex: 0 };
       #root = new Node();
-      insert(path, index, pathErrorCheckOnly) {
+      insert(path, index2, pathErrorCheckOnly) {
         const paramAssoc = [];
         const groups = [];
         for (let i = 0; ; ) {
@@ -1762,7 +2876,7 @@ var init_trie = __esm({
             }
           }
         }
-        this.#root.insert(tokens, index, paramAssoc, this.#context, pathErrorCheckOnly);
+        this.#root.insert(tokens, index2, paramAssoc, this.#context, pathErrorCheckOnly);
         return paramAssoc;
       }
       buildRegExp() {
@@ -1873,7 +2987,10 @@ function findMiddleware(middleware, path) {
 var nullMatcher, wildcardRegExpCache, RegExpRouter;
 var init_router2 = __esm({
   "../node_modules/hono/dist/router/reg-exp-router/router.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router();
     init_url();
     init_matcher();
@@ -1990,7 +3107,10 @@ var init_router2 = __esm({
 // ../node_modules/hono/dist/router/reg-exp-router/prepared-router.js
 var init_prepared_router = __esm({
   "../node_modules/hono/dist/router/reg-exp-router/prepared-router.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router();
     init_matcher();
     init_router2();
@@ -2000,7 +3120,10 @@ var init_prepared_router = __esm({
 // ../node_modules/hono/dist/router/reg-exp-router/index.js
 var init_reg_exp_router = __esm({
   "../node_modules/hono/dist/router/reg-exp-router/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router2();
     init_prepared_router();
   }
@@ -2010,7 +3133,10 @@ var init_reg_exp_router = __esm({
 var SmartRouter;
 var init_router3 = __esm({
   "../node_modules/hono/dist/router/smart-router/router.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router();
     SmartRouter = class {
       static {
@@ -2074,7 +3200,10 @@ var init_router3 = __esm({
 // ../node_modules/hono/dist/router/smart-router/index.js
 var init_smart_router = __esm({
   "../node_modules/hono/dist/router/smart-router/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router3();
   }
 });
@@ -2083,7 +3212,10 @@ var init_smart_router = __esm({
 var emptyParams, hasChildren, Node2;
 var init_node2 = __esm({
   "../node_modules/hono/dist/router/trie-router/node.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router();
     init_url();
     emptyParams = /* @__PURE__ */ Object.create(null);
@@ -2269,7 +3401,10 @@ var init_node2 = __esm({
 var TrieRouter;
 var init_router4 = __esm({
   "../node_modules/hono/dist/router/trie-router/router.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_url();
     init_node2();
     TrieRouter = class {
@@ -2301,7 +3436,10 @@ var init_router4 = __esm({
 // ../node_modules/hono/dist/router/trie-router/index.js
 var init_trie_router = __esm({
   "../node_modules/hono/dist/router/trie-router/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_router4();
   }
 });
@@ -2310,7 +3448,10 @@ var init_trie_router = __esm({
 var Hono2;
 var init_hono = __esm({
   "../node_modules/hono/dist/hono.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_hono_base();
     init_reg_exp_router();
     init_smart_router();
@@ -2337,7 +3478,10 @@ var init_hono = __esm({
 // ../node_modules/hono/dist/index.js
 var init_dist = __esm({
   "../node_modules/hono/dist/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_hono();
     init_context();
   }
@@ -2347,7 +3491,10 @@ var init_dist = __esm({
 var handle;
 var init_handler = __esm({
   "../node_modules/hono/dist/adapter/cloudflare-pages/handler.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_context();
     init_http_exception();
     handle = /* @__PURE__ */ __name((app2) => (eventContext) => {
@@ -2367,14 +3514,20 @@ var init_handler = __esm({
 // ../node_modules/hono/dist/adapter/cloudflare-pages/conninfo.js
 var init_conninfo = __esm({
   "../node_modules/hono/dist/adapter/cloudflare-pages/conninfo.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
 // ../node_modules/hono/dist/adapter/cloudflare-pages/index.js
 var init_cloudflare_pages = __esm({
   "../node_modules/hono/dist/adapter/cloudflare-pages/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_handler();
     init_conninfo();
   }
@@ -2424,7 +3577,10 @@ function abortSignalsAnyPonyfill(signals) {
 var asyncIteratorsSupported, run, TRPC_ERROR_CODES_BY_KEY, TRPC_ERROR_CODES_BY_NUMBER, retryableRpcCodes;
 var init_codes_DagpWZLc = __esm({
   "../node_modules/@trpc/server/dist/codes-DagpWZLc.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(mergeWithoutOverrides, "mergeWithoutOverrides");
     __name(isObject, "isObject");
     __name(isFunction, "isFunction");
@@ -2538,28 +3694,31 @@ function getHTTPStatusCode(json3) {
   const httpStatus = httpStatuses.values().next().value;
   return httpStatus;
 }
-function getHTTPStatusCodeFromError(error51) {
-  return getStatusCodeFromKey(error51.code);
+function getHTTPStatusCodeFromError(error53) {
+  return getStatusCodeFromKey(error53.code);
 }
 function getErrorShape(opts) {
-  const { path, error: error51, config: config2 } = opts;
+  const { path, error: error53, config: config3 } = opts;
   const { code } = opts.error;
   const shape = {
-    message: error51.message,
+    message: error53.message,
     code: TRPC_ERROR_CODES_BY_KEY[code],
     data: {
       code,
-      httpStatus: getHTTPStatusCodeFromError(error51)
+      httpStatus: getHTTPStatusCodeFromError(error53)
     }
   };
-  if (config2.isDev && typeof opts.error.stack === "string") shape.data.stack = opts.error.stack;
+  if (config3.isDev && typeof opts.error.stack === "string") shape.data.stack = opts.error.stack;
   if (typeof path === "string") shape.data.path = path;
-  return config2.errorFormatter((0, import_objectSpread2.default)((0, import_objectSpread2.default)({}, opts), {}, { shape }));
+  return config3.errorFormatter((0, import_objectSpread2.default)((0, import_objectSpread2.default)({}, opts), {}, { shape }));
 }
 var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __copyProps2, __toESM2, noop, freezeIfAvailable, createRecursiveProxy, JSONRPC2_TO_HTTP_CODE, require_typeof, require_toPrimitive, require_toPropertyKey, require_defineProperty, require_objectSpread2, import_objectSpread2;
 var init_getErrorShape_BPSzUA7W = __esm({
   "../node_modules/@trpc/server/dist/getErrorShape-BPSzUA7W.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_codes_DagpWZLc();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
@@ -2729,15 +3888,15 @@ function getDataTransformer(transformer) {
     output: transformer
   };
 }
-function transformTRPCResponseItem(config2, item) {
-  if ("error" in item) return (0, import_objectSpread2$1.default)((0, import_objectSpread2$1.default)({}, item), {}, { error: config2.transformer.output.serialize(item.error) });
-  if ("data" in item.result) return (0, import_objectSpread2$1.default)((0, import_objectSpread2$1.default)({}, item), {}, { result: (0, import_objectSpread2$1.default)((0, import_objectSpread2$1.default)({}, item.result), {}, { data: config2.transformer.output.serialize(item.result.data) }) });
+function transformTRPCResponseItem(config3, item) {
+  if ("error" in item) return (0, import_objectSpread2$1.default)((0, import_objectSpread2$1.default)({}, item), {}, { error: config3.transformer.output.serialize(item.error) });
+  if ("data" in item.result) return (0, import_objectSpread2$1.default)((0, import_objectSpread2$1.default)({}, item), {}, { result: (0, import_objectSpread2$1.default)((0, import_objectSpread2$1.default)({}, item.result), {}, { data: config3.transformer.output.serialize(item.result.data) }) });
   return item;
 }
-function transformTRPCResponse(config2, itemOrItems) {
-  return Array.isArray(itemOrItems) ? itemOrItems.map((item) => transformTRPCResponseItem(config2, item)) : transformTRPCResponseItem(config2, itemOrItems);
+function transformTRPCResponse(config3, itemOrItems) {
+  return Array.isArray(itemOrItems) ? itemOrItems.map((item) => transformTRPCResponseItem(config3, item)) : transformTRPCResponseItem(config3, itemOrItems);
 }
-function once(fn) {
+function once2(fn) {
   const uncalled = /* @__PURE__ */ Symbol();
   let result = uncalled;
   return () => {
@@ -2751,7 +3910,7 @@ function isLazy(input) {
 function isRouter(value) {
   return isObject(value) && isObject(value["_def"]) && "router" in value["_def"];
 }
-function createRouterFactory(config2) {
+function createRouterFactory(config3) {
   function createRouterInner(input) {
     const reservedWordsUsed = new Set(Object.keys(input).filter((v) => reservedWords.includes(v)));
     if (reservedWordsUsed.size > 0) throw new Error("Reserved words used in `router({})` call: " + Array.from(reservedWordsUsed).join(", "));
@@ -2760,7 +3919,7 @@ function createRouterFactory(config2) {
     function createLazyLoader(opts) {
       return {
         ref: opts.ref,
-        load: once(async () => {
+        load: once2(async () => {
           const router$1 = await opts.ref();
           const lazyPath = [...opts.path, opts.key];
           const lazyKey = lazyPath.join(".");
@@ -2809,7 +3968,7 @@ function createRouterFactory(config2) {
     __name(step, "step");
     const record2 = step(input);
     const _def = (0, import_objectSpread22.default)((0, import_objectSpread22.default)({
-      _config: config2,
+      _config: config3,
       router: true,
       procedures,
       lazy: lazy$1
@@ -2911,7 +4070,10 @@ function isTrackedEnvelope(value) {
 var defaultFormatter, import_defineProperty, UnknownCauseError, TRPCError, import_objectSpread2$1, defaultTransformer, import_objectSpread22, lazyMarker, emptyRouter, reservedWords, trackedSymbol;
 var init_tracked_DWInO6EQ = __esm({
   "../node_modules/@trpc/server/dist/tracked-DWInO6EQ.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_getErrorShape_BPSzUA7W();
     init_codes_DagpWZLc();
     defaultFormatter = /* @__PURE__ */ __name(({ shape }) => {
@@ -2962,7 +4124,7 @@ var init_tracked_DWInO6EQ = __esm({
     __name(transformTRPCResponse, "transformTRPCResponse");
     import_objectSpread22 = __toESM2(require_objectSpread2(), 1);
     lazyMarker = "lazyMarker";
-    __name(once, "once");
+    __name(once2, "once");
     __name(isLazy, "isLazy");
     __name(isRouter, "isRouter");
     emptyRouter = {
@@ -3010,10 +4172,10 @@ function observableToReadableStream(observable$1, signal) {
             value: data
           });
         },
-        error(error51) {
+        error(error53) {
           controller.enqueue({
             ok: false,
-            error: error51
+            error: error53
           });
           controller.close();
         },
@@ -3060,7 +4222,10 @@ function observableToAsyncIterable(observable$1, signal) {
 }
 var init_observable_UMO3vUa = __esm({
   "../node_modules/@trpc/server/dist/observable-UMO3vUa_.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(isObservable, "isObservable");
     __name(observableToReadableStream, "observableToReadableStream");
     __name(observableToAsyncIterable, "observableToAsyncIterable");
@@ -3138,8 +4303,8 @@ async function getRequestInfo(opts) {
   const handler = getContentTypeHandler(opts.req);
   return await handler.parse(opts);
 }
-function isAbortError(error51) {
-  return isObject(error51) && error51["name"] === "AbortError";
+function isAbortError(error53) {
+  return isObject(error53) && error53["name"] === "AbortError";
 }
 function throwAbortError(message2 = "AbortError") {
   throw new DOMException(message2, "AbortError");
@@ -3176,12 +4341,12 @@ function withResolvers() {
 function listWithMember(arr, member) {
   return [...arr, member];
 }
-function listWithoutIndex(arr, index) {
-  return [...arr.slice(0, index), ...arr.slice(index + 1)];
+function listWithoutIndex(arr, index2) {
+  return [...arr.slice(0, index2), ...arr.slice(index2 + 1)];
 }
 function listWithoutMember(arr, member) {
-  const index = arr.indexOf(member);
-  if (index !== -1) return listWithoutIndex(arr, index);
+  const index2 = arr.indexOf(member);
+  if (index2 !== -1) return listWithoutIndex(arr, index2);
   return arr;
 }
 function makeResource(thing, dispose) {
@@ -3232,7 +4397,7 @@ function _takeWithGrace() {
       const iterator = _usingCtx$1.a(iteratorResource(iterable));
       let result;
       const timer = _usingCtx$1.u(timerResource(opts.gracePeriodMs));
-      let count = opts.count;
+      let count3 = opts.count;
       let timerPromise = new Promise(() => {
       });
       while (true) {
@@ -3240,7 +4405,7 @@ function _takeWithGrace() {
         if (result === disposablePromiseTimerResult) throwAbortError();
         if (result.done) return result.value;
         yield result.value;
-        if (--count === 0) timerPromise = timer.start();
+        if (--count3 === 0) timerPromise = timer.start();
         result = null;
       }
     } catch (_) {
@@ -3471,8 +4636,8 @@ function _createBatchStreamProducer() {
     function encodePromise(promise2, path) {
       return registerAsync(/* @__PURE__ */ (function() {
         var _ref = (0, import_wrapAsyncGenerator$2.default)(function* (idx) {
-          const error51 = checkMaxDepth(path);
-          if (error51) {
+          const error53 = checkMaxDepth(path);
+          if (error53) {
             promise2.catch((cause) => {
               var _opts$onError;
               (_opts$onError = opts.onError) === null || _opts$onError === void 0 || _opts$onError.call(opts, {
@@ -3480,7 +4645,7 @@ function _createBatchStreamProducer() {
                 path
               });
             });
-            promise2 = Promise.reject(error51);
+            promise2 = Promise.reject(error53);
           }
           try {
             const next = yield (0, import_awaitAsyncGenerator$1.default)(promise2);
@@ -3516,8 +4681,8 @@ function _createBatchStreamProducer() {
         var _ref2 = (0, import_wrapAsyncGenerator$2.default)(function* (idx) {
           try {
             var _usingCtx$1 = (0, import_usingCtx$1.default)();
-            const error51 = checkMaxDepth(path);
-            if (error51) throw error51;
+            const error53 = checkMaxDepth(path);
+            if (error53) throw error53;
             const iterator = _usingCtx$1.a(iteratorResource(iterable$1));
             try {
               while (true) {
@@ -3714,8 +4879,8 @@ function sseStreamProducer(opts) {
       } catch (cause) {
         var _opts$formatError, _opts$formatError2;
         if (isAbortError(cause)) return;
-        const error51 = getTRPCErrorFromUnknown(cause);
-        const data = (_opts$formatError = (_opts$formatError2 = opts.formatError) === null || _opts$formatError2 === void 0 ? void 0 : _opts$formatError2.call(opts, { error: error51 })) !== null && _opts$formatError !== void 0 ? _opts$formatError : null;
+        const error53 = getTRPCErrorFromUnknown(cause);
+        const data = (_opts$formatError = (_opts$formatError2 = opts.formatError) === null || _opts$formatError2 === void 0 ? void 0 : _opts$formatError2.call(opts, { error: error53 })) !== null && _opts$formatError !== void 0 ? _opts$formatError : null;
         yield {
           event: SERIALIZED_ERROR_EVENT,
           data: JSON.stringify(serialize2(data))
@@ -3753,18 +4918,18 @@ function combinedAbortController(signal) {
 }
 function initResponse(initOpts) {
   var _responseMeta, _info$calls$find$proc, _info$calls$find;
-  const { ctx, info, responseMeta, untransformedJSON, errors = [], headers } = initOpts;
+  const { ctx, info: info3, responseMeta, untransformedJSON, errors = [], headers } = initOpts;
   let status = untransformedJSON ? getHTTPStatusCode(untransformedJSON) : 200;
   const eagerGeneration = !untransformedJSON;
   const data = eagerGeneration ? [] : Array.isArray(untransformedJSON) ? untransformedJSON : [untransformedJSON];
   const meta3 = (_responseMeta = responseMeta === null || responseMeta === void 0 ? void 0 : responseMeta({
     ctx,
-    info,
-    paths: info === null || info === void 0 ? void 0 : info.calls.map((call) => call.path),
+    info: info3,
+    paths: info3 === null || info3 === void 0 ? void 0 : info3.calls.map((call) => call.path),
     data,
     errors,
     eagerGeneration,
-    type: (_info$calls$find$proc = info === null || info === void 0 || (_info$calls$find = info.calls.find((call) => {
+    type: (_info$calls$find$proc = info3 === null || info3 === void 0 || (_info$calls$find = info3.calls.find((call) => {
       var _call$procedure;
       return (_call$procedure = call.procedure) === null || _call$procedure === void 0 ? void 0 : _call$procedure._def.type;
     })) === null || _info$calls$find === void 0 || (_info$calls$find = _info$calls$find.procedure) === null || _info$calls$find === void 0 ? void 0 : _info$calls$find._def.type) !== null && _info$calls$find$proc !== void 0 ? _info$calls$find$proc : "unknown"
@@ -3780,9 +4945,9 @@ function initResponse(initOpts) {
 }
 function caughtErrorToData(cause, errorOpts) {
   const { router: router2, req, onError } = errorOpts.opts;
-  const error51 = getTRPCErrorFromUnknown(cause);
+  const error53 = getTRPCErrorFromUnknown(cause);
   onError === null || onError === void 0 || onError({
-    error: error51,
+    error: error53,
     path: errorOpts.path,
     input: errorOpts.input,
     ctx: errorOpts.ctx,
@@ -3791,7 +4956,7 @@ function caughtErrorToData(cause, errorOpts) {
   });
   const untransformedJSON = { error: getErrorShape({
     config: router2._def._config,
-    error: error51,
+    error: error53,
     type: errorOpts.type,
     path: errorOpts.path,
     input: errorOpts.input,
@@ -3800,7 +4965,7 @@ function caughtErrorToData(cause, errorOpts) {
   const transformedJSON = transformTRPCResponse(router2._def._config, untransformedJSON);
   const body = JSON.stringify(transformedJSON);
   return {
-    error: error51,
+    error: error53,
     untransformedJSON,
     body
   };
@@ -3814,7 +4979,7 @@ async function resolveResponse(opts) {
   var _ref, _opts$allowBatching, _opts$batching, _opts$allowMethodOver, _config$sse$enabled, _config$sse;
   const { router: router2, req } = opts;
   const headers = new Headers([["vary", "trpc-accept, accept"]]);
-  const config2 = router2._def._config;
+  const config3 = router2._def._config;
   const url2 = new URL(req.url);
   if (req.method === "HEAD") return new Response(null, { status: 204 });
   const allowBatching = (_ref = (_opts$allowBatching = opts.allowBatching) !== null && _opts$allowBatching !== void 0 ? _opts$allowBatching : (_opts$batching = opts.batching) === null || _opts$batching === void 0 ? void 0 : _opts$batching.enabled) !== null && _ref !== void 0 ? _ref : true;
@@ -3846,10 +5011,10 @@ async function resolveResponse(opts) {
         if (err) throw err;
         return ctx;
       }, "value"),
-      create: /* @__PURE__ */ __name(async (info) => {
+      create: /* @__PURE__ */ __name(async (info3) => {
         if (result) throw new Error("This should only be called once - report a bug in tRPC");
         try {
-          const ctx = await opts.createContext({ info });
+          const ctx = await opts.createContext({ info: info3 });
           result = [void 0, ctx];
         } catch (cause) {
           result = [getTRPCErrorFromUnknown(cause), void 0];
@@ -3859,20 +5024,20 @@ async function resolveResponse(opts) {
   });
   const methodMapper = allowMethodOverride ? TYPE_ACCEPTED_METHOD_MAP_WITH_METHOD_OVERRIDE : TYPE_ACCEPTED_METHOD_MAP;
   const isStreamCall = getAcceptHeader(req.headers) === "application/jsonl";
-  const experimentalSSE = (_config$sse$enabled = (_config$sse = config2.sse) === null || _config$sse === void 0 ? void 0 : _config$sse.enabled) !== null && _config$sse$enabled !== void 0 ? _config$sse$enabled : true;
+  const experimentalSSE = (_config$sse$enabled = (_config$sse = config3.sse) === null || _config$sse === void 0 ? void 0 : _config$sse.enabled) !== null && _config$sse$enabled !== void 0 ? _config$sse$enabled : true;
   try {
-    const [infoError, info] = infoTuple;
+    const [infoError, info3] = infoTuple;
     if (infoError) throw infoError;
-    if (info.isBatchCall && !allowBatching) throw new TRPCError({
+    if (info3.isBatchCall && !allowBatching) throw new TRPCError({
       code: "BAD_REQUEST",
       message: `Batching is not enabled on the server`
     });
-    if (isStreamCall && !info.isBatchCall) throw new TRPCError({
+    if (isStreamCall && !info3.isBatchCall) throw new TRPCError({
       message: `Streaming requests must be batched (you can do a batch of 1)`,
       code: "BAD_REQUEST"
     });
-    await ctxManager.create(info);
-    const rpcCalls = info.calls.map(async (call) => {
+    await ctxManager.create(info3);
+    const rpcCalls = info3.calls.map(async (call) => {
       const proc = call.procedure;
       const combinedAbort = combinedAbortController(opts.req.signal);
       try {
@@ -3887,18 +5052,18 @@ async function resolveResponse(opts) {
         });
         if (proc._def.type === "subscription") {
           var _config$sse2;
-          if (info.isBatchCall) throw new TRPCError({
+          if (info3.isBatchCall) throw new TRPCError({
             code: "BAD_REQUEST",
             message: `Cannot batch subscription calls`
           });
-          if ((_config$sse2 = config2.sse) === null || _config$sse2 === void 0 ? void 0 : _config$sse2.maxDurationMs) {
+          if ((_config$sse2 = config3.sse) === null || _config$sse2 === void 0 ? void 0 : _config$sse2.maxDurationMs) {
             let cleanup = function() {
               clearTimeout(timer);
               combinedAbort.signal.removeEventListener("abort", cleanup);
               combinedAbort.controller.abort();
             };
             __name(cleanup, "cleanup");
-            const timer = setTimeout(cleanup, config2.sse.maxDurationMs);
+            const timer = setTimeout(cleanup, config3.sse.maxDurationMs);
             combinedAbort.signal.addEventListener("abort", cleanup);
           }
         }
@@ -3916,23 +5081,23 @@ async function resolveResponse(opts) {
         }];
       } catch (cause) {
         var _opts$onError, _call$procedure$_def$, _call$procedure2;
-        const error51 = getTRPCErrorFromUnknown(cause);
+        const error53 = getTRPCErrorFromUnknown(cause);
         const input = call.result();
         (_opts$onError = opts.onError) === null || _opts$onError === void 0 || _opts$onError.call(opts, {
-          error: error51,
+          error: error53,
           path: call.path,
           input,
           ctx: ctxManager.valueOrUndefined(),
           type: (_call$procedure$_def$ = (_call$procedure2 = call.procedure) === null || _call$procedure2 === void 0 ? void 0 : _call$procedure2._def.type) !== null && _call$procedure$_def$ !== void 0 ? _call$procedure$_def$ : "unknown",
           req: opts.req
         });
-        return [error51, void 0];
+        return [error53, void 0];
       }
     });
-    if (!info.isBatchCall) {
-      const [call] = info.calls;
-      const [error51, result] = await rpcCalls[0];
-      switch (info.type) {
+    if (!info3.isBatchCall) {
+      const [call] = info3.calls;
+      const [error53, result] = await rpcCalls[0];
+      switch (info3.type) {
         case "unknown":
         case "mutation":
         case "query": {
@@ -3941,30 +5106,30 @@ async function resolveResponse(opts) {
             code: "UNSUPPORTED_MEDIA_TYPE",
             message: "Cannot use stream-like response in non-streaming request - use httpBatchStreamLink"
           });
-          const res = error51 ? { error: getErrorShape({
-            config: config2,
+          const res = error53 ? { error: getErrorShape({
+            config: config3,
             ctx: ctxManager.valueOrUndefined(),
-            error: error51,
+            error: error53,
             input: call.result(),
             path: call.path,
-            type: info.type
+            type: info3.type
           }) } : { result: { data: result.data } };
           const headResponse$1 = initResponse({
             ctx: ctxManager.valueOrUndefined(),
-            info,
+            info: info3,
             responseMeta: opts.responseMeta,
-            errors: error51 ? [error51] : [],
+            errors: error53 ? [error53] : [],
             headers,
             untransformedJSON: [res]
           });
-          return new Response(JSON.stringify(transformTRPCResponse(config2, res)), {
+          return new Response(JSON.stringify(transformTRPCResponse(config3, res)), {
             status: headResponse$1.status,
             headers
           });
         }
         case "subscription": {
           const iterable = run(() => {
-            if (error51) return errorToAsyncIterable(error51);
+            if (error53) return errorToAsyncIterable(error53);
             if (!experimentalSSE) return errorToAsyncIterable(new TRPCError({
               code: "METHOD_NOT_SUPPORTED",
               message: 'Missing experimental flag "sseSubscriptions"'
@@ -3976,9 +5141,9 @@ async function resolveResponse(opts) {
             const dataAsIterable = isObservable(result.data) ? observableToAsyncIterable(result.data, opts.req.signal) : result.data;
             return dataAsIterable;
           });
-          const stream = sseStreamProducer((0, import_objectSpread23.default)((0, import_objectSpread23.default)({}, config2.sse), {}, {
+          const stream = sseStreamProducer((0, import_objectSpread23.default)((0, import_objectSpread23.default)({}, config3.sse), {}, {
             data: iterable,
-            serialize: /* @__PURE__ */ __name((v) => config2.transformer.output.serialize(v), "serialize"),
+            serialize: /* @__PURE__ */ __name((v) => config3.transformer.output.serialize(v), "serialize"),
             formatError(errorOpts) {
               var _call$procedure$_def$2, _call$procedure3, _opts$onError2;
               const error$1 = getTRPCErrorFromUnknown(errorOpts.error);
@@ -3994,7 +5159,7 @@ async function resolveResponse(opts) {
                 type
               });
               const shape = getErrorShape({
-                config: config2,
+                config: config3,
                 ctx: ctxManager.valueOrUndefined(),
                 error: error$1,
                 input,
@@ -4007,7 +5172,7 @@ async function resolveResponse(opts) {
           for (const [key, value] of Object.entries(sseHeaders)) headers.set(key, value);
           const headResponse$1 = initResponse({
             ctx: ctxManager.valueOrUndefined(),
-            info,
+            info: info3,
             responseMeta: opts.responseMeta,
             errors: [],
             headers,
@@ -4041,28 +5206,28 @@ async function resolveResponse(opts) {
         }
       }
     }
-    if (info.accept === "application/jsonl") {
+    if (info3.accept === "application/jsonl") {
       headers.set("content-type", "application/json");
       headers.set("transfer-encoding", "chunked");
       const headResponse$1 = initResponse({
         ctx: ctxManager.valueOrUndefined(),
-        info,
+        info: info3,
         responseMeta: opts.responseMeta,
         errors: [],
         headers,
         untransformedJSON: null
       });
-      const stream = jsonlStreamProducer((0, import_objectSpread23.default)((0, import_objectSpread23.default)({}, config2.jsonl), {}, {
+      const stream = jsonlStreamProducer((0, import_objectSpread23.default)((0, import_objectSpread23.default)({}, config3.jsonl), {}, {
         maxDepth: Infinity,
-        data: rpcCalls.map(async (res, index) => {
-          const [error51, result] = await res;
-          const call = info.calls[index];
-          if (error51) {
+        data: rpcCalls.map(async (res, index2) => {
+          const [error53, result] = await res;
+          const call = info3.calls[index2];
+          if (error53) {
             var _procedure$_def$type, _procedure;
             return { error: getErrorShape({
-              config: config2,
+              config: config3,
               ctx: ctxManager.valueOrUndefined(),
-              error: error51,
+              error: error53,
               input: call.result(),
               path: call.path,
               type: (_procedure$_def$type = (_procedure = call.procedure) === null || _procedure === void 0 ? void 0 : _procedure._def.type) !== null && _procedure$_def$type !== void 0 ? _procedure$_def$type : "unknown"
@@ -4071,7 +5236,7 @@ async function resolveResponse(opts) {
           const iterable = isObservable(result.data) ? observableToAsyncIterable(result.data, opts.req.signal) : Promise.resolve(result.data);
           return { result: Promise.resolve({ data: iterable }) };
         }),
-        serialize: /* @__PURE__ */ __name((data) => config2.transformer.output.serialize(data), "serialize"),
+        serialize: /* @__PURE__ */ __name((data) => config3.transformer.output.serialize(data), "serialize"),
         onError: /* @__PURE__ */ __name((cause) => {
           var _opts$onError3, _info$type;
           (_opts$onError3 = opts.onError) === null || _opts$onError3 === void 0 || _opts$onError3.call(opts, {
@@ -4080,20 +5245,20 @@ async function resolveResponse(opts) {
             input: void 0,
             ctx: ctxManager.valueOrUndefined(),
             req: opts.req,
-            type: (_info$type = info === null || info === void 0 ? void 0 : info.type) !== null && _info$type !== void 0 ? _info$type : "unknown"
+            type: (_info$type = info3 === null || info3 === void 0 ? void 0 : info3.type) !== null && _info$type !== void 0 ? _info$type : "unknown"
           });
         }, "onError"),
         formatError(errorOpts) {
           var _call$procedure$_def$3, _call$procedure4;
-          const call = info === null || info === void 0 ? void 0 : info.calls[errorOpts.path[0]];
-          const error51 = getTRPCErrorFromUnknown(errorOpts.error);
+          const call = info3 === null || info3 === void 0 ? void 0 : info3.calls[errorOpts.path[0]];
+          const error53 = getTRPCErrorFromUnknown(errorOpts.error);
           const input = call === null || call === void 0 ? void 0 : call.result();
           const path = call === null || call === void 0 ? void 0 : call.path;
           const type = (_call$procedure$_def$3 = call === null || call === void 0 || (_call$procedure4 = call.procedure) === null || _call$procedure4 === void 0 ? void 0 : _call$procedure4._def.type) !== null && _call$procedure$_def$3 !== void 0 ? _call$procedure$_def$3 : "unknown";
           const shape = getErrorShape({
-            config: config2,
+            config: config3,
             ctx: ctxManager.valueOrUndefined(),
-            error: error51,
+            error: error53,
             input,
             path,
             type
@@ -4108,22 +5273,22 @@ async function resolveResponse(opts) {
     }
     headers.set("content-type", "application/json");
     const results = (await Promise.all(rpcCalls)).map((res) => {
-      const [error51, result] = res;
-      if (error51) return res;
+      const [error53, result] = res;
+      if (error53) return res;
       if (isDataStream(result.data)) return [new TRPCError({
         code: "UNSUPPORTED_MEDIA_TYPE",
         message: "Cannot use stream-like response in non-streaming request - use httpBatchStreamLink"
       }), void 0];
       return res;
     });
-    const resultAsRPCResponse = results.map(([error51, result], index) => {
-      const call = info.calls[index];
-      if (error51) {
+    const resultAsRPCResponse = results.map(([error53, result], index2) => {
+      const call = info3.calls[index2];
+      if (error53) {
         var _call$procedure$_def$4, _call$procedure5;
         return { error: getErrorShape({
-          config: config2,
+          config: config3,
           ctx: ctxManager.valueOrUndefined(),
-          error: error51,
+          error: error53,
           input: call.result(),
           path: call.path,
           type: (_call$procedure$_def$4 = (_call$procedure5 = call.procedure) === null || _call$procedure5 === void 0 ? void 0 : _call$procedure5._def.type) !== null && _call$procedure$_def$4 !== void 0 ? _call$procedure$_def$4 : "unknown"
@@ -4131,34 +5296,34 @@ async function resolveResponse(opts) {
       }
       return { result: { data: result.data } };
     });
-    const errors = results.map(([error51]) => error51).filter(Boolean);
+    const errors = results.map(([error53]) => error53).filter(Boolean);
     const headResponse = initResponse({
       ctx: ctxManager.valueOrUndefined(),
-      info,
+      info: info3,
       responseMeta: opts.responseMeta,
       untransformedJSON: resultAsRPCResponse,
       errors,
       headers
     });
-    return new Response(JSON.stringify(transformTRPCResponse(config2, resultAsRPCResponse)), {
+    return new Response(JSON.stringify(transformTRPCResponse(config3, resultAsRPCResponse)), {
       status: headResponse.status,
       headers
     });
   } catch (cause) {
     var _info$type2;
-    const [_infoError, info] = infoTuple;
+    const [_infoError, info3] = infoTuple;
     const ctx = ctxManager.valueOrUndefined();
-    const { error: error51, untransformedJSON, body } = caughtErrorToData(cause, {
+    const { error: error53, untransformedJSON, body } = caughtErrorToData(cause, {
       opts,
       ctx: ctxManager.valueOrUndefined(),
-      type: (_info$type2 = info === null || info === void 0 ? void 0 : info.type) !== null && _info$type2 !== void 0 ? _info$type2 : "unknown"
+      type: (_info$type2 = info3 === null || info3 === void 0 ? void 0 : info3.type) !== null && _info$type2 !== void 0 ? _info$type2 : "unknown"
     });
     const headResponse = initResponse({
       ctx,
-      info,
+      info: info3,
       responseMeta: opts.responseMeta,
       untransformedJSON,
-      errors: [error51],
+      errors: [error53],
       headers
     });
     return new Response(body, {
@@ -4170,7 +5335,10 @@ async function resolveResponse(opts) {
 var import_objectSpread2$12, jsonContentTypeHandler, formDataContentTypeHandler, octetStreamContentTypeHandler, handlers, import_defineProperty2, _Symbol$toStringTag, subscribableCache, NOOP, Unpromise, _Symbol, _Symbol$dispose, _Symbol2, _Symbol2$asyncDispose, disposablePromiseTimerResult, require_usingCtx, require_OverloadYield, require_awaitAsyncGenerator, require_wrapAsyncGenerator, import_usingCtx$4, import_awaitAsyncGenerator$4, import_wrapAsyncGenerator$5, import_usingCtx$3, import_awaitAsyncGenerator$3, import_wrapAsyncGenerator$4, import_usingCtx$2, import_awaitAsyncGenerator$2, import_wrapAsyncGenerator$3, PING_SYM, require_asyncIterator, import_awaitAsyncGenerator$1, import_wrapAsyncGenerator$2, import_usingCtx$1, import_asyncIterator$1, CHUNK_VALUE_TYPE_PROMISE, CHUNK_VALUE_TYPE_ASYNC_ITERABLE, PROMISE_STATUS_FULFILLED, PROMISE_STATUS_REJECTED, ASYNC_ITERABLE_STATUS_RETURN, ASYNC_ITERABLE_STATUS_YIELD, ASYNC_ITERABLE_STATUS_ERROR, MaxDepthError, require_asyncGeneratorDelegate, import_asyncIterator, import_awaitAsyncGenerator, import_wrapAsyncGenerator$1, import_asyncGeneratorDelegate, import_usingCtx, PING_EVENT, SERIALIZED_ERROR_EVENT, CONNECTED_EVENT, RETURN_EVENT, sseHeaders, import_wrapAsyncGenerator, import_objectSpread23, TYPE_ACCEPTED_METHOD_MAP, TYPE_ACCEPTED_METHOD_MAP_WITH_METHOD_OVERRIDE;
 var init_resolveResponse_CdASWfAV = __esm({
   "../node_modules/@trpc/server/dist/resolveResponse-CdASWfAV.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_getErrorShape_BPSzUA7W();
     init_codes_DagpWZLc();
     init_tracked_DWInO6EQ();
@@ -4212,21 +5380,21 @@ var init_resolveResponse_CdASWfAV = __esm({
             message: '"input" needs to be an object when doing a batch call'
           });
           const acc = emptyObject();
-          for (const index of paths.keys()) {
-            const input = inputs[index];
-            if (input !== void 0) acc[index] = opts.router._def._config.transformer.input.deserialize(input);
+          for (const index2 of paths.keys()) {
+            const input = inputs[index2];
+            if (input !== void 0) acc[index2] = opts.router._def._config.transformer.input.deserialize(input);
           }
           return acc;
         });
-        const calls = await Promise.all(paths.map(async (path, index) => {
+        const calls = await Promise.all(paths.map(async (path, index2) => {
           const procedure = await getProcedureAtPath(opts.router, path);
           return {
-            batchIndex: index,
+            batchIndex: index2,
             path,
             procedure,
             getRawInput: /* @__PURE__ */ __name(async () => {
               const inputs = await getInputs.read();
-              let input = inputs[index];
+              let input = inputs[index2];
               if ((procedure === null || procedure === void 0 ? void 0 : procedure._def.type) === "subscription") {
                 var _ref2, _opts$headers$get;
                 const lastEventId = (_ref2 = (_opts$headers$get = opts.headers.get("last-event-id")) !== null && _opts$headers$get !== void 0 ? _opts$headers$get : opts.searchParams.get("lastEventId")) !== null && _ref2 !== void 0 ? _ref2 : opts.searchParams.get("Last-Event-Id");
@@ -4240,7 +5408,7 @@ var init_resolveResponse_CdASWfAV = __esm({
             }, "getRawInput"),
             result: /* @__PURE__ */ __name(() => {
               var _getInputs$result;
-              return (_getInputs$result = getInputs.result()) === null || _getInputs$result === void 0 ? void 0 : _getInputs$result[index];
+              return (_getInputs$result = getInputs.result()) === null || _getInputs$result === void 0 ? void 0 : _getInputs$result[index2];
             }, "result")
           };
         }));
@@ -4254,7 +5422,7 @@ var init_resolveResponse_CdASWfAV = __esm({
         });
         const type = (_types$values$next$va = types.values().next().value) !== null && _types$values$next$va !== void 0 ? _types$values$next$va : "unknown";
         const connectionParamsStr = opts.searchParams.get("connectionParams");
-        const info = {
+        const info3 = {
           isBatchCall,
           accept: getAcceptHeader(req.headers),
           calls,
@@ -4263,7 +5431,7 @@ var init_resolveResponse_CdASWfAV = __esm({
           signal: req.signal,
           url: opts.url
         };
-        return info;
+        return info3;
       }
     };
     formDataContentTypeHandler = {
@@ -4858,7 +6026,10 @@ async function fetchRequestHandler(opts) {
 var import_objectSpread24, trimSlashes;
 var init_fetch = __esm({
   "../node_modules/@trpc/server/dist/adapters/fetch/index.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_getErrorShape_BPSzUA7W();
     init_resolveResponse_CdASWfAV();
     import_objectSpread24 = __toESM2(require_objectSpread2(), 1);
@@ -4875,14 +6046,17 @@ var init_fetch = __esm({
 var matchedRoutes, routePath;
 var init_route = __esm({
   "../node_modules/hono/dist/helper/route/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_constants();
     init_url();
     matchedRoutes = /* @__PURE__ */ __name((c) => (
       // @ts-expect-error c.req[GET_MATCH_RESULT] is not typed
       c.req[GET_MATCH_RESULT][0].map(([[, route]]) => route)
     ), "matchedRoutes");
-    routePath = /* @__PURE__ */ __name((c, index) => matchedRoutes(c).at(index ?? c.req.routeIndex)?.path ?? "", "routePath");
+    routePath = /* @__PURE__ */ __name((c, index2) => matchedRoutes(c).at(index2 ?? c.req.routeIndex)?.path ?? "", "routePath");
   }
 });
 
@@ -4890,7 +6064,10 @@ var init_route = __esm({
 var trpcServer;
 var init_dist2 = __esm({
   "../node_modules/@hono/trpc-server/dist/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_fetch();
     init_route();
     trpcServer = /* @__PURE__ */ __name(({ endpoint, createContext: createContext2, ...rest }) => {
@@ -4930,7 +6107,10 @@ var init_dist2 = __esm({
 var cors;
 var init_cors = __esm({
   "../node_modules/hono/dist/middleware/cors/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     cors = /* @__PURE__ */ __name((options) => {
       const opts = {
         origin: "*",
@@ -5020,7 +6200,10 @@ var COOKIE_NAME, ONE_YEAR_MS, UNAUTHED_ERR_MSG, NOT_ADMIN_ERR_MSG;
 var init_const = __esm({
   "../shared/const.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     COOKIE_NAME = "app_session_id";
     ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
     UNAUTHED_ERR_MSG = "Please login (10001)";
@@ -5192,16 +6375,16 @@ function createResolver(_defIn, resolver) {
   callerWrapper._def = _def;
   return callerWrapper;
 }
-async function callRecursive(index, _def, opts) {
+async function callRecursive(index2, _def, opts) {
   try {
-    const middleware = _def.middlewares[index];
+    const middleware = _def.middlewares[index2];
     const result = await middleware((0, import_objectSpread2$13.default)((0, import_objectSpread2$13.default)({}, opts), {}, {
       meta: _def.meta,
       input: opts.input,
       next(_nextOpts) {
         var _nextOpts$getRawInput;
         const nextOpts = _nextOpts;
-        return callRecursive(index + 1, _def, (0, import_objectSpread2$13.default)((0, import_objectSpread2$13.default)({}, opts), {}, {
+        return callRecursive(index2 + 1, _def, (0, import_objectSpread2$13.default)((0, import_objectSpread2$13.default)({}, opts), {}, {
           ctx: (nextOpts === null || nextOpts === void 0 ? void 0 : nextOpts.ctx) ? (0, import_objectSpread2$13.default)((0, import_objectSpread2$13.default)({}, opts.ctx), nextOpts.ctx) : opts.ctx,
           input: nextOpts && "input" in nextOpts ? nextOpts.input : opts.input,
           getRawInput: (_nextOpts$getRawInput = nextOpts === null || nextOpts === void 0 ? void 0 : nextOpts.getRawInput) !== null && _nextOpts$getRawInput !== void 0 ? _nextOpts$getRawInput : opts.getRawInput
@@ -5237,7 +6420,10 @@ function createProcedureCaller(_def) {
 var import_objectSpread2$2, middlewareMarker, import_defineProperty3, StandardSchemaV1Error, require_objectWithoutPropertiesLoose, require_objectWithoutProperties, import_objectWithoutProperties, import_objectSpread2$13, _excluded, codeblock, _globalThis$process, _globalThis$process2, _globalThis$process3, isServerDefault, import_objectSpread25, TRPCBuilder, initTRPC;
 var init_initTRPC_BRf4imah = __esm({
   "../node_modules/@trpc/server/dist/initTRPC-BRf4imah.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_getErrorShape_BPSzUA7W();
     init_codes_DagpWZLc();
     init_tracked_DWInO6EQ();
@@ -5334,7 +6520,7 @@ If you want to call this function on the server, see https://trpc.io/docs/v11/se
       */
       create(opts) {
         var _opts$transformer, _opts$isDev, _globalThis$process$1, _opts$allowOutsideOfS, _opts$errorFormatter, _opts$isServer;
-        const config2 = (0, import_objectSpread25.default)((0, import_objectSpread25.default)({}, opts), {}, {
+        const config3 = (0, import_objectSpread25.default)((0, import_objectSpread25.default)({}, opts), {}, {
           transformer: getDataTransformer((_opts$transformer = opts === null || opts === void 0 ? void 0 : opts.transformer) !== null && _opts$transformer !== void 0 ? _opts$transformer : defaultTransformer),
           isDev: (_opts$isDev = opts === null || opts === void 0 ? void 0 : opts.isDev) !== null && _opts$isDev !== void 0 ? _opts$isDev : ((_globalThis$process$1 = globalThis.process) === null || _globalThis$process$1 === void 0 ? void 0 : _globalThis$process$1.env["NODE_ENV"]) !== "production",
           allowOutsideOfServer: (_opts$allowOutsideOfS = opts === null || opts === void 0 ? void 0 : opts.allowOutsideOfServer) !== null && _opts$allowOutsideOfS !== void 0 ? _opts$allowOutsideOfS : false,
@@ -5348,10 +6534,10 @@ If you want to call this function on the server, see https://trpc.io/docs/v11/se
           if (!isServer && (opts === null || opts === void 0 ? void 0 : opts.allowOutsideOfServer) !== true) throw new Error(`You're trying to use @trpc/server in a non-server environment. This is not supported by default.`);
         }
         return {
-          _config: config2,
+          _config: config3,
           procedure: createBuilder({ meta: opts === null || opts === void 0 ? void 0 : opts.defaultMeta }),
           middleware: createMiddlewareFactory(),
-          router: createRouterFactory(config2),
+          router: createRouterFactory(config3),
           mergeRouters,
           createCallerFactory: createCallerFactory()
         };
@@ -5364,7 +6550,10 @@ If you want to call this function on the server, see https://trpc.io/docs/v11/se
 // ../node_modules/@trpc/server/dist/index.mjs
 var init_dist3 = __esm({
   "../node_modules/@trpc/server/dist/index.mjs"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_tracked_DWInO6EQ();
     init_initTRPC_BRf4imah();
   }
@@ -5374,7 +6563,10 @@ var init_dist3 = __esm({
 var DoubleIndexedKV;
 var init_double_indexed_kv = __esm({
   "../node_modules/superjson/dist/esm/double-indexed-kv.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     DoubleIndexedKV = /** @class */
     (function() {
       function DoubleIndexedKV2() {
@@ -5405,7 +6597,10 @@ var init_double_indexed_kv = __esm({
 var Registry;
 var init_registry = __esm({
   "../node_modules/superjson/dist/esm/registry.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_double_indexed_kv();
     Registry = /** @class */
     (function() {
@@ -5441,7 +6636,10 @@ var init_registry = __esm({
 var __extends, ClassRegistry;
 var init_class_registry = __esm({
   "../node_modules/superjson/dist/esm/class-registry.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_registry();
     __extends = /* @__PURE__ */ (function() {
       var extendStatics = /* @__PURE__ */ __name(function(d, b) {
@@ -5540,15 +6738,18 @@ function findArr(record2, predicate) {
 var __read;
 var init_util = __esm({
   "../node_modules/superjson/dist/esm/util.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __read = function(o, n) {
       var m = typeof Symbol === "function" && o[Symbol.iterator];
       if (!m) return o;
       var i = m.call(o), r, ar = [], e;
       try {
         while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-      } catch (error51) {
-        e = { error: error51 };
+      } catch (error53) {
+        e = { error: error53 };
       } finally {
         try {
           if (r && !r.done && (m = i["return"])) m.call(i);
@@ -5570,7 +6771,10 @@ var init_util = __esm({
 var CustomTransformerRegistry;
 var init_custom_transformer_registry = __esm({
   "../node_modules/superjson/dist/esm/custom-transformer-registry.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util();
     CustomTransformerRegistry = /** @class */
     (function() {
@@ -5598,7 +6802,10 @@ var init_custom_transformer_registry = __esm({
 var getType, isUndefined, isNull, isPlainObject2, isEmptyObject, isArray, isString, isNumber, isBoolean, isRegExp, isMap, isSet, isSymbol, isDate, isError, isNaNValue, isPrimitive, isBigint, isInfinite, isTypedArray, isURL;
 var init_is = __esm({
   "../node_modules/superjson/dist/esm/is.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     getType = /* @__PURE__ */ __name(function(payload) {
       return Object.prototype.toString.call(payload).slice(8, -1);
     }, "getType");
@@ -5675,7 +6882,10 @@ var init_is = __esm({
 var escapeKey, stringifyPath, parsePath;
 var init_pathstringifier = __esm({
   "../node_modules/superjson/dist/esm/pathstringifier.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     escapeKey = /* @__PURE__ */ __name(function(key) {
       return key.replace(/\./g, "\\.");
     }, "escapeKey");
@@ -5735,7 +6945,10 @@ function isInstanceOfRegisteredClass(potentialClass, superJson) {
 var __assign, __read2, __spreadArray, simpleRules, symbolRule, constructorToName, typedArrayRule, classRule, customRule, compositeRules, transformValue, simpleRulesByAnnotation, untransformValue;
 var init_transformer = __esm({
   "../node_modules/superjson/dist/esm/transformer.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_is();
     init_util();
     __assign = function() {
@@ -5755,8 +6968,8 @@ var init_transformer = __esm({
       var i = m.call(o), r, ar = [], e;
       try {
         while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-      } catch (error51) {
-        e = { error: error51 };
+      } catch (error53) {
+        e = { error: error53 };
       } finally {
         try {
           if (r && !r.done && (m = i["return"])) m.call(i);
@@ -6003,7 +7216,10 @@ function validatePath(path) {
 var getNthKey, getDeep, setDeep;
 var init_accessDeep = __esm({
   "../node_modules/superjson/dist/esm/accessDeep.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_is();
     init_util();
     getNthKey = /* @__PURE__ */ __name(function(value, n) {
@@ -6048,8 +7264,8 @@ var init_accessDeep = __esm({
       for (var i = 0; i < path.length - 1; i++) {
         var key = path[i];
         if (isArray(parent)) {
-          var index = +key;
-          parent = parent[index];
+          var index2 = +key;
+          parent = parent[index2];
         } else if (isPlainObject2(parent)) {
           parent = parent[key];
         } else if (isSet(parent)) {
@@ -6208,7 +7424,10 @@ function generateReferentialEqualityAnnotations(identitites, dedupe) {
 var __read3, __spreadArray2, isDeep, walker;
 var init_plainer = __esm({
   "../node_modules/superjson/dist/esm/plainer.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_is();
     init_pathstringifier();
     init_transformer();
@@ -6221,8 +7440,8 @@ var init_plainer = __esm({
       var i = m.call(o), r, ar = [], e;
       try {
         while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-      } catch (error51) {
-        e = { error: error51 };
+      } catch (error53) {
+        e = { error: error53 };
       } finally {
         try {
           if (r && !r.done && (m = i["return"])) m.call(i);
@@ -6288,14 +7507,14 @@ var init_plainer = __esm({
       var transformed = (_a3 = transformationResult === null || transformationResult === void 0 ? void 0 : transformationResult.value) !== null && _a3 !== void 0 ? _a3 : object2;
       var transformedValue = isArray(transformed) ? [] : {};
       var innerAnnotations = {};
-      forEach(transformed, function(value, index) {
-        var recursiveResult = walker(value, identities, superJson, dedupe, __spreadArray2(__spreadArray2([], __read3(path)), [index]), __spreadArray2(__spreadArray2([], __read3(objectsInThisPath)), [object2]), seenObjects);
-        transformedValue[index] = recursiveResult.transformedValue;
+      forEach(transformed, function(value, index2) {
+        var recursiveResult = walker(value, identities, superJson, dedupe, __spreadArray2(__spreadArray2([], __read3(path)), [index2]), __spreadArray2(__spreadArray2([], __read3(objectsInThisPath)), [object2]), seenObjects);
+        transformedValue[index2] = recursiveResult.transformedValue;
         if (isArray(recursiveResult.annotations)) {
-          innerAnnotations[index] = recursiveResult.annotations;
+          innerAnnotations[index2] = recursiveResult.annotations;
         } else if (isPlainObject2(recursiveResult.annotations)) {
           forEach(recursiveResult.annotations, function(tree, key) {
-            innerAnnotations[escapeKey(index) + "." + key] = tree;
+            innerAnnotations[escapeKey(index2) + "." + key] = tree;
           });
         }
       });
@@ -6339,7 +7558,10 @@ function isUndefined2(payload) {
 var isNullOrUndefined;
 var init_dist4 = __esm({
   "../node_modules/is-what/dist/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(getType2, "getType");
     __name(isArray2, "isArray");
     __name(isPlainObject3, "isPlainObject");
@@ -6385,7 +7607,10 @@ function copy(target, options = {}) {
 }
 var init_dist5 = __esm({
   "../node_modules/copy-anything/dist/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_dist4();
     __name(assignProp, "assignProp");
     __name(copy, "copy");
@@ -6396,7 +7621,10 @@ var init_dist5 = __esm({
 var __assign2, __read4, __spreadArray3, SuperJSON, esm_default, serialize, deserialize, stringify, parse, registerClass, registerCustom, registerSymbol, allowErrorProps;
 var init_esm = __esm({
   "../node_modules/superjson/dist/esm/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_class_registry();
     init_registry();
     init_custom_transformer_registry();
@@ -6419,8 +7647,8 @@ var init_esm = __esm({
       var i = m.call(o), r, ar = [], e;
       try {
         while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-      } catch (error51) {
-        e = { error: error51 };
+      } catch (error53) {
+        e = { error: error53 };
       } finally {
         try {
           if (r && !r.done && (m = i["return"])) m.call(i);
@@ -6526,7 +7754,10 @@ var t, router, publicProcedure, requireUser, protectedProcedure, adminProcedure;
 var init_trpc = __esm({
   "../server/_core/trpc.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_const();
     init_dist3();
     init_esm();
@@ -6623,7 +7854,7 @@ function $constructor(name, initializer3, params) {
   Object.defineProperty(_, "name", { value: name });
   return _;
 }
-function config(newConfig) {
+function config2(newConfig) {
   if (newConfig)
     Object.assign(globalConfig, newConfig);
   return globalConfig;
@@ -6631,7 +7862,10 @@ function config(newConfig) {
 var _a, NEVER, $brand, $ZodAsyncError, $ZodEncodeError, globalConfig;
 var init_core = __esm({
   "../node_modules/zod/v4/core/core.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     NEVER = /* @__PURE__ */ Object.freeze({
       status: "aborted"
     });
@@ -6656,7 +7890,7 @@ var init_core = __esm({
     };
     (_a = globalThis).__zod_globalConfig ?? (_a.__zod_globalConfig = {});
     globalConfig = globalThis.__zod_globalConfig;
-    __name(config, "config");
+    __name(config2, "config");
   }
 });
 
@@ -6668,7 +7902,7 @@ __export(util_exports, {
   NUMBER_FORMAT_RANGES: () => NUMBER_FORMAT_RANGES,
   aborted: () => aborted,
   allowsEval: () => allowsEval,
-  assert: () => assert,
+  assert: () => assert3,
   assertEqual: () => assertEqual,
   assertIs: () => assertIs,
   assertNever: () => assertNever,
@@ -6738,7 +7972,7 @@ function assertIs(_arg) {
 function assertNever(_x) {
   throw new Error("Unexpected value in exhaustive check");
 }
-function assert(_) {
+function assert3(_) {
 }
 function getEnumValues(entries) {
   const numericValues = Object.values(entries).filter((v) => typeof v === "number");
@@ -7168,8 +8402,8 @@ function prefixIssues(path, issues) {
 function unwrapMessage(message2) {
   return typeof message2 === "string" ? message2 : message2?.message;
 }
-function finalizeIssue(iss, ctx, config2) {
-  const message2 = iss.message ? iss.message : unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config2.customError?.(iss)) ?? unwrapMessage(config2.localeError?.(iss)) ?? "Invalid input";
+function finalizeIssue(iss, ctx, config3) {
+  const message2 = iss.message ? iss.message : unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config3.customError?.(iss)) ?? unwrapMessage(config3.localeError?.(iss)) ?? "Invalid input";
   const { inst: _inst, continue: _continue, input: _input, ...rest } = iss;
   rest.path ?? (rest.path = []);
   rest.message = message2;
@@ -7272,13 +8506,16 @@ function uint8ArrayToHex(bytes) {
 var EVALUATING, captureStackTrace, allowsEval, getParsedType, propertyKeyTypes, primitiveTypes, NUMBER_FORMAT_RANGES, BIGINT_FORMAT_RANGES, Class;
 var init_util2 = __esm({
   "../node_modules/zod/v4/core/util.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core();
     __name(assertEqual, "assertEqual");
     __name(assertNotEqual, "assertNotEqual");
     __name(assertIs, "assertIs");
     __name(assertNever, "assertNever");
-    __name(assert, "assert");
+    __name(assert3, "assert");
     __name(getEnumValues, "getEnumValues");
     __name(joinValues, "joinValues");
     __name(jsonStringifyReplacer, "jsonStringifyReplacer");
@@ -7304,7 +8541,7 @@ var init_util2 = __esm({
       if (globalConfig.jitless) {
         return false;
       }
-      if (typeof navigator !== "undefined" && navigator?.userAgent?.includes("Cloudflare")) {
+      if (typeof navigator !== "undefined" && "Cloudflare-Workers"?.includes("Cloudflare")) {
         return false;
       }
       try {
@@ -7422,10 +8659,10 @@ var init_util2 = __esm({
 });
 
 // ../node_modules/zod/v4/core/errors.js
-function flattenError(error51, mapper = (issue2) => issue2.message) {
+function flattenError(error53, mapper = (issue2) => issue2.message) {
   const fieldErrors = {};
   const formErrors = [];
-  for (const sub of error51.issues) {
+  for (const sub of error53.issues) {
     if (sub.path.length > 0) {
       fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
       fieldErrors[sub.path[0]].push(mapper(sub));
@@ -7435,10 +8672,10 @@ function flattenError(error51, mapper = (issue2) => issue2.message) {
   }
   return { formErrors, fieldErrors };
 }
-function formatError(error51, mapper = (issue2) => issue2.message) {
+function formatError(error53, mapper = (issue2) => issue2.message) {
   const fieldErrors = { _errors: [] };
-  const processError = /* @__PURE__ */ __name((error52, path = []) => {
-    for (const issue2 of error52.issues) {
+  const processError = /* @__PURE__ */ __name((error54, path = []) => {
+    for (const issue2 of error54.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
         issue2.errors.map((issues) => processError({ issues }, [...path, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
@@ -7468,14 +8705,14 @@ function formatError(error51, mapper = (issue2) => issue2.message) {
       }
     }
   }, "processError");
-  processError(error51);
+  processError(error53);
   return fieldErrors;
 }
-function treeifyError(error51, mapper = (issue2) => issue2.message) {
+function treeifyError(error53, mapper = (issue2) => issue2.message) {
   const result = { errors: [] };
-  const processError = /* @__PURE__ */ __name((error52, path = []) => {
+  const processError = /* @__PURE__ */ __name((error54, path = []) => {
     var _a3, _b;
-    for (const issue2 of error52.issues) {
+    for (const issue2 of error54.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
         issue2.errors.map((issues) => processError({ issues }, [...path, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
@@ -7510,7 +8747,7 @@ function treeifyError(error51, mapper = (issue2) => issue2.message) {
       }
     }
   }, "processError");
-  processError(error51);
+  processError(error53);
   return result;
 }
 function toDotPath(_path) {
@@ -7531,9 +8768,9 @@ function toDotPath(_path) {
   }
   return segs.join("");
 }
-function prettifyError(error51) {
+function prettifyError(error53) {
   const lines = [];
-  const issues = [...error51.issues].sort((a, b) => (a.path ?? []).length - (b.path ?? []).length);
+  const issues = [...error53.issues].sort((a, b) => (a.path ?? []).length - (b.path ?? []).length);
   for (const issue2 of issues) {
     lines.push(`\u2716 ${issue2.message}`);
     if (issue2.path?.length)
@@ -7544,7 +8781,10 @@ function prettifyError(error51) {
 var initializer, $ZodError, $ZodRealError;
 var init_errors = __esm({
   "../node_modules/zod/v4/core/errors.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core();
     init_util2();
     initializer = /* @__PURE__ */ __name((inst, def) => {
@@ -7577,7 +8817,10 @@ var init_errors = __esm({
 var _parse, parse2, _parseAsync, parseAsync, _safeParse, safeParse, _safeParseAsync, safeParseAsync, _encode, encode, _decode, decode, _encodeAsync, encodeAsync, _decodeAsync, decodeAsync, _safeEncode, safeEncode, _safeDecode, safeDecode, _safeEncodeAsync, safeEncodeAsync, _safeDecodeAsync, safeDecodeAsync;
 var init_parse = __esm({
   "../node_modules/zod/v4/core/parse.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core();
     init_errors();
     init_util2();
@@ -7588,7 +8831,7 @@ var init_parse = __esm({
         throw new $ZodAsyncError();
       }
       if (result.issues.length) {
-        const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+        const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config2())));
         captureStackTrace(e, _params?.callee);
         throw e;
       }
@@ -7601,7 +8844,7 @@ var init_parse = __esm({
       if (result instanceof Promise)
         result = await result;
       if (result.issues.length) {
-        const e = new (params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+        const e = new (params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config2())));
         captureStackTrace(e, params?.callee);
         throw e;
       }
@@ -7616,7 +8859,7 @@ var init_parse = __esm({
       }
       return result.issues.length ? {
         success: false,
-        error: new (_Err ?? $ZodError)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+        error: new (_Err ?? $ZodError)(result.issues.map((iss) => finalizeIssue(iss, ctx, config2())))
       } : { success: true, data: result.value };
     }, "_safeParse");
     safeParse = /* @__PURE__ */ _safeParse($ZodRealError);
@@ -7627,7 +8870,7 @@ var init_parse = __esm({
         result = await result;
       return result.issues.length ? {
         success: false,
-        error: new _Err(result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+        error: new _Err(result.issues.map((iss) => finalizeIssue(iss, ctx, config2())))
       } : { success: true, data: result.value };
     }, "_safeParseAsync");
     safeParseAsync = /* @__PURE__ */ _safeParseAsync($ZodRealError);
@@ -7675,7 +8918,7 @@ var regexes_exports = {};
 __export(regexes_exports, {
   base64: () => base64,
   base64url: () => base64url,
-  bigint: () => bigint,
+  bigint: () => bigint2,
   boolean: () => boolean,
   browserEmail: () => browserEmail,
   cidrv4: () => cidrv4,
@@ -7684,7 +8927,7 @@ __export(regexes_exports, {
   cuid2: () => cuid2,
   date: () => date,
   datetime: () => datetime,
-  domain: () => domain,
+  domain: () => domain2,
   duration: () => duration,
   e164: () => e164,
   email: () => email,
@@ -7722,7 +8965,7 @@ __export(regexes_exports, {
   sha512_base64url: () => sha512_base64url,
   sha512_hex: () => sha512_hex,
   string: () => string,
-  time: () => time,
+  time: () => time3,
   ulid: () => ulid,
   undefined: () => _undefined,
   unicodeEmail: () => unicodeEmail,
@@ -7741,17 +8984,17 @@ function timeSource(args) {
   const regex = typeof args.precision === "number" ? args.precision === -1 ? `${hhmm}` : args.precision === 0 ? `${hhmm}:[0-5]\\d` : `${hhmm}:[0-5]\\d\\.\\d{${args.precision}}` : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
   return regex;
 }
-function time(args) {
+function time3(args) {
   return new RegExp(`^${timeSource(args)}$`);
 }
 function datetime(args) {
-  const time4 = timeSource({ precision: args.precision });
+  const time6 = timeSource({ precision: args.precision });
   const opts = ["Z"];
   if (args.local)
     opts.push("");
   if (args.offset)
     opts.push(`([+-](?:[01]\\d|2[0-3]):[0-5]\\d)`);
-  const timeRegex = `${time4}(?:${opts.join("|")})`;
+  const timeRegex = `${time6}(?:${opts.join("|")})`;
   return new RegExp(`^${dateSource}T(?:${timeRegex})$`);
 }
 function fixedBase64(bodyLength, padding) {
@@ -7760,10 +9003,13 @@ function fixedBase64(bodyLength, padding) {
 function fixedBase64url(length) {
   return new RegExp(`^[A-Za-z0-9_-]{${length}}$`);
 }
-var cuid, cuid2, ulid, xid, ksuid, nanoid, duration, extendedDuration, guid, uuid, uuid4, uuid6, uuid7, email, html5Email, rfc5322Email, unicodeEmail, idnEmail, browserEmail, _emoji, ipv4, ipv6, mac, cidrv4, cidrv6, base64, base64url, hostname, domain, httpProtocol, e164, dateSource, date, string, bigint, integer, number, boolean, _null, _undefined, lowercase, uppercase, hex, md5_hex, md5_base64, md5_base64url, sha1_hex, sha1_base64, sha1_base64url, sha256_hex, sha256_base64, sha256_base64url, sha384_hex, sha384_base64, sha384_base64url, sha512_hex, sha512_base64, sha512_base64url;
+var cuid, cuid2, ulid, xid, ksuid, nanoid, duration, extendedDuration, guid, uuid, uuid4, uuid6, uuid7, email, html5Email, rfc5322Email, unicodeEmail, idnEmail, browserEmail, _emoji, ipv4, ipv6, mac, cidrv4, cidrv6, base64, base64url, hostname, domain2, httpProtocol, e164, dateSource, date, string, bigint2, integer, number, boolean, _null, _undefined, lowercase, uppercase, hex, md5_hex, md5_base64, md5_base64url, sha1_hex, sha1_base64, sha1_base64url, sha256_hex, sha256_base64, sha256_base64url, sha384_hex, sha384_base64, sha384_base64url, sha512_hex, sha512_base64, sha512_base64url;
 var init_regexes = __esm({
   "../node_modules/zod/v4/core/regexes.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
     cuid = /^[cC][0-9a-z]{6,}$/;
     cuid2 = /^[0-9a-z]+$/;
@@ -7774,10 +9020,10 @@ var init_regexes = __esm({
     duration = /^P(?:(\d+W)|(?!.*W)(?=\d|T\d)(\d+Y)?(\d+M)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+([.,]\d+)?S)?)?)$/;
     extendedDuration = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
     guid = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/;
-    uuid = /* @__PURE__ */ __name((version3) => {
-      if (!version3)
+    uuid = /* @__PURE__ */ __name((version4) => {
+      if (!version4)
         return /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/;
-      return new RegExp(`^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-${version3}[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$`);
+      return new RegExp(`^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-${version4}[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$`);
     }, "uuid");
     uuid4 = /* @__PURE__ */ uuid(4);
     uuid6 = /* @__PURE__ */ uuid(6);
@@ -7801,19 +9047,19 @@ var init_regexes = __esm({
     base64 = /^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
     base64url = /^[A-Za-z0-9_-]*$/;
     hostname = /^(?=.{1,253}\.?$)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?)*\.?$/;
-    domain = /^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+    domain2 = /^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
     httpProtocol = /^https?$/;
     e164 = /^\+[1-9]\d{6,14}$/;
     dateSource = `(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))`;
     date = /* @__PURE__ */ new RegExp(`^${dateSource}$`);
     __name(timeSource, "timeSource");
-    __name(time, "time");
+    __name(time3, "time");
     __name(datetime, "datetime");
     string = /* @__PURE__ */ __name((params) => {
       const regex = params ? `[\\s\\S]{${params?.minimum ?? 0},${params?.maximum ?? ""}}` : `[\\s\\S]*`;
       return new RegExp(`^${regex}$`);
     }, "string");
-    bigint = /^-?\d+n?$/;
+    bigint2 = /^-?\d+n?$/;
     integer = /^-?\d+$/;
     number = /^-?\d+(?:\.\d+)?$/;
     boolean = /^(?:true|false)$/i;
@@ -7851,7 +9097,10 @@ function handleCheckPropertyResult(result, payload, property) {
 var $ZodCheck, numericOriginMap, $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat, $ZodCheckBigIntFormat, $ZodCheckMaxSize, $ZodCheckMinSize, $ZodCheckSizeEquals, $ZodCheckMaxLength, $ZodCheckMinLength, $ZodCheckLengthEquals, $ZodCheckStringFormat, $ZodCheckRegex, $ZodCheckLowerCase, $ZodCheckUpperCase, $ZodCheckIncludes, $ZodCheckStartsWith, $ZodCheckEndsWith, $ZodCheckProperty, $ZodCheckMimeType, $ZodCheckOverwrite;
 var init_checks = __esm({
   "../node_modules/zod/v4/core/checks.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core();
     init_regexes();
     init_util2();
@@ -8404,7 +9653,10 @@ var init_checks = __esm({
 var Doc;
 var init_doc = __esm({
   "../node_modules/zod/v4/core/doc.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     Doc = class {
       static {
         __name(this, "Doc");
@@ -8446,11 +9698,14 @@ var init_doc = __esm({
 });
 
 // ../node_modules/zod/v4/core/versions.js
-var version;
+var version2;
 var init_versions = __esm({
   "../node_modules/zod/v4/core/versions.js"() {
-    init_functionsRoutes_0_698410973351653();
-    version = {
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    version2 = {
       major: 4,
       minor: 4,
       patch: 3
@@ -8500,11 +9755,11 @@ function isValidJWT(token, algorithm = null) {
     return false;
   }
 }
-function handleArrayResult(result, final, index) {
+function handleArrayResult(result, final, index2) {
   if (result.issues.length) {
-    final.issues.push(...prefixIssues(index, result.issues));
+    final.issues.push(...prefixIssues(index2, result.issues));
   }
-  final.value[index] = result.value;
+  final.value[index2] = result.value;
 }
 function handlePropertyResult(result, final, key, input, isOptionalIn, isOptionalOut) {
   const isPresent = key in input;
@@ -8602,7 +9857,7 @@ function handleUnionResults(results, final, inst, ctx) {
     code: "invalid_union",
     input: final.value,
     inst,
-    errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+    errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, config2())))
   });
   return final;
 }
@@ -8617,7 +9872,7 @@ function handleExclusiveUnionResults(results, final, inst, ctx) {
       code: "invalid_union",
       input: final.value,
       inst,
-      errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+      errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, config2())))
     });
   } else {
     final.issues.push({
@@ -8658,14 +9913,14 @@ function mergeValues(a, b) {
       return { valid: false, mergeErrorPath: [] };
     }
     const newArray = [];
-    for (let index = 0; index < a.length; index++) {
-      const itemA = a[index];
-      const itemB = b[index];
+    for (let index2 = 0; index2 < a.length; index2++) {
+      const itemA = a[index2];
+      const itemB = b[index2];
       const sharedValue = mergeValues(itemA, itemB);
       if (!sharedValue.valid) {
         return {
           valid: false,
-          mergeErrorPath: [index, ...sharedValue.mergeErrorPath]
+          mergeErrorPath: [index2, ...sharedValue.mergeErrorPath]
         };
       }
       newArray.push(sharedValue.data);
@@ -8720,11 +9975,11 @@ function getTupleOptStart(items, key) {
   }
   return 0;
 }
-function handleTupleResult(result, final, index) {
+function handleTupleResult(result, final, index2) {
   if (result.issues.length) {
-    final.issues.push(...prefixIssues(index, result.issues));
+    final.issues.push(...prefixIssues(index2, result.issues));
   }
-  final.value[index] = result.value;
+  final.value[index2] = result.value;
 }
 function handleTupleResults(itemResults, final, items, input, optoutStart) {
   for (let i = 0; i < items.length; i++) {
@@ -8758,7 +10013,7 @@ function handleMapResult(keyResult, valueResult, final, key, input, inst, ctx) {
         origin: "map",
         input,
         inst,
-        issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config()))
+        issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config2()))
       });
     }
   }
@@ -8772,7 +10027,7 @@ function handleMapResult(keyResult, valueResult, final, key, input, inst, ctx) {
         input,
         inst,
         key,
-        issues: valueResult.issues.map((iss) => finalizeIssue(iss, ctx, config()))
+        issues: valueResult.issues.map((iss) => finalizeIssue(iss, ctx, config2()))
       });
     }
   }
@@ -8865,7 +10120,10 @@ function handleRefineResult(result, payload, input, inst) {
 var $ZodType, $ZodString, $ZodStringFormat, $ZodGUID, $ZodUUID, $ZodEmail, $ZodURL, $ZodEmoji, $ZodNanoID, $ZodCUID, $ZodCUID2, $ZodULID, $ZodXID, $ZodKSUID, $ZodISODateTime, $ZodISODate, $ZodISOTime, $ZodISODuration, $ZodIPv4, $ZodIPv6, $ZodMAC, $ZodCIDRv4, $ZodCIDRv6, $ZodBase64, $ZodBase64URL, $ZodE164, $ZodJWT, $ZodCustomStringFormat, $ZodNumber, $ZodNumberFormat, $ZodBoolean, $ZodBigInt, $ZodBigIntFormat, $ZodSymbol, $ZodUndefined, $ZodNull, $ZodAny, $ZodUnknown, $ZodNever, $ZodVoid, $ZodDate, $ZodArray, $ZodObject, $ZodObjectJIT, $ZodUnion, $ZodXor, $ZodDiscriminatedUnion, $ZodIntersection, $ZodTuple, $ZodRecord, $ZodMap, $ZodSet, $ZodEnum, $ZodLiteral, $ZodFile, $ZodTransform, $ZodOptional, $ZodExactOptional, $ZodNullable, $ZodDefault, $ZodPrefault, $ZodNonOptional, $ZodSuccess, $ZodCatch, $ZodNaN, $ZodPipe, $ZodCodec, $ZodPreprocess, $ZodReadonly, $ZodTemplateLiteral, $ZodFunction, $ZodPromise, $ZodLazy, $ZodCustom;
 var init_schemas = __esm({
   "../node_modules/zod/v4/core/schemas.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_checks();
     init_core();
     init_doc();
@@ -8879,7 +10137,7 @@ var init_schemas = __esm({
       inst ?? (inst = {});
       inst._zod.def = def;
       inst._zod.bag = inst._zod.bag || {};
-      inst._zod.version = version;
+      inst._zod.version = version2;
       const checks = [...inst._zod.def.checks ?? []];
       if (inst._zod.traits.has("$ZodCheck")) {
         checks.unshift(inst);
@@ -9138,7 +10396,7 @@ var init_schemas = __esm({
       $ZodStringFormat.init(inst, def);
     });
     $ZodISOTime = /* @__PURE__ */ $constructor("$ZodISOTime", (inst, def) => {
-      def.pattern ?? (def.pattern = time(def));
+      def.pattern ?? (def.pattern = time3(def));
       $ZodStringFormat.init(inst, def);
     });
     $ZodISODuration = /* @__PURE__ */ $constructor("$ZodISODuration", (inst, def) => {
@@ -9323,7 +10581,7 @@ var init_schemas = __esm({
     });
     $ZodBigInt = /* @__PURE__ */ $constructor("$ZodBigInt", (inst, def) => {
       $ZodType.init(inst, def);
-      inst._zod.pattern = bigint;
+      inst._zod.pattern = bigint2;
       inst._zod.parse = (payload, _ctx) => {
         if (def.coerce)
           try {
@@ -9944,7 +11202,7 @@ var init_schemas = __esm({
                 payload.issues.push({
                   code: "invalid_key",
                   origin: "record",
-                  issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
+                  issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config2())),
                   input: key,
                   path: [key],
                   inst
@@ -10011,7 +11269,7 @@ var init_schemas = __esm({
                 payload.issues.push({
                   code: "invalid_key",
                   origin: "record",
-                  issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
+                  issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config2())),
                   input: key,
                   path: [key],
                   inst
@@ -10316,7 +11574,7 @@ var init_schemas = __esm({
               payload.value = def.catchValue({
                 ...payload,
                 error: {
-                  issues: result2.issues.map((iss) => finalizeIssue(iss, ctx, config()))
+                  issues: result2.issues.map((iss) => finalizeIssue(iss, ctx, config2()))
                 },
                 input: payload.value
               });
@@ -10331,7 +11589,7 @@ var init_schemas = __esm({
           payload.value = def.catchValue({
             ...payload,
             error: {
-              issues: result.issues.map((iss) => finalizeIssue(iss, ctx, config()))
+              issues: result.issues.map((iss) => finalizeIssue(iss, ctx, config2()))
             },
             input: payload.value
           });
@@ -10592,15 +11850,18 @@ var init_schemas = __esm({
 // ../node_modules/zod/v4/locales/ar.js
 function ar_default() {
   return {
-    localeError: error()
+    localeError: error3()
   };
 }
-var error;
+var error3;
 var init_ar = __esm({
   "../node_modules/zod/v4/locales/ar.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error = /* @__PURE__ */ __name(() => {
+    error3 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u062D\u0631\u0641", verb: "\u0623\u0646 \u064A\u062D\u0648\u064A" },
         file: { unit: "\u0628\u0627\u064A\u062A", verb: "\u0623\u0646 \u064A\u062D\u0648\u064A" },
@@ -10708,15 +11969,18 @@ var init_ar = __esm({
 // ../node_modules/zod/v4/locales/az.js
 function az_default() {
   return {
-    localeError: error2()
+    localeError: error4()
   };
 }
-var error2;
+var error4;
 var init_az = __esm({
   "../node_modules/zod/v4/locales/az.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error2 = /* @__PURE__ */ __name(() => {
+    error4 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "simvol", verb: "olmal\u0131d\u0131r" },
         file: { unit: "bayt", verb: "olmal\u0131d\u0131r" },
@@ -10821,8 +12085,8 @@ var init_az = __esm({
 });
 
 // ../node_modules/zod/v4/locales/be.js
-function getBelarusianPlural(count, one, few, many) {
-  const absCount = Math.abs(count);
+function getBelarusianPlural(count3, one, few, many) {
+  const absCount = Math.abs(count3);
   const lastDigit = absCount % 10;
   const lastTwoDigits = absCount % 100;
   if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
@@ -10838,16 +12102,19 @@ function getBelarusianPlural(count, one, few, many) {
 }
 function be_default() {
   return {
-    localeError: error3()
+    localeError: error5()
   };
 }
-var error3;
+var error5;
 var init_be = __esm({
   "../node_modules/zod/v4/locales/be.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
     __name(getBelarusianPlural, "getBelarusianPlural");
-    error3 = /* @__PURE__ */ __name(() => {
+    error5 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: {
           unit: {
@@ -10990,15 +12257,18 @@ var init_be = __esm({
 // ../node_modules/zod/v4/locales/bg.js
 function bg_default() {
   return {
-    localeError: error4()
+    localeError: error6()
   };
 }
-var error4;
+var error6;
 var init_bg = __esm({
   "../node_modules/zod/v4/locales/bg.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error4 = /* @__PURE__ */ __name(() => {
+    error6 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u0441\u0438\u043C\u0432\u043E\u043B\u0430", verb: "\u0434\u0430 \u0441\u044A\u0434\u044A\u0440\u0436\u0430" },
         file: { unit: "\u0431\u0430\u0439\u0442\u0430", verb: "\u0434\u0430 \u0441\u044A\u0434\u044A\u0440\u0436\u0430" },
@@ -11120,15 +12390,18 @@ var init_bg = __esm({
 // ../node_modules/zod/v4/locales/ca.js
 function ca_default() {
   return {
-    localeError: error5()
+    localeError: error7()
   };
 }
-var error5;
+var error7;
 var init_ca = __esm({
   "../node_modules/zod/v4/locales/ca.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error5 = /* @__PURE__ */ __name(() => {
+    error7 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "car\xE0cters", verb: "contenir" },
         file: { unit: "bytes", verb: "contenir" },
@@ -11238,15 +12511,18 @@ var init_ca = __esm({
 // ../node_modules/zod/v4/locales/cs.js
 function cs_default() {
   return {
-    localeError: error6()
+    localeError: error8()
   };
 }
-var error6;
+var error8;
 var init_cs = __esm({
   "../node_modules/zod/v4/locales/cs.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error6 = /* @__PURE__ */ __name(() => {
+    error8 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "znak\u016F", verb: "m\xEDt" },
         file: { unit: "bajt\u016F", verb: "m\xEDt" },
@@ -11359,15 +12635,18 @@ var init_cs = __esm({
 // ../node_modules/zod/v4/locales/da.js
 function da_default() {
   return {
-    localeError: error7()
+    localeError: error9()
   };
 }
-var error7;
+var error9;
 var init_da = __esm({
   "../node_modules/zod/v4/locales/da.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error7 = /* @__PURE__ */ __name(() => {
+    error9 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "tegn", verb: "havde" },
         file: { unit: "bytes", verb: "havde" },
@@ -11484,15 +12763,18 @@ var init_da = __esm({
 // ../node_modules/zod/v4/locales/de.js
 function de_default() {
   return {
-    localeError: error8()
+    localeError: error10()
   };
 }
-var error8;
+var error10;
 var init_de = __esm({
   "../node_modules/zod/v4/locales/de.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error8 = /* @__PURE__ */ __name(() => {
+    error10 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "Zeichen", verb: "zu haben" },
         file: { unit: "Bytes", verb: "zu haben" },
@@ -11602,15 +12884,18 @@ var init_de = __esm({
 // ../node_modules/zod/v4/locales/el.js
 function el_default() {
   return {
-    localeError: error9()
+    localeError: error11()
   };
 }
-var error9;
+var error11;
 var init_el = __esm({
   "../node_modules/zod/v4/locales/el.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error9 = /* @__PURE__ */ __name(() => {
+    error11 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u03C7\u03B1\u03C1\u03B1\u03BA\u03C4\u03AE\u03C1\u03B5\u03C2", verb: "\u03BD\u03B1 \u03AD\u03C7\u03B5\u03B9" },
         file: { unit: "bytes", verb: "\u03BD\u03B1 \u03AD\u03C7\u03B5\u03B9" },
@@ -11721,15 +13006,18 @@ var init_el = __esm({
 // ../node_modules/zod/v4/locales/en.js
 function en_default() {
   return {
-    localeError: error10()
+    localeError: error12()
   };
 }
-var error10;
+var error12;
 var init_en = __esm({
   "../node_modules/zod/v4/locales/en.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error10 = /* @__PURE__ */ __name(() => {
+    error12 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "characters", verb: "to have" },
         file: { unit: "bytes", verb: "to have" },
@@ -11843,15 +13131,18 @@ var init_en = __esm({
 // ../node_modules/zod/v4/locales/eo.js
 function eo_default() {
   return {
-    localeError: error11()
+    localeError: error13()
   };
 }
-var error11;
+var error13;
 var init_eo = __esm({
   "../node_modules/zod/v4/locales/eo.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error11 = /* @__PURE__ */ __name(() => {
+    error13 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "karaktrojn", verb: "havi" },
         file: { unit: "bajtojn", verb: "havi" },
@@ -11962,15 +13253,18 @@ var init_eo = __esm({
 // ../node_modules/zod/v4/locales/es.js
 function es_default() {
   return {
-    localeError: error12()
+    localeError: error14()
   };
 }
-var error12;
+var error14;
 var init_es = __esm({
   "../node_modules/zod/v4/locales/es.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error12 = /* @__PURE__ */ __name(() => {
+    error14 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "caracteres", verb: "tener" },
         file: { unit: "bytes", verb: "tener" },
@@ -12104,15 +13398,18 @@ var init_es = __esm({
 // ../node_modules/zod/v4/locales/fa.js
 function fa_default() {
   return {
-    localeError: error13()
+    localeError: error15()
   };
 }
-var error13;
+var error15;
 var init_fa = __esm({
   "../node_modules/zod/v4/locales/fa.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error13 = /* @__PURE__ */ __name(() => {
+    error15 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u06A9\u0627\u0631\u0627\u06A9\u062A\u0631", verb: "\u062F\u0627\u0634\u062A\u0647 \u0628\u0627\u0634\u062F" },
         file: { unit: "\u0628\u0627\u06CC\u062A", verb: "\u062F\u0627\u0634\u062A\u0647 \u0628\u0627\u0634\u062F" },
@@ -12228,15 +13525,18 @@ var init_fa = __esm({
 // ../node_modules/zod/v4/locales/fi.js
 function fi_default() {
   return {
-    localeError: error14()
+    localeError: error16()
   };
 }
-var error14;
+var error16;
 var init_fi = __esm({
   "../node_modules/zod/v4/locales/fi.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error14 = /* @__PURE__ */ __name(() => {
+    error16 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "merkki\xE4", subject: "merkkijonon" },
         file: { unit: "tavua", subject: "tiedoston" },
@@ -12350,15 +13650,18 @@ var init_fi = __esm({
 // ../node_modules/zod/v4/locales/fr.js
 function fr_default() {
   return {
-    localeError: error15()
+    localeError: error17()
   };
 }
-var error15;
+var error17;
 var init_fr = __esm({
   "../node_modules/zod/v4/locales/fr.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error15 = /* @__PURE__ */ __name(() => {
+    error17 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "caract\xE8res", verb: "avoir" },
         file: { unit: "octets", verb: "avoir" },
@@ -12485,15 +13788,18 @@ var init_fr = __esm({
 // ../node_modules/zod/v4/locales/fr-CA.js
 function fr_CA_default() {
   return {
-    localeError: error16()
+    localeError: error18()
   };
 }
-var error16;
+var error18;
 var init_fr_CA = __esm({
   "../node_modules/zod/v4/locales/fr-CA.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error16 = /* @__PURE__ */ __name(() => {
+    error18 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "caract\xE8res", verb: "avoir" },
         file: { unit: "octets", verb: "avoir" },
@@ -12602,15 +13908,18 @@ var init_fr_CA = __esm({
 // ../node_modules/zod/v4/locales/he.js
 function he_default() {
   return {
-    localeError: error17()
+    localeError: error19()
   };
 }
-var error17;
+var error19;
 var init_he = __esm({
   "../node_modules/zod/v4/locales/he.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error17 = /* @__PURE__ */ __name(() => {
+    error19 = /* @__PURE__ */ __name(() => {
       const TypeNames = {
         string: { label: "\u05DE\u05D7\u05E8\u05D5\u05D6\u05EA", gender: "f" },
         number: { label: "\u05DE\u05E1\u05E4\u05E8", gender: "m" },
@@ -12805,15 +14114,18 @@ var init_he = __esm({
 // ../node_modules/zod/v4/locales/hr.js
 function hr_default() {
   return {
-    localeError: error18()
+    localeError: error20()
   };
 }
-var error18;
+var error20;
 var init_hr = __esm({
   "../node_modules/zod/v4/locales/hr.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error18 = /* @__PURE__ */ __name(() => {
+    error20 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "znakova", verb: "imati" },
         file: { unit: "bajtova", verb: "imati" },
@@ -12937,15 +14249,18 @@ var init_hr = __esm({
 // ../node_modules/zod/v4/locales/hu.js
 function hu_default() {
   return {
-    localeError: error19()
+    localeError: error21()
   };
 }
-var error19;
+var error21;
 var init_hu = __esm({
   "../node_modules/zod/v4/locales/hu.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error19 = /* @__PURE__ */ __name(() => {
+    error21 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "karakter", verb: "legyen" },
         file: { unit: "byte", verb: "legyen" },
@@ -13053,8 +14368,8 @@ var init_hu = __esm({
 });
 
 // ../node_modules/zod/v4/locales/hy.js
-function getArmenianPlural(count, one, many) {
-  return Math.abs(count) === 1 ? one : many;
+function getArmenianPlural(count3, one, many) {
+  return Math.abs(count3) === 1 ? one : many;
 }
 function withDefiniteArticle(word) {
   if (!word)
@@ -13065,17 +14380,20 @@ function withDefiniteArticle(word) {
 }
 function hy_default() {
   return {
-    localeError: error20()
+    localeError: error22()
   };
 }
-var error20;
+var error22;
 var init_hy = __esm({
   "../node_modules/zod/v4/locales/hy.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
     __name(getArmenianPlural, "getArmenianPlural");
     __name(withDefiniteArticle, "withDefiniteArticle");
-    error20 = /* @__PURE__ */ __name(() => {
+    error22 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: {
           unit: {
@@ -13214,15 +14532,18 @@ var init_hy = __esm({
 // ../node_modules/zod/v4/locales/id.js
 function id_default() {
   return {
-    localeError: error21()
+    localeError: error23()
   };
 }
-var error21;
+var error23;
 var init_id = __esm({
   "../node_modules/zod/v4/locales/id.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error21 = /* @__PURE__ */ __name(() => {
+    error23 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "karakter", verb: "memiliki" },
         file: { unit: "byte", verb: "memiliki" },
@@ -13330,15 +14651,18 @@ var init_id = __esm({
 // ../node_modules/zod/v4/locales/is.js
 function is_default() {
   return {
-    localeError: error22()
+    localeError: error24()
   };
 }
-var error22;
+var error24;
 var init_is2 = __esm({
   "../node_modules/zod/v4/locales/is.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error22 = /* @__PURE__ */ __name(() => {
+    error24 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "stafi", verb: "a\xF0 hafa" },
         file: { unit: "b\xE6ti", verb: "a\xF0 hafa" },
@@ -13449,15 +14773,18 @@ var init_is2 = __esm({
 // ../node_modules/zod/v4/locales/it.js
 function it_default() {
   return {
-    localeError: error23()
+    localeError: error25()
   };
 }
-var error23;
+var error25;
 var init_it = __esm({
   "../node_modules/zod/v4/locales/it.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error23 = /* @__PURE__ */ __name(() => {
+    error25 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "caratteri", verb: "avere" },
         file: { unit: "byte", verb: "avere" },
@@ -13567,15 +14894,18 @@ var init_it = __esm({
 // ../node_modules/zod/v4/locales/ja.js
 function ja_default() {
   return {
-    localeError: error24()
+    localeError: error26()
   };
 }
-var error24;
+var error26;
 var init_ja = __esm({
   "../node_modules/zod/v4/locales/ja.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error24 = /* @__PURE__ */ __name(() => {
+    error26 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u6587\u5B57", verb: "\u3067\u3042\u308B" },
         file: { unit: "\u30D0\u30A4\u30C8", verb: "\u3067\u3042\u308B" },
@@ -13684,15 +15014,18 @@ var init_ja = __esm({
 // ../node_modules/zod/v4/locales/ka.js
 function ka_default() {
   return {
-    localeError: error25()
+    localeError: error27()
   };
 }
-var error25;
+var error27;
 var init_ka = __esm({
   "../node_modules/zod/v4/locales/ka.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error25 = /* @__PURE__ */ __name(() => {
+    error27 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u10E1\u10D8\u10DB\u10D1\u10DD\u10DA\u10DD", verb: "\u10E3\u10DC\u10D3\u10D0 \u10E8\u10D4\u10D8\u10EA\u10D0\u10D5\u10D3\u10D4\u10E1" },
         file: { unit: "\u10D1\u10D0\u10D8\u10E2\u10D8", verb: "\u10E3\u10DC\u10D3\u10D0 \u10E8\u10D4\u10D8\u10EA\u10D0\u10D5\u10D3\u10D4\u10E1" },
@@ -13806,15 +15139,18 @@ var init_ka = __esm({
 // ../node_modules/zod/v4/locales/km.js
 function km_default() {
   return {
-    localeError: error26()
+    localeError: error28()
   };
 }
-var error26;
+var error28;
 var init_km = __esm({
   "../node_modules/zod/v4/locales/km.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error26 = /* @__PURE__ */ __name(() => {
+    error28 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u178F\u17BD\u17A2\u1780\u17D2\u179F\u179A", verb: "\u1782\u17BD\u179A\u1798\u17B6\u1793" },
         file: { unit: "\u1794\u17C3", verb: "\u1782\u17BD\u179A\u1798\u17B6\u1793" },
@@ -13929,7 +15265,10 @@ function kh_default() {
 }
 var init_kh = __esm({
   "../node_modules/zod/v4/locales/kh.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_km();
     __name(kh_default, "default");
   }
@@ -13938,15 +15277,18 @@ var init_kh = __esm({
 // ../node_modules/zod/v4/locales/ko.js
 function ko_default() {
   return {
-    localeError: error27()
+    localeError: error29()
   };
 }
-var error27;
+var error29;
 var init_ko = __esm({
   "../node_modules/zod/v4/locales/ko.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error27 = /* @__PURE__ */ __name(() => {
+    error29 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\uBB38\uC790", verb: "to have" },
         file: { unit: "\uBC14\uC774\uD2B8", verb: "to have" },
@@ -14069,19 +15411,22 @@ function getUnitTypeFromNumber(number4) {
 }
 function lt_default() {
   return {
-    localeError: error28()
+    localeError: error30()
   };
 }
-var capitalizeFirstCharacter, error28;
+var capitalizeFirstCharacter, error30;
 var init_lt = __esm({
   "../node_modules/zod/v4/locales/lt.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
     capitalizeFirstCharacter = /* @__PURE__ */ __name((text2) => {
       return text2.charAt(0).toUpperCase() + text2.slice(1);
     }, "capitalizeFirstCharacter");
     __name(getUnitTypeFromNumber, "getUnitTypeFromNumber");
-    error28 = /* @__PURE__ */ __name(() => {
+    error30 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: {
           unit: {
@@ -14273,15 +15618,18 @@ var init_lt = __esm({
 // ../node_modules/zod/v4/locales/mk.js
 function mk_default() {
   return {
-    localeError: error29()
+    localeError: error31()
   };
 }
-var error29;
+var error31;
 var init_mk = __esm({
   "../node_modules/zod/v4/locales/mk.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error29 = /* @__PURE__ */ __name(() => {
+    error31 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u0437\u043D\u0430\u0446\u0438", verb: "\u0434\u0430 \u0438\u043C\u0430\u0430\u0442" },
         file: { unit: "\u0431\u0430\u0458\u0442\u0438", verb: "\u0434\u0430 \u0438\u043C\u0430\u0430\u0442" },
@@ -14392,15 +15740,18 @@ var init_mk = __esm({
 // ../node_modules/zod/v4/locales/ms.js
 function ms_default() {
   return {
-    localeError: error30()
+    localeError: error32()
   };
 }
-var error30;
+var error32;
 var init_ms = __esm({
   "../node_modules/zod/v4/locales/ms.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error30 = /* @__PURE__ */ __name(() => {
+    error32 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "aksara", verb: "mempunyai" },
         file: { unit: "bait", verb: "mempunyai" },
@@ -14509,15 +15860,18 @@ var init_ms = __esm({
 // ../node_modules/zod/v4/locales/nl.js
 function nl_default() {
   return {
-    localeError: error31()
+    localeError: error33()
   };
 }
-var error31;
+var error33;
 var init_nl = __esm({
   "../node_modules/zod/v4/locales/nl.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error31 = /* @__PURE__ */ __name(() => {
+    error33 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "tekens", verb: "heeft" },
         file: { unit: "bytes", verb: "heeft" },
@@ -14629,15 +15983,18 @@ var init_nl = __esm({
 // ../node_modules/zod/v4/locales/no.js
 function no_default() {
   return {
-    localeError: error32()
+    localeError: error34()
   };
 }
-var error32;
+var error34;
 var init_no = __esm({
   "../node_modules/zod/v4/locales/no.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error32 = /* @__PURE__ */ __name(() => {
+    error34 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "tegn", verb: "\xE5 ha" },
         file: { unit: "bytes", verb: "\xE5 ha" },
@@ -14747,15 +16104,18 @@ var init_no = __esm({
 // ../node_modules/zod/v4/locales/ota.js
 function ota_default() {
   return {
-    localeError: error33()
+    localeError: error35()
   };
 }
-var error33;
+var error35;
 var init_ota = __esm({
   "../node_modules/zod/v4/locales/ota.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error33 = /* @__PURE__ */ __name(() => {
+    error35 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "harf", verb: "olmal\u0131d\u0131r" },
         file: { unit: "bayt", verb: "olmal\u0131d\u0131r" },
@@ -14866,15 +16226,18 @@ var init_ota = __esm({
 // ../node_modules/zod/v4/locales/ps.js
 function ps_default() {
   return {
-    localeError: error34()
+    localeError: error36()
   };
 }
-var error34;
+var error36;
 var init_ps = __esm({
   "../node_modules/zod/v4/locales/ps.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error34 = /* @__PURE__ */ __name(() => {
+    error36 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u062A\u0648\u06A9\u064A", verb: "\u0648\u0644\u0631\u064A" },
         file: { unit: "\u0628\u0627\u06CC\u067C\u0633", verb: "\u0648\u0644\u0631\u064A" },
@@ -14990,15 +16353,18 @@ var init_ps = __esm({
 // ../node_modules/zod/v4/locales/pl.js
 function pl_default() {
   return {
-    localeError: error35()
+    localeError: error37()
   };
 }
-var error35;
+var error37;
 var init_pl = __esm({
   "../node_modules/zod/v4/locales/pl.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error35 = /* @__PURE__ */ __name(() => {
+    error37 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "znak\xF3w", verb: "mie\u0107" },
         file: { unit: "bajt\xF3w", verb: "mie\u0107" },
@@ -15109,15 +16475,18 @@ var init_pl = __esm({
 // ../node_modules/zod/v4/locales/pt.js
 function pt_default() {
   return {
-    localeError: error36()
+    localeError: error38()
   };
 }
-var error36;
+var error38;
 var init_pt = __esm({
   "../node_modules/zod/v4/locales/pt.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error36 = /* @__PURE__ */ __name(() => {
+    error38 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "caracteres", verb: "ter" },
         file: { unit: "bytes", verb: "ter" },
@@ -15227,15 +16596,18 @@ var init_pt = __esm({
 // ../node_modules/zod/v4/locales/ro.js
 function ro_default() {
   return {
-    localeError: error37()
+    localeError: error39()
   };
 }
-var error37;
+var error39;
 var init_ro = __esm({
   "../node_modules/zod/v4/locales/ro.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error37 = /* @__PURE__ */ __name(() => {
+    error39 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "caractere", verb: "s\u0103 aib\u0103" },
         file: { unit: "octe\u021Bi", verb: "s\u0103 aib\u0103" },
@@ -15354,8 +16726,8 @@ var init_ro = __esm({
 });
 
 // ../node_modules/zod/v4/locales/ru.js
-function getRussianPlural(count, one, few, many) {
-  const absCount = Math.abs(count);
+function getRussianPlural(count3, one, few, many) {
+  const absCount = Math.abs(count3);
   const lastDigit = absCount % 10;
   const lastTwoDigits = absCount % 100;
   if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
@@ -15371,16 +16743,19 @@ function getRussianPlural(count, one, few, many) {
 }
 function ru_default() {
   return {
-    localeError: error38()
+    localeError: error40()
   };
 }
-var error38;
+var error40;
 var init_ru = __esm({
   "../node_modules/zod/v4/locales/ru.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
     __name(getRussianPlural, "getRussianPlural");
-    error38 = /* @__PURE__ */ __name(() => {
+    error40 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: {
           unit: {
@@ -15523,15 +16898,18 @@ var init_ru = __esm({
 // ../node_modules/zod/v4/locales/sl.js
 function sl_default() {
   return {
-    localeError: error39()
+    localeError: error41()
   };
 }
-var error39;
+var error41;
 var init_sl = __esm({
   "../node_modules/zod/v4/locales/sl.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error39 = /* @__PURE__ */ __name(() => {
+    error41 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "znakov", verb: "imeti" },
         file: { unit: "bajtov", verb: "imeti" },
@@ -15642,15 +17020,18 @@ var init_sl = __esm({
 // ../node_modules/zod/v4/locales/sv.js
 function sv_default() {
   return {
-    localeError: error40()
+    localeError: error42()
   };
 }
-var error40;
+var error42;
 var init_sv = __esm({
   "../node_modules/zod/v4/locales/sv.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error40 = /* @__PURE__ */ __name(() => {
+    error42 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "tecken", verb: "att ha" },
         file: { unit: "bytes", verb: "att ha" },
@@ -15762,15 +17143,18 @@ var init_sv = __esm({
 // ../node_modules/zod/v4/locales/ta.js
 function ta_default() {
   return {
-    localeError: error41()
+    localeError: error43()
   };
 }
-var error41;
+var error43;
 var init_ta = __esm({
   "../node_modules/zod/v4/locales/ta.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error41 = /* @__PURE__ */ __name(() => {
+    error43 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u0B8E\u0BB4\u0BC1\u0BA4\u0BCD\u0BA4\u0BC1\u0B95\u0BCD\u0B95\u0BB3\u0BCD", verb: "\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BBF\u0BB0\u0BC1\u0B95\u0BCD\u0B95 \u0BB5\u0BC7\u0BA3\u0BCD\u0B9F\u0BC1\u0BAE\u0BCD" },
         file: { unit: "\u0BAA\u0BC8\u0B9F\u0BCD\u0B9F\u0BC1\u0B95\u0BB3\u0BCD", verb: "\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BBF\u0BB0\u0BC1\u0B95\u0BCD\u0B95 \u0BB5\u0BC7\u0BA3\u0BCD\u0B9F\u0BC1\u0BAE\u0BCD" },
@@ -15882,15 +17266,18 @@ var init_ta = __esm({
 // ../node_modules/zod/v4/locales/th.js
 function th_default() {
   return {
-    localeError: error42()
+    localeError: error44()
   };
 }
-var error42;
+var error44;
 var init_th = __esm({
   "../node_modules/zod/v4/locales/th.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error42 = /* @__PURE__ */ __name(() => {
+    error44 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u0E15\u0E31\u0E27\u0E2D\u0E31\u0E01\u0E29\u0E23", verb: "\u0E04\u0E27\u0E23\u0E21\u0E35" },
         file: { unit: "\u0E44\u0E1A\u0E15\u0E4C", verb: "\u0E04\u0E27\u0E23\u0E21\u0E35" },
@@ -16002,15 +17389,18 @@ var init_th = __esm({
 // ../node_modules/zod/v4/locales/tr.js
 function tr_default() {
   return {
-    localeError: error43()
+    localeError: error45()
   };
 }
-var error43;
+var error45;
 var init_tr = __esm({
   "../node_modules/zod/v4/locales/tr.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error43 = /* @__PURE__ */ __name(() => {
+    error45 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "karakter", verb: "olmal\u0131" },
         file: { unit: "bayt", verb: "olmal\u0131" },
@@ -16117,15 +17507,18 @@ var init_tr = __esm({
 // ../node_modules/zod/v4/locales/uk.js
 function uk_default() {
   return {
-    localeError: error44()
+    localeError: error46()
   };
 }
-var error44;
+var error46;
 var init_uk = __esm({
   "../node_modules/zod/v4/locales/uk.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error44 = /* @__PURE__ */ __name(() => {
+    error46 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u0441\u0438\u043C\u0432\u043E\u043B\u0456\u0432", verb: "\u043C\u0430\u0442\u0438\u043C\u0435" },
         file: { unit: "\u0431\u0430\u0439\u0442\u0456\u0432", verb: "\u043C\u0430\u0442\u0438\u043C\u0435" },
@@ -16238,7 +17631,10 @@ function ua_default() {
 }
 var init_ua = __esm({
   "../node_modules/zod/v4/locales/ua.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_uk();
     __name(ua_default, "default");
   }
@@ -16247,15 +17643,18 @@ var init_ua = __esm({
 // ../node_modules/zod/v4/locales/ur.js
 function ur_default() {
   return {
-    localeError: error45()
+    localeError: error47()
   };
 }
-var error45;
+var error47;
 var init_ur = __esm({
   "../node_modules/zod/v4/locales/ur.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error45 = /* @__PURE__ */ __name(() => {
+    error47 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u062D\u0631\u0648\u0641", verb: "\u06C1\u0648\u0646\u0627" },
         file: { unit: "\u0628\u0627\u0626\u0679\u0633", verb: "\u06C1\u0648\u0646\u0627" },
@@ -16367,15 +17766,18 @@ var init_ur = __esm({
 // ../node_modules/zod/v4/locales/uz.js
 function uz_default() {
   return {
-    localeError: error46()
+    localeError: error48()
   };
 }
-var error46;
+var error48;
 var init_uz = __esm({
   "../node_modules/zod/v4/locales/uz.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error46 = /* @__PURE__ */ __name(() => {
+    error48 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "belgi", verb: "bo\u2018lishi kerak" },
         file: { unit: "bayt", verb: "bo\u2018lishi kerak" },
@@ -16487,15 +17889,18 @@ var init_uz = __esm({
 // ../node_modules/zod/v4/locales/vi.js
 function vi_default() {
   return {
-    localeError: error47()
+    localeError: error49()
   };
 }
-var error47;
+var error49;
 var init_vi = __esm({
   "../node_modules/zod/v4/locales/vi.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error47 = /* @__PURE__ */ __name(() => {
+    error49 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "k\xFD t\u1EF1", verb: "c\xF3" },
         file: { unit: "byte", verb: "c\xF3" },
@@ -16605,15 +18010,18 @@ var init_vi = __esm({
 // ../node_modules/zod/v4/locales/zh-CN.js
 function zh_CN_default() {
   return {
-    localeError: error48()
+    localeError: error50()
   };
 }
-var error48;
+var error50;
 var init_zh_CN = __esm({
   "../node_modules/zod/v4/locales/zh-CN.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error48 = /* @__PURE__ */ __name(() => {
+    error50 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u5B57\u7B26", verb: "\u5305\u542B" },
         file: { unit: "\u5B57\u8282", verb: "\u5305\u542B" },
@@ -16724,15 +18132,18 @@ var init_zh_CN = __esm({
 // ../node_modules/zod/v4/locales/zh-TW.js
 function zh_TW_default() {
   return {
-    localeError: error49()
+    localeError: error51()
   };
 }
-var error49;
+var error51;
 var init_zh_TW = __esm({
   "../node_modules/zod/v4/locales/zh-TW.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error49 = /* @__PURE__ */ __name(() => {
+    error51 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\u5B57\u5143", verb: "\u64C1\u6709" },
         file: { unit: "\u4F4D\u5143\u7D44", verb: "\u64C1\u6709" },
@@ -16841,15 +18252,18 @@ var init_zh_TW = __esm({
 // ../node_modules/zod/v4/locales/yo.js
 function yo_default() {
   return {
-    localeError: error50()
+    localeError: error52()
   };
 }
-var error50;
+var error52;
 var init_yo = __esm({
   "../node_modules/zod/v4/locales/yo.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_util2();
-    error50 = /* @__PURE__ */ __name(() => {
+    error52 = /* @__PURE__ */ __name(() => {
       const Sizable = {
         string: { unit: "\xE0mi", verb: "n\xED" },
         file: { unit: "bytes", verb: "n\xED" },
@@ -17013,7 +18427,10 @@ __export(locales_exports, {
 });
 var init_locales = __esm({
   "../node_modules/zod/v4/locales/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_ar();
     init_az();
     init_be();
@@ -17076,7 +18493,10 @@ function registry() {
 var _a2, $output, $input, $ZodRegistry, globalRegistry;
 var init_registries = __esm({
   "../node_modules/zod/v4/core/registries.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     $output = /* @__PURE__ */ Symbol("ZodOutput");
     $input = /* @__PURE__ */ Symbol("ZodInput");
     $ZodRegistry = class {
@@ -18162,7 +19582,10 @@ function _stringFormat(Class2, format2, fnOrRegex, _params = {}) {
 var TimePrecision;
 var init_api = __esm({
   "../node_modules/zod/v4/core/api.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_checks();
     init_registries();
     init_schemas();
@@ -18407,7 +19830,7 @@ function extractDefs(ctx, schema) {
       return;
     }
     const seen = entry[1];
-    const { ref, defId } = makeURI(entry);
+    const { ref: ref2, defId } = makeURI(entry);
     seen.def = { ...seen.schema };
     if (defId)
       seen.defId = defId;
@@ -18415,7 +19838,7 @@ function extractDefs(ctx, schema) {
     for (const key in schema2) {
       delete schema2[key];
     }
-    schema2.$ref = ref;
+    schema2.$ref = ref2;
   }, "extractToDef");
   if (ctx.cycles === "throw") {
     for (const entry of ctx.seen.entries()) {
@@ -18467,11 +19890,11 @@ function finalize(ctx, schema) {
       return;
     const schema2 = seen.def ?? seen.schema;
     const _cached = { ...schema2 };
-    const ref = seen.ref;
+    const ref2 = seen.ref;
     seen.ref = null;
-    if (ref) {
-      flattenRef(ref);
-      const refSeen = ctx.seen.get(ref);
+    if (ref2) {
+      flattenRef(ref2);
+      const refSeen = ctx.seen.get(ref2);
       const refSchema = refSeen.schema;
       if (refSchema.$ref && (ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0")) {
         schema2.allOf = schema2.allOf ?? [];
@@ -18480,7 +19903,7 @@ function finalize(ctx, schema) {
         Object.assign(schema2, refSchema);
       }
       Object.assign(schema2, _cached);
-      const isParentRef = zodSchema._zod.parent === ref;
+      const isParentRef = zodSchema._zod.parent === ref2;
       if (isParentRef) {
         for (const key in schema2) {
           if (key === "$ref" || key === "allOf")
@@ -18501,7 +19924,7 @@ function finalize(ctx, schema) {
       }
     }
     const parent = zodSchema._zod.parent;
-    if (parent && parent !== ref) {
+    if (parent && parent !== ref2) {
       flattenRef(parent);
       const parentSeen = ctx.seen.get(parent);
       if (parentSeen?.schema.$ref) {
@@ -18639,7 +20062,10 @@ function isTransforming(_schema, _ctx) {
 var createToJSONSchemaMethod, createStandardJSONSchemaMethod;
 var init_to_json_schema = __esm({
   "../node_modules/zod/v4/core/to-json-schema.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_registries();
     __name(initializeContext, "initializeContext");
     __name(process2, "process");
@@ -18700,7 +20126,10 @@ function toJSONSchema(input, params) {
 var formatMap, stringProcessor, numberProcessor, booleanProcessor, bigintProcessor, symbolProcessor, nullProcessor, undefinedProcessor, voidProcessor, neverProcessor, anyProcessor, unknownProcessor, dateProcessor, enumProcessor, literalProcessor, nanProcessor, templateLiteralProcessor, fileProcessor, successProcessor, customProcessor, functionProcessor, transformProcessor, mapProcessor, setProcessor, arrayProcessor, objectProcessor, unionProcessor, intersectionProcessor, tupleProcessor, recordProcessor, nullableProcessor, nonoptionalProcessor, defaultProcessor, prefaultProcessor, catchProcessor, pipeProcessor, readonlyProcessor, promiseProcessor, optionalProcessor, lazyProcessor, allProcessors;
 var init_json_schema_processors = __esm({
   "../node_modules/zod/v4/core/json-schema-processors.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_to_json_schema();
     init_util2();
     formatMap = {
@@ -19219,7 +20648,10 @@ var init_json_schema_processors = __esm({
 var JSONSchemaGenerator;
 var init_json_schema_generator = __esm({
   "../node_modules/zod/v4/core/json-schema-generator.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_json_schema_processors();
     init_to_json_schema();
     JSONSchemaGenerator = class {
@@ -19305,7 +20737,10 @@ var init_json_schema_generator = __esm({
 var json_schema_exports = {};
 var init_json_schema = __esm({
   "../node_modules/zod/v4/core/json-schema.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
@@ -19549,7 +20984,7 @@ __export(core_exports2, {
   _xid: () => _xid,
   _xor: () => _xor,
   clone: () => clone,
-  config: () => config,
+  config: () => config2,
   createStandardJSONSchemaMethod: () => createStandardJSONSchemaMethod,
   createToJSONSchemaMethod: () => createToJSONSchemaMethod,
   decode: () => decode,
@@ -19585,11 +21020,14 @@ __export(core_exports2, {
   toJSONSchema: () => toJSONSchema,
   treeifyError: () => treeifyError,
   util: () => util_exports,
-  version: () => version
+  version: () => version2
 });
 var init_core2 = __esm({
   "../node_modules/zod/v4/core/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core();
     init_parse();
     init_errors();
@@ -19644,7 +21082,10 @@ __export(checks_exports2, {
 });
 var init_checks2 = __esm({
   "../node_modules/zod/v4/classic/checks.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
   }
 });
@@ -19659,7 +21100,7 @@ __export(iso_exports, {
   date: () => date2,
   datetime: () => datetime2,
   duration: () => duration2,
-  time: () => time2
+  time: () => time4
 });
 function datetime2(params) {
   return _isoDateTime(ZodISODateTime, params);
@@ -19667,7 +21108,7 @@ function datetime2(params) {
 function date2(params) {
   return _isoDate(ZodISODate, params);
 }
-function time2(params) {
+function time4(params) {
   return _isoTime(ZodISOTime, params);
 }
 function duration2(params) {
@@ -19676,7 +21117,10 @@ function duration2(params) {
 var ZodISODateTime, ZodISODate, ZodISOTime, ZodISODuration;
 var init_iso = __esm({
   "../node_modules/zod/v4/classic/iso.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     init_schemas2();
     ZodISODateTime = /* @__PURE__ */ $constructor("ZodISODateTime", (inst, def) => {
@@ -19693,7 +21137,7 @@ var init_iso = __esm({
       $ZodISOTime.init(inst, def);
       ZodStringFormat.init(inst, def);
     });
-    __name(time2, "time");
+    __name(time4, "time");
     ZodISODuration = /* @__PURE__ */ $constructor("ZodISODuration", (inst, def) => {
       $ZodISODuration.init(inst, def);
       ZodStringFormat.init(inst, def);
@@ -19706,7 +21150,10 @@ var init_iso = __esm({
 var initializer2, ZodError, ZodRealError;
 var init_errors2 = __esm({
   "../node_modules/zod/v4/classic/errors.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     init_core2();
     init_util2();
@@ -19755,7 +21202,10 @@ var init_errors2 = __esm({
 var parse3, parseAsync2, safeParse2, safeParseAsync2, encode2, decode2, encodeAsync2, decodeAsync2, safeEncode2, safeDecode2, safeEncodeAsync2, safeDecodeAsync2;
 var init_parse2 = __esm({
   "../node_modules/zod/v4/classic/parse.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     init_errors2();
     parse3 = /* @__PURE__ */ _parse(ZodRealError);
@@ -19852,7 +21302,7 @@ __export(schemas_exports2, {
   array: () => array,
   base64: () => base642,
   base64url: () => base64url2,
-  bigint: () => bigint2,
+  bigint: () => bigint3,
   boolean: () => boolean2,
   catch: () => _catch2,
   check: () => check,
@@ -19943,16 +21393,16 @@ __export(schemas_exports2, {
   xid: () => xid2,
   xor: () => xor
 });
-function _installLazyMethods(inst, group, methods) {
+function _installLazyMethods(inst, group3, methods) {
   const proto = Object.getPrototypeOf(inst);
   let installed = _installedGroups.get(proto);
   if (!installed) {
     installed = /* @__PURE__ */ new Set();
     _installedGroups.set(proto, installed);
   }
-  if (installed.has(group))
+  if (installed.has(group3))
     return;
-  installed.add(group);
+  installed.add(group3);
   for (const key in methods) {
     const fn = methods[key];
     Object.defineProperty(proto, key, {
@@ -20096,7 +21546,7 @@ function uint32(params) {
 function boolean2(params) {
   return _boolean(ZodBoolean, params);
 }
-function bigint2(params) {
+function bigint3(params) {
   return _bigint(ZodBigInt, params);
 }
 function int64(params) {
@@ -20458,7 +21908,10 @@ function preprocess(fn, schema) {
 var _installedGroups, ZodType, _ZodString, ZodString, ZodStringFormat, ZodEmail, ZodGUID, ZodUUID, ZodURL, ZodEmoji, ZodNanoID, ZodCUID, ZodCUID2, ZodULID, ZodXID, ZodKSUID, ZodIPv4, ZodMAC, ZodIPv6, ZodCIDRv4, ZodCIDRv6, ZodBase64, ZodBase64URL, ZodE164, ZodJWT, ZodCustomStringFormat, ZodNumber, ZodNumberFormat, ZodBoolean, ZodBigInt, ZodBigIntFormat, ZodSymbol, ZodUndefined, ZodNull, ZodAny, ZodUnknown, ZodNever, ZodVoid, ZodDate, ZodArray, ZodObject, ZodUnion, ZodXor, ZodDiscriminatedUnion, ZodIntersection, ZodTuple, ZodRecord, ZodMap, ZodSet, ZodEnum, ZodLiteral, ZodFile, ZodTransform, ZodOptional, ZodExactOptional, ZodNullable, ZodDefault, ZodPrefault, ZodNonOptional, ZodSuccess, ZodCatch, ZodNaN, ZodPipe, ZodCodec, ZodPreprocess, ZodReadonly, ZodTemplateLiteral, ZodLazy, ZodPromise, ZodFunction, ZodCustom, describe2, meta2, stringbool;
 var init_schemas2 = __esm({
   "../node_modules/zod/v4/classic/schemas.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     init_core2();
     init_json_schema_processors();
@@ -20681,7 +22134,7 @@ var init_schemas2 = __esm({
       inst.e164 = (params) => inst.check(_e164(ZodE164, params));
       inst.datetime = (params) => inst.check(datetime2(params));
       inst.date = (params) => inst.check(date2(params));
-      inst.time = (params) => inst.check(time2(params));
+      inst.time = (params) => inst.check(time4(params));
       inst.duration = (params) => inst.check(duration2(params));
     });
     __name(string2, "string");
@@ -20897,7 +22350,7 @@ var init_schemas2 = __esm({
       inst.maxValue = bag.maximum ?? null;
       inst.format = bag.format ?? null;
     });
-    __name(bigint2, "bigint");
+    __name(bigint3, "bigint");
     ZodBigIntFormat = /* @__PURE__ */ $constructor("ZodBigIntFormat", (inst, def) => {
       $ZodBigIntFormat.init(inst, def);
       ZodBigInt.init(inst, def);
@@ -21340,17 +22793,20 @@ var init_schemas2 = __esm({
 
 // ../node_modules/zod/v4/classic/compat.js
 function setErrorMap(map2) {
-  config({
+  config2({
     customError: map2
   });
 }
 function getErrorMap() {
-  return config().customError;
+  return config2().customError;
 }
 var ZodIssueCode, ZodFirstPartyTypeKind;
 var init_compat = __esm({
   "../node_modules/zod/v4/classic/compat.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     ZodIssueCode = {
       invalid_type: "invalid_type",
@@ -21386,11 +22842,11 @@ function detectVersion(schema, defaultTarget) {
   }
   return defaultTarget ?? "draft-2020-12";
 }
-function resolveRef(ref, ctx) {
-  if (!ref.startsWith("#")) {
+function resolveRef(ref2, ctx) {
+  if (!ref2.startsWith("#")) {
     throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
   }
-  const path = ref.slice(1).split("/").filter(Boolean);
+  const path = ref2.slice(1).split("/").filter(Boolean);
   if (path.length === 0) {
     return ctx.rootSchema;
   }
@@ -21398,11 +22854,11 @@ function resolveRef(ref, ctx) {
   if (path[0] === defsKey) {
     const key = path[1];
     if (!key || !ctx.defs[key]) {
-      throw new Error(`Reference not found: ${ref}`);
+      throw new Error(`Reference not found: ${ref2}`);
     }
     return ctx.defs[key];
   }
-  throw new Error(`Reference not found: ${ref}`);
+  throw new Error(`Reference not found: ${ref2}`);
 }
 function convertBaseSchema(schema, ctx) {
   if (schema.not !== void 0) {
@@ -21763,10 +23219,10 @@ function fromJSONSchema(schema, params) {
   } catch {
     throw new Error("fromJSONSchema input is not valid JSON (possibly cyclic); use $defs/$ref for recursive schemas");
   }
-  const version3 = detectVersion(normalized, params?.defaultTarget);
+  const version4 = detectVersion(normalized, params?.defaultTarget);
   const defs = normalized.$defs || normalized.definitions || {};
   const ctx = {
-    version: version3,
+    version: version4,
     defs,
     refs: /* @__PURE__ */ new Map(),
     processing: /* @__PURE__ */ new Set(),
@@ -21778,7 +23234,10 @@ function fromJSONSchema(schema, params) {
 var z, RECOGNIZED_KEYS;
 var init_from_json_schema = __esm({
   "../node_modules/zod/v4/classic/from-json-schema.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_registries();
     init_checks2();
     init_iso();
@@ -21870,7 +23329,7 @@ var init_from_json_schema = __esm({
 // ../node_modules/zod/v4/classic/coerce.js
 var coerce_exports = {};
 __export(coerce_exports, {
-  bigint: () => bigint3,
+  bigint: () => bigint4,
   boolean: () => boolean3,
   date: () => date4,
   number: () => number3,
@@ -21885,7 +23344,7 @@ function number3(params) {
 function boolean3(params) {
   return _coercedBoolean(ZodBoolean, params);
 }
-function bigint3(params) {
+function bigint4(params) {
   return _coercedBigint(ZodBigInt, params);
 }
 function date4(params) {
@@ -21893,13 +23352,16 @@ function date4(params) {
 }
 var init_coerce = __esm({
   "../node_modules/zod/v4/classic/coerce.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     init_schemas2();
     __name(string3, "string");
     __name(number3, "number");
     __name(boolean3, "boolean");
-    __name(bigint3, "bigint");
+    __name(bigint4, "bigint");
     __name(date4, "date");
   }
 });
@@ -21996,7 +23458,7 @@ __export(external_exports, {
   array: () => array,
   base64: () => base642,
   base64url: () => base64url2,
-  bigint: () => bigint2,
+  bigint: () => bigint3,
   boolean: () => boolean2,
   catch: () => _catch2,
   check: () => check,
@@ -22005,7 +23467,7 @@ __export(external_exports, {
   clone: () => clone,
   codec: () => codec,
   coerce: () => coerce_exports,
-  config: () => config,
+  config: () => config2,
   core: () => core_exports2,
   cuid: () => cuid3,
   cuid2: () => cuid22,
@@ -22148,7 +23610,10 @@ __export(external_exports, {
 });
 var init_external = __esm({
   "../node_modules/zod/v4/classic/external.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core2();
     init_schemas2();
     init_checks2();
@@ -22164,14 +23629,17 @@ var init_external = __esm({
     init_iso();
     init_iso();
     init_coerce();
-    config(en_default());
+    config2(en_default());
   }
 });
 
 // ../node_modules/zod/index.js
 var init_zod = __esm({
   "../node_modules/zod/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_external();
     init_external();
   }
@@ -22204,7 +23672,10 @@ function is(value, type) {
 var entityKind;
 var init_entity = __esm({
   "../node_modules/drizzle-orm/entity.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     entityKind = /* @__PURE__ */ Symbol.for("drizzle:entityKind");
     __name(is, "is");
   }
@@ -22214,30 +23685,33 @@ var init_entity = __esm({
 var Column;
 var init_column = __esm({
   "../node_modules/drizzle-orm/column.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     Column = class {
       static {
         __name(this, "Column");
       }
-      constructor(table, config2) {
-        this.table = table;
-        this.config = config2;
-        this.name = config2.name;
-        this.keyAsName = config2.keyAsName;
-        this.notNull = config2.notNull;
-        this.default = config2.default;
-        this.defaultFn = config2.defaultFn;
-        this.onUpdateFn = config2.onUpdateFn;
-        this.hasDefault = config2.hasDefault;
-        this.primary = config2.primaryKey;
-        this.isUnique = config2.isUnique;
-        this.uniqueName = config2.uniqueName;
-        this.uniqueType = config2.uniqueType;
-        this.dataType = config2.dataType;
-        this.columnType = config2.columnType;
-        this.generated = config2.generated;
-        this.generatedIdentity = config2.generatedIdentity;
+      constructor(table3, config3) {
+        this.table = table3;
+        this.config = config3;
+        this.name = config3.name;
+        this.keyAsName = config3.keyAsName;
+        this.notNull = config3.notNull;
+        this.default = config3.default;
+        this.defaultFn = config3.defaultFn;
+        this.onUpdateFn = config3.onUpdateFn;
+        this.hasDefault = config3.hasDefault;
+        this.primary = config3.primaryKey;
+        this.isUnique = config3.isUnique;
+        this.uniqueName = config3.uniqueName;
+        this.uniqueType = config3.uniqueType;
+        this.dataType = config3.dataType;
+        this.columnType = config3.columnType;
+        this.generated = config3.generated;
+        this.generatedIdentity = config3.generatedIdentity;
       }
       static [entityKind] = "Column";
       name;
@@ -22275,7 +23749,10 @@ var init_column = __esm({
 var ColumnBuilder;
 var init_column_builder = __esm({
   "../node_modules/drizzle-orm/column-builder.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     ColumnBuilder = class {
       static {
@@ -22388,7 +23865,10 @@ var init_column_builder = __esm({
 var TableName;
 var init_table_utils = __esm({
   "../node_modules/drizzle-orm/table.utils.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     TableName = /* @__PURE__ */ Symbol.for("drizzle:Name");
   }
 });
@@ -22397,7 +23877,10 @@ var init_table_utils = __esm({
 var ForeignKeyBuilder, ForeignKey;
 var init_foreign_keys = __esm({
   "../node_modules/drizzle-orm/pg-core/foreign-keys.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table_utils();
     ForeignKeyBuilder = class {
@@ -22411,9 +23894,9 @@ var init_foreign_keys = __esm({
       _onUpdate = "no action";
       /** @internal */
       _onDelete = "no action";
-      constructor(config2, actions) {
+      constructor(config3, actions) {
         this.reference = () => {
-          const { name, columns, foreignColumns } = config2();
+          const { name, columns, foreignColumns } = config3();
           return { name, columns, foreignTable: foreignColumns[0].table, foreignColumns };
         };
         if (actions) {
@@ -22430,16 +23913,16 @@ var init_foreign_keys = __esm({
         return this;
       }
       /** @internal */
-      build(table) {
-        return new ForeignKey(table, this);
+      build(table3) {
+        return new ForeignKey(table3, this);
       }
     };
     ForeignKey = class {
       static {
         __name(this, "ForeignKey");
       }
-      constructor(table, builder) {
-        this.table = table;
+      constructor(table3, builder) {
+        this.table = table3;
         this.reference = builder.reference;
         this.onUpdate = builder._onUpdate;
         this.onDelete = builder._onDelete;
@@ -22470,19 +23953,25 @@ function iife(fn, ...args) {
 }
 var init_tracing_utils = __esm({
   "../node_modules/drizzle-orm/tracing-utils.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(iife, "iife");
   }
 });
 
 // ../node_modules/drizzle-orm/pg-core/unique-constraint.js
-function uniqueKeyName(table, columns) {
-  return `${table[TableName]}_${columns.join("_")}_unique`;
+function uniqueKeyName(table3, columns) {
+  return `${table3[TableName]}_${columns.join("_")}_unique`;
 }
 var UniqueConstraintBuilder, UniqueOnConstraintBuilder, UniqueConstraint;
 var init_unique_constraint = __esm({
   "../node_modules/drizzle-orm/pg-core/unique-constraint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table_utils();
     __name(uniqueKeyName, "uniqueKeyName");
@@ -22504,8 +23993,8 @@ var init_unique_constraint = __esm({
         return this;
       }
       /** @internal */
-      build(table) {
-        return new UniqueConstraint(table, this.columns, this.nullsNotDistinctConfig, this.name);
+      build(table3) {
+        return new UniqueConstraint(table3, this.columns, this.nullsNotDistinctConfig, this.name);
       }
     };
     UniqueOnConstraintBuilder = class {
@@ -22526,8 +24015,8 @@ var init_unique_constraint = __esm({
       static {
         __name(this, "UniqueConstraint");
       }
-      constructor(table, columns, nullsNotDistinct, name) {
-        this.table = table;
+      constructor(table3, columns, nullsNotDistinct, name) {
+        this.table = table3;
         this.columns = columns;
         this.name = name ?? uniqueKeyName(this.table, this.columns.map((column) => column.name));
         this.nullsNotDistinct = nullsNotDistinct;
@@ -22620,7 +24109,10 @@ function makePgArray(array2) {
 }
 var init_array = __esm({
   "../node_modules/drizzle-orm/pg-core/utils/array.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(parsePgArrayValue, "parsePgArrayValue");
     __name(parsePgNestedArray, "parsePgNestedArray");
     __name(parsePgArray, "parsePgArray");
@@ -22632,7 +24124,10 @@ var init_array = __esm({
 var PgColumnBuilder, PgColumn, ExtraConfigColumn, IndexedColumn, PgArrayBuilder, PgArray;
 var init_common = __esm({
   "../node_modules/drizzle-orm/pg-core/columns/common.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_column_builder();
     init_column();
     init_entity();
@@ -22649,14 +24144,14 @@ var init_common = __esm({
       array(size) {
         return new PgArrayBuilder(this.config.name, this, size);
       }
-      references(ref, actions = {}) {
-        this.foreignKeyConfigs.push({ ref, actions });
+      references(ref2, actions = {}) {
+        this.foreignKeyConfigs.push({ ref: ref2, actions });
         return this;
       }
-      unique(name, config2) {
+      unique(name, config3) {
         this.config.isUnique = true;
         this.config.uniqueName = name;
-        this.config.uniqueType = config2?.nulls;
+        this.config.uniqueType = config3?.nulls;
         return this;
       }
       generatedAlwaysAs(as) {
@@ -22668,12 +24163,12 @@ var init_common = __esm({
         return this;
       }
       /** @internal */
-      buildForeignKeys(column, table) {
-        return this.foreignKeyConfigs.map(({ ref, actions }) => {
+      buildForeignKeys(column, table3) {
+        return this.foreignKeyConfigs.map(({ ref: ref2, actions }) => {
           return iife(
-            (ref2, actions2) => {
+            (ref22, actions2) => {
               const builder = new ForeignKeyBuilder(() => {
-                const foreignColumn = ref2();
+                const foreignColumn = ref22();
                 return { columns: [column], foreignColumns: [foreignColumn] };
               });
               if (actions2.onUpdate) {
@@ -22682,28 +24177,28 @@ var init_common = __esm({
               if (actions2.onDelete) {
                 builder.onDelete(actions2.onDelete);
               }
-              return builder.build(table);
+              return builder.build(table3);
             },
-            ref,
+            ref2,
             actions
           );
         });
       }
       /** @internal */
-      buildExtraConfigColumn(table) {
-        return new ExtraConfigColumn(table, this.config);
+      buildExtraConfigColumn(table3) {
+        return new ExtraConfigColumn(table3, this.config);
       }
     };
     PgColumn = class extends Column {
       static {
         __name(this, "PgColumn");
       }
-      constructor(table, config2) {
-        if (!config2.uniqueName) {
-          config2.uniqueName = uniqueKeyName(table, [config2.name]);
+      constructor(table3, config3) {
+        if (!config3.uniqueName) {
+          config3.uniqueName = uniqueKeyName(table3, [config3.name]);
         }
-        super(table, config2);
-        this.table = table;
+        super(table3, config3);
+        this.table = table3;
       }
       static [entityKind] = "PgColumn";
     };
@@ -22802,10 +24297,10 @@ var init_common = __esm({
         this.config.size = size;
       }
       /** @internal */
-      build(table) {
-        const baseColumn = this.config.baseBuilder.build(table);
+      build(table3) {
+        const baseColumn = this.config.baseBuilder.build(table3);
         return new PgArray(
-          table,
+          table3,
           this.config,
           baseColumn
         );
@@ -22815,11 +24310,11 @@ var init_common = __esm({
       static {
         __name(this, "PgArray");
       }
-      constructor(table, config2, baseColumn, range) {
-        super(table, config2);
+      constructor(table3, config3, baseColumn, range) {
+        super(table3, config3);
         this.baseColumn = baseColumn;
         this.range = range;
-        this.size = config2.size;
+        this.size = config3.size;
       }
       size;
       static [entityKind] = "PgArray";
@@ -22850,7 +24345,10 @@ function isPgEnum(obj) {
 var PgEnumObjectColumnBuilder, PgEnumObjectColumn, isPgEnumSym, PgEnumColumnBuilder, PgEnumColumn;
 var init_enum = __esm({
   "../node_modules/drizzle-orm/pg-core/columns/enum.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_common();
     PgEnumObjectColumnBuilder = class extends PgColumnBuilder {
@@ -22863,9 +24361,9 @@ var init_enum = __esm({
         this.config.enum = enumInstance;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new PgEnumObjectColumn(
-          table,
+          table3,
           this.config
         );
       }
@@ -22877,9 +24375,9 @@ var init_enum = __esm({
       static [entityKind] = "PgEnumObjectColumn";
       enum;
       enumValues = this.config.enum.enumValues;
-      constructor(table, config2) {
-        super(table, config2);
-        this.enum = config2.enum;
+      constructor(table3, config3) {
+        super(table3, config3);
+        this.enum = config3.enum;
       }
       getSQLType() {
         return this.enum.enumName;
@@ -22897,9 +24395,9 @@ var init_enum = __esm({
         this.config.enum = enumInstance;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new PgEnumColumn(
-          table,
+          table3,
           this.config
         );
       }
@@ -22911,9 +24409,9 @@ var init_enum = __esm({
       static [entityKind] = "PgEnumColumn";
       enum = this.config.enum;
       enumValues = this.config.enum.enumValues;
-      constructor(table, config2) {
-        super(table, config2);
-        this.enum = config2.enum;
+      constructor(table3, config3) {
+        super(table3, config3);
+        this.enum = config3.enum;
       }
       getSQLType() {
         return this.enum.enumName;
@@ -22926,7 +24424,10 @@ var init_enum = __esm({
 var Subquery, WithSubquery;
 var init_subquery = __esm({
   "../node_modules/drizzle-orm/subquery.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     Subquery = class {
       static {
@@ -22957,11 +24458,14 @@ var init_subquery = __esm({
 });
 
 // ../node_modules/drizzle-orm/version.js
-var version2;
+var version3;
 var init_version = __esm({
   "../node_modules/drizzle-orm/version.js"() {
-    init_functionsRoutes_0_698410973351653();
-    version2 = "0.44.7";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    version3 = "0.44.7";
   }
 });
 
@@ -22969,7 +24473,10 @@ var init_version = __esm({
 var otel, rawTracer, tracer;
 var init_tracing = __esm({
   "../node_modules/drizzle-orm/tracing.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_tracing_utils();
     init_version();
     tracer = {
@@ -22978,7 +24485,7 @@ var init_tracing = __esm({
           return fn();
         }
         if (!rawTracer) {
-          rawTracer = otel.trace.getTracer("drizzle-orm", version2);
+          rawTracer = otel.trace.getTracer("drizzle-orm", version3);
         }
         return iife(
           (otel2, rawTracer2) => rawTracer2.startActiveSpan(
@@ -23010,22 +24517,28 @@ var init_tracing = __esm({
 var ViewBaseConfig;
 var init_view_common = __esm({
   "../node_modules/drizzle-orm/view-common.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     ViewBaseConfig = /* @__PURE__ */ Symbol.for("drizzle:ViewBaseConfig");
   }
 });
 
 // ../node_modules/drizzle-orm/table.js
-function getTableName(table) {
-  return table[TableName];
+function getTableName(table3) {
+  return table3[TableName];
 }
-function getTableUniqueName(table) {
-  return `${table[Schema] ?? "public"}.${table[TableName]}`;
+function getTableUniqueName(table3) {
+  return `${table3[Schema] ?? "public"}.${table3[TableName]}`;
 }
 var Schema, Columns, ExtraConfigColumns, OriginalName, BaseName, IsAlias, ExtraConfigBuilder, IsDrizzleTable, Table;
 var init_table = __esm({
   "../node_modules/drizzle-orm/table.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table_utils();
     Schema = /* @__PURE__ */ Symbol.for("drizzle:Schema");
@@ -23141,7 +24654,10 @@ function fillPlaceholders(params, values) {
 var FakePrimitiveParam, StringChunk, SQL, Name, noopDecoder, noopEncoder, noopMapper, Param, Placeholder, IsDrizzleView, View;
 var init_sql = __esm({
   "../node_modules/drizzle-orm/sql/sql.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_enum();
     init_subquery();
@@ -23195,9 +24711,9 @@ var init_sql = __esm({
         this.queryChunks.push(...query.queryChunks);
         return this;
       }
-      toQuery(config2) {
+      toQuery(config3) {
         return tracer.startActiveSpan("drizzle.buildSQL", (span) => {
-          const query = this.buildQueryFromSourceParams(this.queryChunks, config2);
+          const query = this.buildQueryFromSourceParams(this.queryChunks, config3);
           span?.setAttributes({
             "drizzle.query.text": query.sql,
             "drizzle.query.params": JSON.stringify(query.params)
@@ -23206,7 +24722,7 @@ var init_sql = __esm({
         });
       }
       buildQueryFromSourceParams(chunks, _config) {
-        const config2 = Object.assign({}, _config, {
+        const config3 = Object.assign({}, _config, {
           inlineParams: _config.inlineParams || this.shouldInlineParams,
           paramStartIndex: _config.paramStartIndex || { value: 0 }
         });
@@ -23217,7 +24733,7 @@ var init_sql = __esm({
           prepareTyping,
           inlineParams,
           paramStartIndex
-        } = config2;
+        } = config3;
         return mergeQueries(chunks.map((chunk) => {
           if (is(chunk, StringChunk)) {
             return { sql: chunk.value.join(""), params: [] };
@@ -23237,11 +24753,11 @@ var init_sql = __esm({
               }
             }
             result.push(new StringChunk(")"));
-            return this.buildQueryFromSourceParams(result, config2);
+            return this.buildQueryFromSourceParams(result, config3);
           }
           if (is(chunk, _SQL)) {
             return this.buildQueryFromSourceParams(chunk.queryChunks, {
-              ...config2,
+              ...config3,
               inlineParams: inlineParams || chunk.shouldInlineParams
             });
           }
@@ -23278,10 +24794,10 @@ var init_sql = __esm({
             }
             const mappedValue = chunk.value === null ? null : chunk.encoder.mapToDriverValue(chunk.value);
             if (is(mappedValue, _SQL)) {
-              return this.buildQueryFromSourceParams([mappedValue], config2);
+              return this.buildQueryFromSourceParams([mappedValue], config3);
             }
             if (inlineParams) {
-              return { sql: this.mapInlineParam(mappedValue, config2), params: [] };
+              return { sql: this.mapInlineParam(mappedValue, config3), params: [] };
             }
             let typings = ["none"];
             if (prepareTyping) {
@@ -23304,7 +24820,7 @@ var init_sql = __esm({
               chunk._.sql,
               new StringChunk(") "),
               new Name(chunk._.alias)
-            ], config2);
+            ], config3);
           }
           if (isPgEnum(chunk)) {
             if (chunk.schema) {
@@ -23314,16 +24830,16 @@ var init_sql = __esm({
           }
           if (isSQLWrapper(chunk)) {
             if (chunk.shouldOmitSQLParens?.()) {
-              return this.buildQueryFromSourceParams([chunk.getSQL()], config2);
+              return this.buildQueryFromSourceParams([chunk.getSQL()], config3);
             }
             return this.buildQueryFromSourceParams([
               new StringChunk("("),
               chunk.getSQL(),
               new StringChunk(")")
-            ], config2);
+            ], config3);
           }
           if (inlineParams) {
-            return { sql: this.mapInlineParam(chunk, config2), params: [] };
+            return { sql: this.mapInlineParam(chunk, config3), params: [] };
           }
           return { sql: escapeParam(paramStartIndex.value++, chunk), params: [chunk], typings: ["none"] };
         }));
@@ -23534,8 +25050,8 @@ var init_sql = __esm({
 });
 
 // ../node_modules/drizzle-orm/alias.js
-function aliasedTable(table, tableAlias) {
-  return new Proxy(table, new TableAliasProxyHandler(tableAlias, false));
+function aliasedTable(table3, tableAlias) {
+  return new Proxy(table3, new TableAliasProxyHandler(tableAlias, false));
 }
 function aliasedTableColumn(column, tableAlias) {
   return new Proxy(
@@ -23563,7 +25079,10 @@ function mapColumnsInSQLToAlias(query, alias) {
 var ColumnAliasProxyHandler, TableAliasProxyHandler, RelationTableAliasProxyHandler;
 var init_alias = __esm({
   "../node_modules/drizzle-orm/alias.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_column();
     init_entity();
     init_sql();
@@ -23573,8 +25092,8 @@ var init_alias = __esm({
       static {
         __name(this, "ColumnAliasProxyHandler");
       }
-      constructor(table) {
-        this.table = table;
+      constructor(table3) {
+        this.table = table3;
       }
       static [entityKind] = "ColumnAliasProxyHandler";
       get(columnObj, prop) {
@@ -23657,7 +25176,10 @@ var init_alias = __esm({
 var DrizzleError, DrizzleQueryError, TransactionRollbackError;
 var init_errors3 = __esm({
   "../node_modules/drizzle-orm/errors.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     DrizzleError = class extends Error {
       static {
@@ -23700,7 +25222,10 @@ params: ${params}`);
 var ConsoleLogWriter, DefaultLogger, NoopLogger;
 var init_logger = __esm({
   "../node_modules/drizzle-orm/logger.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     ConsoleLogWriter = class {
       static {
@@ -23717,8 +25242,8 @@ var init_logger = __esm({
       }
       static [entityKind] = "DefaultLogger";
       writer;
-      constructor(config2) {
-        this.writer = config2?.writer ?? new ConsoleLogWriter();
+      constructor(config3) {
+        this.writer = config3?.writer ?? new ConsoleLogWriter();
       }
       logQuery(query, params) {
         const stringifiedParams = params.map((p) => {
@@ -23746,7 +25271,10 @@ var init_logger = __esm({
 // ../node_modules/drizzle-orm/operations.js
 var init_operations = __esm({
   "../node_modules/drizzle-orm/operations.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
@@ -23754,7 +25282,10 @@ var init_operations = __esm({
 var QueryPromise;
 var init_query_promise = __esm({
   "../node_modules/drizzle-orm/query-promise.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     QueryPromise = class {
       static {
@@ -23852,19 +25383,19 @@ function haveSameKeys(left, right) {
   if (leftKeys.length !== rightKeys.length) {
     return false;
   }
-  for (const [index, key] of leftKeys.entries()) {
-    if (key !== rightKeys[index]) {
+  for (const [index2, key] of leftKeys.entries()) {
+    if (key !== rightKeys[index2]) {
       return false;
     }
   }
   return true;
 }
-function mapUpdateSet(table, values) {
+function mapUpdateSet(table3, values) {
   const entries = Object.entries(values).filter(([, value]) => value !== void 0).map(([key, value]) => {
     if (is(value, SQL) || is(value, Column)) {
       return [key, value];
     } else {
-      return [key, new Param(value, table[Table.Symbol.Columns][key])];
+      return [key, new Param(value, table3[Table.Symbol.Columns][key])];
     }
   });
   if (entries.length === 0) {
@@ -23884,11 +25415,11 @@ function applyMixins(baseClass, extendedClasses) {
     }
   }
 }
-function getTableColumns(table) {
-  return table[Table.Symbol.Columns];
+function getTableColumns(table3) {
+  return table3[Table.Symbol.Columns];
 }
-function getTableLikeName(table) {
-  return is(table, Subquery) ? table._.alias : is(table, View) ? table[ViewBaseConfig].name : is(table, SQL) ? void 0 : table[Table.Symbol.IsAlias] ? table[Table.Symbol.Name] : table[Table.Symbol.BaseName];
+function getTableLikeName(table3) {
+  return is(table3, Subquery) ? table3._.alias : is(table3, View) ? table3[ViewBaseConfig].name : is(table3, SQL) ? void 0 : table3[Table.Symbol.IsAlias] ? table3[Table.Symbol.Name] : table3[Table.Symbol.BaseName];
 }
 function getColumnNameAndConfig(a, b) {
   return {
@@ -23932,9 +25463,12 @@ function isConfig(data) {
   return false;
 }
 var textDecoder;
-var init_utils = __esm({
+var init_utils2 = __esm({
   "../node_modules/drizzle-orm/utils.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_column();
     init_entity();
     init_sql();
@@ -23958,7 +25492,10 @@ var init_utils = __esm({
 var InlineForeignKeys, EnableRLS, PgTable;
 var init_table2 = __esm({
   "../node_modules/drizzle-orm/pg-core/table.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table();
     InlineForeignKeys = /* @__PURE__ */ Symbol.for("drizzle:PgInlineForeignKeys");
@@ -23989,7 +25526,10 @@ var init_table2 = __esm({
 var PrimaryKeyBuilder, PrimaryKey;
 var init_primary_keys = __esm({
   "../node_modules/drizzle-orm/pg-core/primary-keys.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table2();
     PrimaryKeyBuilder = class {
@@ -24006,16 +25546,16 @@ var init_primary_keys = __esm({
         this.name = name;
       }
       /** @internal */
-      build(table) {
-        return new PrimaryKey(table, this.columns, this.name);
+      build(table3) {
+        return new PrimaryKey(table3, this.columns, this.name);
       }
     };
     PrimaryKey = class {
       static {
         __name(this, "PrimaryKey");
       }
-      constructor(table, columns, name) {
-        this.table = table;
+      constructor(table3, columns, name) {
+        this.table = table3;
         this.columns = columns;
         this.name = name;
       }
@@ -24128,7 +25668,10 @@ function notIlike(column, value) {
 var eq, ne, gt, gte, lt, lte;
 var init_conditions = __esm({
   "../node_modules/drizzle-orm/sql/expressions/conditions.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_column();
     init_entity();
     init_table();
@@ -24179,7 +25722,10 @@ function desc(column) {
 }
 var init_select = __esm({
   "../node_modules/drizzle-orm/sql/expressions/select.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_sql();
     __name(asc, "asc");
     __name(desc, "desc");
@@ -24189,7 +25735,10 @@ var init_select = __esm({
 // ../node_modules/drizzle-orm/sql/expressions/index.js
 var init_expressions = __esm({
   "../node_modules/drizzle-orm/sql/expressions/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_conditions();
     init_select();
   }
@@ -24293,18 +25842,18 @@ function extractTablesRelationalConfig(schema, configHelpers) {
   return { tables: tablesConfig, tableNamesMap };
 }
 function createOne(sourceTable) {
-  return /* @__PURE__ */ __name(function one(table, config2) {
+  return /* @__PURE__ */ __name(function one(table3, config3) {
     return new One(
       sourceTable,
-      table,
-      config2,
-      config2?.fields.reduce((res, f) => res && f.notNull, true) ?? false
+      table3,
+      config3,
+      config3?.fields.reduce((res, f) => res && f.notNull, true) ?? false
     );
   }, "one");
 }
 function createMany(sourceTable) {
-  return /* @__PURE__ */ __name(function many(referencedTable, config2) {
-    return new Many(sourceTable, referencedTable, config2);
+  return /* @__PURE__ */ __name(function many(referencedTable, config3) {
+    return new Many(sourceTable, referencedTable, config3);
   }, "many");
 }
 function normalizeRelation(schema, tableNamesMap, relation) {
@@ -24406,7 +25955,10 @@ function mapRelationalRow(tablesConfig, tableConfig, row, buildQueryResultSelect
 var Relation, Relations, One, Many;
 var init_relations = __esm({
   "../node_modules/drizzle-orm/relations.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_table();
     init_column();
     init_entity();
@@ -24431,9 +25983,9 @@ var init_relations = __esm({
       static {
         __name(this, "Relations");
       }
-      constructor(table, config2) {
-        this.table = table;
-        this.config = config2;
+      constructor(table3, config3) {
+        this.table = table3;
+        this.config = config3;
       }
       static [entityKind] = "Relations";
     };
@@ -24441,9 +25993,9 @@ var init_relations = __esm({
       static {
         __name(this, "One");
       }
-      constructor(sourceTable, referencedTable, config2, isNullable) {
-        super(sourceTable, referencedTable, config2?.relationName);
-        this.config = config2;
+      constructor(sourceTable, referencedTable, config3, isNullable) {
+        super(sourceTable, referencedTable, config3?.relationName);
+        this.config = config3;
         this.isNullable = isNullable;
       }
       static [entityKind] = "One";
@@ -24462,9 +26014,9 @@ var init_relations = __esm({
       static {
         __name(this, "Many");
       }
-      constructor(sourceTable, referencedTable, config2) {
-        super(sourceTable, referencedTable, config2?.relationName);
-        this.config = config2;
+      constructor(sourceTable, referencedTable, config3) {
+        super(sourceTable, referencedTable, config3?.relationName);
+        this.config = config3;
       }
       static [entityKind] = "Many";
       withFieldName(fieldName) {
@@ -24491,21 +26043,30 @@ var init_relations = __esm({
 // ../node_modules/drizzle-orm/sql/functions/aggregate.js
 var init_aggregate = __esm({
   "../node_modules/drizzle-orm/sql/functions/aggregate.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
 // ../node_modules/drizzle-orm/sql/functions/vector.js
 var init_vector = __esm({
   "../node_modules/drizzle-orm/sql/functions/vector.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
 // ../node_modules/drizzle-orm/sql/functions/index.js
 var init_functions = __esm({
   "../node_modules/drizzle-orm/sql/functions/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_aggregate();
     init_vector();
   }
@@ -24514,7 +26075,10 @@ var init_functions = __esm({
 // ../node_modules/drizzle-orm/sql/index.js
 var init_sql2 = __esm({
   "../node_modules/drizzle-orm/sql/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_expressions();
     init_functions();
     init_sql();
@@ -24524,7 +26088,10 @@ var init_sql2 = __esm({
 // ../node_modules/drizzle-orm/index.js
 var init_drizzle_orm = __esm({
   "../node_modules/drizzle-orm/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_alias();
     init_column_builder();
     init_column();
@@ -24537,7 +26104,7 @@ var init_drizzle_orm = __esm({
     init_sql2();
     init_subquery();
     init_table();
-    init_utils();
+    init_utils2();
     init_view_common();
   }
 });
@@ -24547,9 +26114,9 @@ function format(query, values) {
   return Array.isArray(values) ? replacePosition(query, values) : replaceNamed(query, values);
 }
 function replacePosition(query, values) {
-  let index = 0;
+  let index2 = 0;
   return query.replace(/\?/g, (match3) => {
-    return index < values.length ? sanitize(values[index++]) : match3;
+    return index2 < values.length ? sanitize(values[index2++]) : match3;
   });
 }
 function replaceNamed(query, values) {
@@ -24677,7 +26244,7 @@ function hexToUint8Array2(hexString) {
   }
   return uint8Array;
 }
-async function postQuery(config2, body, session = "", isolationLevel = null, debug, statefulAction) {
+async function postQuery(config3, body, session = "", isolationLevel = null, debug3, statefulAction) {
   let fetchCacheOption = { cache: "no-store" };
   try {
     new Request("x:", fetchCacheOption);
@@ -24685,13 +26252,13 @@ async function postQuery(config2, body, session = "", isolationLevel = null, deb
     fetchCacheOption = {};
   }
   const requestId = generateUniqueId();
-  if (debug) {
+  if (debug3) {
     console.log(`[serverless-js debug] request id: ${requestId}`);
   }
-  const url2 = new URL("/v1beta/sql", `https://http-${config2.host}`);
-  const auth = btoa(`${config2.username}:${config2.password}`);
-  const { fetch: fetch2 } = config2;
-  const database = config2.database ?? "";
+  const url2 = new URL("/v1beta/sql", `https://http-${config3.host}`);
+  const auth = btoa(`${config3.username}:${config3.password}`);
+  const { fetch: fetch2 } = config3;
+  const database = config3.database ?? "";
   const headers = {
     "Content-Type": "application/json",
     "User-Agent": `serverless-js/${Version}`,
@@ -24713,7 +26280,7 @@ async function postQuery(config2, body, session = "", isolationLevel = null, deb
     headers,
     ...fetchCacheOption
   });
-  if (debug) {
+  if (debug3) {
     const traceId = response?.headers?.get("X-Debug-Trace-Id");
     console.log(`[serverless-js debug] response id: ${traceId}`);
     const contentEncoding = response?.headers?.get("Content-Encoding");
@@ -24725,14 +26292,14 @@ async function postQuery(config2, body, session = "", isolationLevel = null, deb
     resp.session = session2 ?? "";
     return resp;
   } else {
-    let error51;
+    let error53;
     try {
       const e = await response.json();
-      error51 = new DatabaseError(e.message, response.status, e);
+      error53 = new DatabaseError(e.message, response.status, e);
     } catch {
-      error51 = new DatabaseError(response.statusText, response.status, null);
+      error53 = new DatabaseError(response.statusText, response.status, null);
     }
-    throw error51;
+    throw error53;
   }
 }
 function generateUniqueId() {
@@ -24748,8 +26315,8 @@ function randomString2(n) {
   }
   return result;
 }
-function connect(config2) {
-  return new Connection(config2);
+function connect(config3) {
+  return new Connection(config3);
 }
 function parseArrayRow(fields, rawRow, cast2, decoders) {
   return fields.map((field, ix) => {
@@ -24768,7 +26335,10 @@ function parse4(fields, rows, cast2, arrayMode, decode4) {
 var re, DatabaseError, Version, defaultExecuteOptions, Tx, Connection, StatefulConnection;
 var init_dist6 = __esm({
   "../node_modules/@tidbcloud/serverless/dist/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(format, "format");
     __name(replacePosition, "replacePosition");
     __name(replaceNamed, "replaceNamed");
@@ -24817,15 +26387,15 @@ var init_dist6 = __esm({
       static {
         __name(this, "_Connection");
       }
-      constructor(config2) {
+      constructor(config3) {
         var _a3;
         this.session = null;
-        this.config = { ...config2 };
+        this.config = { ...config3 };
         if (typeof fetch !== "undefined") {
           (_a3 = this.config).fetch || (_a3.fetch = fetch);
         }
-        if (config2.url) {
-          const url2 = new URL(config2.url);
+        if (config3.url) {
+          const url2 = new URL(config3.url);
           if (!this.config.username) {
             this.config.username = decodeURIComponent(url2.username);
           }
@@ -24858,8 +26428,8 @@ var init_dist6 = __esm({
       async execute(query, args = null, options = defaultExecuteOptions, txOptions = {}, statefulAction) {
         const sql2 = args ? format(query, args) : query;
         const body = JSON.stringify({ query: sql2 });
-        const debug = options.debug ?? this.config.debug ?? false;
-        if (debug) {
+        const debug3 = options.debug ?? this.config.debug ?? false;
+        if (debug3) {
           console.log(`[serverless-js debug] sql: ${sql2}`);
         }
         const resp = await postQuery(
@@ -24867,7 +26437,7 @@ var init_dist6 = __esm({
           body,
           this.session ?? "",
           sql2 == "BEGIN" ? txOptions.isolation : null,
-          debug,
+          debug3,
           statefulAction
         );
         this.session = resp?.session ?? null;
@@ -24921,7 +26491,10 @@ var init_dist6 = __esm({
 var SelectionProxyHandler;
 var init_selection_proxy = __esm({
   "../node_modules/drizzle-orm/selection-proxy.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_alias();
     init_column();
     init_entity();
@@ -24934,8 +26507,8 @@ var init_selection_proxy = __esm({
       }
       static [entityKind] = "SelectionProxyHandler";
       config;
-      constructor(config2) {
-        this.config = { ...config2 };
+      constructor(config3) {
+        this.config = { ...config3 };
       }
       get(subquery, prop) {
         if (prop === "_") {
@@ -25004,7 +26577,10 @@ var init_selection_proxy = __esm({
 var MySqlCountBuilder;
 var init_count = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/count.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_sql();
     MySqlCountBuilder = class _MySqlCountBuilder extends SQL {
@@ -25060,7 +26636,10 @@ var init_count = __esm({
 var CheckBuilder, Check;
 var init_checks3 = __esm({
   "../node_modules/drizzle-orm/mysql-core/checks.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     CheckBuilder = class {
       static {
@@ -25073,16 +26652,16 @@ var init_checks3 = __esm({
       static [entityKind] = "MySqlCheckBuilder";
       brand;
       /** @internal */
-      build(table) {
-        return new Check(table, this);
+      build(table3) {
+        return new Check(table3, this);
       }
     };
     Check = class {
       static {
         __name(this, "Check");
       }
-      constructor(table, builder) {
-        this.table = table;
+      constructor(table3, builder) {
+        this.table = table3;
         this.name = builder.name;
         this.value = builder.value;
       }
@@ -25097,7 +26676,10 @@ var init_checks3 = __esm({
 var ForeignKeyBuilder2, ForeignKey2;
 var init_foreign_keys2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/foreign-keys.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table_utils();
     ForeignKeyBuilder2 = class {
@@ -25111,9 +26693,9 @@ var init_foreign_keys2 = __esm({
       _onUpdate;
       /** @internal */
       _onDelete;
-      constructor(config2, actions) {
+      constructor(config3, actions) {
         this.reference = () => {
-          const { name, columns, foreignColumns } = config2();
+          const { name, columns, foreignColumns } = config3();
           return { name, columns, foreignTable: foreignColumns[0].table, foreignColumns };
         };
         if (actions) {
@@ -25130,16 +26712,16 @@ var init_foreign_keys2 = __esm({
         return this;
       }
       /** @internal */
-      build(table) {
-        return new ForeignKey2(table, this);
+      build(table3) {
+        return new ForeignKey2(table3, this);
       }
     };
     ForeignKey2 = class {
       static {
         __name(this, "ForeignKey");
       }
-      constructor(table, builder) {
-        this.table = table;
+      constructor(table3, builder) {
+        this.table = table3;
         this.reference = builder.reference;
         this.onUpdate = builder._onUpdate;
         this.onDelete = builder._onDelete;
@@ -25165,10 +26747,16 @@ var init_foreign_keys2 = __esm({
 });
 
 // ../node_modules/drizzle-orm/mysql-core/indexes.js
+function index(name) {
+  return new IndexBuilderOn(name, false);
+}
 var IndexBuilderOn, IndexBuilder, Index;
 var init_indexes = __esm({
   "../node_modules/drizzle-orm/mysql-core/indexes.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     IndexBuilderOn = class {
       static {
@@ -25210,8 +26798,8 @@ var init_indexes = __esm({
         return this;
       }
       /** @internal */
-      build(table) {
-        return new Index(this.config, table);
+      build(table3) {
+        return new Index(this.config, table3);
       }
     };
     Index = class {
@@ -25220,21 +26808,25 @@ var init_indexes = __esm({
       }
       static [entityKind] = "MySqlIndex";
       config;
-      constructor(config2, table) {
-        this.config = { ...config2, table };
+      constructor(config3, table3) {
+        this.config = { ...config3, table: table3 };
       }
     };
+    __name(index, "index");
   }
 });
 
 // ../node_modules/drizzle-orm/mysql-core/unique-constraint.js
-function uniqueKeyName2(table, columns) {
-  return `${table[TableName]}_${columns.join("_")}_unique`;
+function uniqueKeyName2(table3, columns) {
+  return `${table3[TableName]}_${columns.join("_")}_unique`;
 }
 var UniqueConstraintBuilder2, UniqueOnConstraintBuilder2, UniqueConstraint2;
 var init_unique_constraint2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/unique-constraint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table_utils();
     __name(uniqueKeyName2, "uniqueKeyName");
@@ -25250,8 +26842,8 @@ var init_unique_constraint2 = __esm({
       /** @internal */
       columns;
       /** @internal */
-      build(table) {
-        return new UniqueConstraint2(table, this.columns, this.name);
+      build(table3) {
+        return new UniqueConstraint2(table3, this.columns, this.name);
       }
     };
     UniqueOnConstraintBuilder2 = class {
@@ -25272,8 +26864,8 @@ var init_unique_constraint2 = __esm({
       static {
         __name(this, "UniqueConstraint");
       }
-      constructor(table, columns, name) {
-        this.table = table;
+      constructor(table3, columns, name) {
+        this.table = table3;
         this.columns = columns;
         this.name = name ?? uniqueKeyName2(this.table, this.columns.map((column) => column.name));
       }
@@ -25292,7 +26884,10 @@ var init_unique_constraint2 = __esm({
 var MySqlColumnBuilder, MySqlColumn, MySqlColumnBuilderWithAutoIncrement, MySqlColumnWithAutoIncrement;
 var init_common2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/common.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_column_builder();
     init_column();
     init_entity();
@@ -25304,8 +26899,8 @@ var init_common2 = __esm({
       }
       static [entityKind] = "MySqlColumnBuilder";
       foreignKeyConfigs = [];
-      references(ref, actions = {}) {
-        this.foreignKeyConfigs.push({ ref, actions });
+      references(ref2, actions = {}) {
+        this.foreignKeyConfigs.push({ ref: ref2, actions });
         return this;
       }
       unique(name) {
@@ -25313,20 +26908,20 @@ var init_common2 = __esm({
         this.config.uniqueName = name;
         return this;
       }
-      generatedAlwaysAs(as, config2) {
+      generatedAlwaysAs(as, config3) {
         this.config.generated = {
           as,
           type: "always",
-          mode: config2?.mode ?? "virtual"
+          mode: config3?.mode ?? "virtual"
         };
         return this;
       }
       /** @internal */
-      buildForeignKeys(column, table) {
-        return this.foreignKeyConfigs.map(({ ref, actions }) => {
-          return ((ref2, actions2) => {
+      buildForeignKeys(column, table3) {
+        return this.foreignKeyConfigs.map(({ ref: ref2, actions }) => {
+          return ((ref22, actions2) => {
             const builder = new ForeignKeyBuilder2(() => {
-              const foreignColumn = ref2();
+              const foreignColumn = ref22();
               return { columns: [column], foreignColumns: [foreignColumn] };
             });
             if (actions2.onUpdate) {
@@ -25335,8 +26930,8 @@ var init_common2 = __esm({
             if (actions2.onDelete) {
               builder.onDelete(actions2.onDelete);
             }
-            return builder.build(table);
-          })(ref, actions);
+            return builder.build(table3);
+          })(ref2, actions);
         });
       }
     };
@@ -25344,12 +26939,12 @@ var init_common2 = __esm({
       static {
         __name(this, "MySqlColumn");
       }
-      constructor(table, config2) {
-        if (!config2.uniqueName) {
-          config2.uniqueName = uniqueKeyName2(table, [config2.name]);
+      constructor(table3, config3) {
+        if (!config3.uniqueName) {
+          config3.uniqueName = uniqueKeyName2(table3, [config3.name]);
         }
-        super(table, config2);
-        this.table = table;
+        super(table3, config3);
+        this.table = table3;
       }
       static [entityKind] = "MySqlColumn";
     };
@@ -25379,19 +26974,22 @@ var init_common2 = __esm({
 });
 
 // ../node_modules/drizzle-orm/mysql-core/columns/bigint.js
-function bigint4(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  if (config2.mode === "number") {
-    return new MySqlBigInt53Builder(name, config2.unsigned);
+function bigint5(a, b) {
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  if (config3.mode === "number") {
+    return new MySqlBigInt53Builder(name, config3.unsigned);
   }
-  return new MySqlBigInt64Builder(name, config2.unsigned);
+  return new MySqlBigInt64Builder(name, config3.unsigned);
 }
 var MySqlBigInt53Builder, MySqlBigInt53, MySqlBigInt64Builder, MySqlBigInt64;
 var init_bigint = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/bigint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlBigInt53Builder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
@@ -25403,9 +27001,9 @@ var init_bigint = __esm({
         this.config.unsigned = unsigned;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlBigInt53(
-          table,
+          table3,
           this.config
         );
       }
@@ -25435,9 +27033,9 @@ var init_bigint = __esm({
         this.config.unsigned = unsigned;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlBigInt64(
-          table,
+          table3,
           this.config
         );
       }
@@ -25455,21 +27053,24 @@ var init_bigint = __esm({
         return BigInt(value);
       }
     };
-    __name(bigint4, "bigint");
+    __name(bigint5, "bigint");
   }
 });
 
 // ../node_modules/drizzle-orm/mysql-core/columns/binary.js
 function binary(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlBinaryBuilder(name, config2.length);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlBinaryBuilder(name, config3.length);
 }
 var MySqlBinaryBuilder, MySqlBinary;
 var init_binary = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/binary.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlBinaryBuilder = class extends MySqlColumnBuilder {
       static {
@@ -25481,8 +27082,8 @@ var init_binary = __esm({
         this.config.length = length;
       }
       /** @internal */
-      build(table) {
-        return new MySqlBinary(table, this.config);
+      build(table3) {
+        return new MySqlBinary(table3, this.config);
       }
     };
     MySqlBinary = class extends MySqlColumn {
@@ -25515,7 +27116,10 @@ function boolean4(name) {
 var MySqlBooleanBuilder, MySqlBoolean;
 var init_boolean = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/boolean.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_common2();
     MySqlBooleanBuilder = class extends MySqlColumnBuilder {
@@ -25527,9 +27131,9 @@ var init_boolean = __esm({
         super(name, "boolean", "MySqlBoolean");
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlBoolean(
-          table,
+          table3,
           this.config
         );
       }
@@ -25555,30 +27159,33 @@ var init_boolean = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/char.js
 function char(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlCharBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlCharBuilder(name, config3);
 }
 var MySqlCharBuilder, MySqlChar;
 var init_char = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/char.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlCharBuilder = class extends MySqlColumnBuilder {
       static {
         __name(this, "MySqlCharBuilder");
       }
       static [entityKind] = "MySqlCharBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlChar");
-        this.config.length = config2.length;
-        this.config.enum = config2.enum;
+        this.config.length = config3.length;
+        this.config.enum = config3.enum;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlChar(
-          table,
+          table3,
           this.config
         );
       }
@@ -25601,16 +27208,19 @@ var init_char = __esm({
 // ../node_modules/drizzle-orm/mysql-core/columns/custom.js
 function customType(customTypeParams) {
   return (a, b) => {
-    const { name, config: config2 } = getColumnNameAndConfig(a, b);
-    return new MySqlCustomColumnBuilder(name, config2, customTypeParams);
+    const { name, config: config3 } = getColumnNameAndConfig(a, b);
+    return new MySqlCustomColumnBuilder(name, config3, customTypeParams);
   };
 }
 var MySqlCustomColumnBuilder, MySqlCustomColumn;
 var init_custom = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/custom.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlCustomColumnBuilder = class extends MySqlColumnBuilder {
       static {
@@ -25623,9 +27233,9 @@ var init_custom = __esm({
         this.config.customTypeParams = customTypeParams;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlCustomColumn(
-          table,
+          table3,
           this.config
         );
       }
@@ -25638,11 +27248,11 @@ var init_custom = __esm({
       sqlName;
       mapTo;
       mapFrom;
-      constructor(table, config2) {
-        super(table, config2);
-        this.sqlName = config2.customTypeParams.dataType(config2.fieldConfig);
-        this.mapTo = config2.customTypeParams.toDriver;
-        this.mapFrom = config2.customTypeParams.fromDriver;
+      constructor(table3, config3) {
+        super(table3, config3);
+        this.sqlName = config3.customTypeParams.dataType(config3.fieldConfig);
+        this.mapTo = config3.customTypeParams.toDriver;
+        this.mapFrom = config3.customTypeParams.fromDriver;
       }
       getSQLType() {
         return this.sqlName;
@@ -25660,8 +27270,8 @@ var init_custom = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/date.js
 function date5(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  if (config2?.mode === "string") {
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  if (config3?.mode === "string") {
     return new MySqlDateStringBuilder(name);
   }
   return new MySqlDateBuilder(name);
@@ -25669,9 +27279,12 @@ function date5(a, b) {
 var MySqlDateBuilder, MySqlDate, MySqlDateStringBuilder, MySqlDateString;
 var init_date = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/date.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlDateBuilder = class extends MySqlColumnBuilder {
       static {
@@ -25682,8 +27295,8 @@ var init_date = __esm({
         super(name, "date", "MySqlDate");
       }
       /** @internal */
-      build(table) {
-        return new MySqlDate(table, this.config);
+      build(table3) {
+        return new MySqlDate(table3, this.config);
       }
     };
     MySqlDate = class extends MySqlColumn {
@@ -25691,8 +27304,8 @@ var init_date = __esm({
         __name(this, "MySqlDate");
       }
       static [entityKind] = "MySqlDate";
-      constructor(table, config2) {
-        super(table, config2);
+      constructor(table3, config3) {
+        super(table3, config3);
       }
       getSQLType() {
         return `date`;
@@ -25710,9 +27323,9 @@ var init_date = __esm({
         super(name, "string", "MySqlDateString");
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlDateString(
-          table,
+          table3,
           this.config
         );
       }
@@ -25722,8 +27335,8 @@ var init_date = __esm({
         __name(this, "MySqlDateString");
       }
       static [entityKind] = "MySqlDateString";
-      constructor(table, config2) {
-        super(table, config2);
+      constructor(table3, config3) {
+        super(table3, config3);
       }
       getSQLType() {
         return `date`;
@@ -25735,32 +27348,35 @@ var init_date = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/datetime.js
 function datetime3(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  if (config2?.mode === "string") {
-    return new MySqlDateTimeStringBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  if (config3?.mode === "string") {
+    return new MySqlDateTimeStringBuilder(name, config3);
   }
-  return new MySqlDateTimeBuilder(name, config2);
+  return new MySqlDateTimeBuilder(name, config3);
 }
 var MySqlDateTimeBuilder, MySqlDateTime, MySqlDateTimeStringBuilder, MySqlDateTimeString;
 var init_datetime = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/datetime.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlDateTimeBuilder = class extends MySqlColumnBuilder {
       static {
         __name(this, "MySqlDateTimeBuilder");
       }
       static [entityKind] = "MySqlDateTimeBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "date", "MySqlDateTime");
-        this.config.fsp = config2?.fsp;
+        this.config.fsp = config3?.fsp;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlDateTime(
-          table,
+          table3,
           this.config
         );
       }
@@ -25771,9 +27387,9 @@ var init_datetime = __esm({
       }
       static [entityKind] = "MySqlDateTime";
       fsp;
-      constructor(table, config2) {
-        super(table, config2);
-        this.fsp = config2.fsp;
+      constructor(table3, config3) {
+        super(table3, config3);
+        this.fsp = config3.fsp;
       }
       getSQLType() {
         const precision = this.fsp === void 0 ? "" : `(${this.fsp})`;
@@ -25791,14 +27407,14 @@ var init_datetime = __esm({
         __name(this, "MySqlDateTimeStringBuilder");
       }
       static [entityKind] = "MySqlDateTimeStringBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlDateTimeString");
-        this.config.fsp = config2?.fsp;
+        this.config.fsp = config3?.fsp;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlDateTimeString(
-          table,
+          table3,
           this.config
         );
       }
@@ -25809,9 +27425,9 @@ var init_datetime = __esm({
       }
       static [entityKind] = "MySqlDateTimeString";
       fsp;
-      constructor(table, config2) {
-        super(table, config2);
-        this.fsp = config2.fsp;
+      constructor(table3, config3) {
+        super(table3, config3);
+        this.fsp = config3.fsp;
       }
       getSQLType() {
         const precision = this.fsp === void 0 ? "" : `(${this.fsp})`;
@@ -25824,32 +27440,35 @@ var init_datetime = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/decimal.js
 function decimal(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  const mode = config2?.mode;
-  return mode === "number" ? new MySqlDecimalNumberBuilder(name, config2) : mode === "bigint" ? new MySqlDecimalBigIntBuilder(name, config2) : new MySqlDecimalBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  const mode = config3?.mode;
+  return mode === "number" ? new MySqlDecimalNumberBuilder(name, config3) : mode === "bigint" ? new MySqlDecimalBigIntBuilder(name, config3) : new MySqlDecimalBuilder(name, config3);
 }
 var MySqlDecimalBuilder, MySqlDecimal, MySqlDecimalNumberBuilder, MySqlDecimalNumber, MySqlDecimalBigIntBuilder, MySqlDecimalBigInt;
 var init_decimal = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/decimal.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlDecimalBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlDecimalBuilder");
       }
       static [entityKind] = "MySqlDecimalBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlDecimal");
-        this.config.precision = config2?.precision;
-        this.config.scale = config2?.scale;
-        this.config.unsigned = config2?.unsigned;
+        this.config.precision = config3?.precision;
+        this.config.scale = config3?.scale;
+        this.config.unsigned = config3?.unsigned;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlDecimal(
-          table,
+          table3,
           this.config
         );
       }
@@ -25884,16 +27503,16 @@ var init_decimal = __esm({
         __name(this, "MySqlDecimalNumberBuilder");
       }
       static [entityKind] = "MySqlDecimalNumberBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlDecimalNumber");
-        this.config.precision = config2?.precision;
-        this.config.scale = config2?.scale;
-        this.config.unsigned = config2?.unsigned;
+        this.config.precision = config3?.precision;
+        this.config.scale = config3?.scale;
+        this.config.unsigned = config3?.unsigned;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlDecimalNumber(
-          table,
+          table3,
           this.config
         );
       }
@@ -25929,16 +27548,16 @@ var init_decimal = __esm({
         __name(this, "MySqlDecimalBigIntBuilder");
       }
       static [entityKind] = "MySqlDecimalBigIntBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "bigint", "MySqlDecimalBigInt");
-        this.config.precision = config2?.precision;
-        this.config.scale = config2?.scale;
-        this.config.unsigned = config2?.unsigned;
+        this.config.precision = config3?.precision;
+        this.config.scale = config3?.scale;
+        this.config.unsigned = config3?.unsigned;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlDecimalBigInt(
-          table,
+          table3,
           this.config
         );
       }
@@ -25972,30 +27591,33 @@ var init_decimal = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/double.js
 function double(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlDoubleBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlDoubleBuilder(name, config3);
 }
 var MySqlDoubleBuilder, MySqlDouble;
 var init_double = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/double.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlDoubleBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlDoubleBuilder");
       }
       static [entityKind] = "MySqlDoubleBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlDouble");
-        this.config.precision = config2?.precision;
-        this.config.scale = config2?.scale;
-        this.config.unsigned = config2?.unsigned;
+        this.config.precision = config3?.precision;
+        this.config.scale = config3?.scale;
+        this.config.unsigned = config3?.unsigned;
       }
       /** @internal */
-      build(table) {
-        return new MySqlDouble(table, this.config);
+      build(table3) {
+        return new MySqlDouble(table3, this.config);
       }
     };
     MySqlDouble = class extends MySqlColumnWithAutoIncrement {
@@ -26044,7 +27666,10 @@ function mysqlEnum(a, b) {
 var MySqlEnumColumnBuilder, MySqlEnumColumn, MySqlEnumObjectColumnBuilder, MySqlEnumObjectColumn;
 var init_enum2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/enum.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_common2();
     MySqlEnumColumnBuilder = class extends MySqlColumnBuilder {
@@ -26057,9 +27682,9 @@ var init_enum2 = __esm({
         this.config.enumValues = values;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlEnumColumn(
-          table,
+          table3,
           this.config
         );
       }
@@ -26084,9 +27709,9 @@ var init_enum2 = __esm({
         this.config.enumValues = values;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlEnumObjectColumn(
-          table,
+          table3,
           this.config
         );
       }
@@ -26107,30 +27732,33 @@ var init_enum2 = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/float.js
 function float(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlFloatBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlFloatBuilder(name, config3);
 }
 var MySqlFloatBuilder, MySqlFloat;
 var init_float = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/float.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlFloatBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlFloatBuilder");
       }
       static [entityKind] = "MySqlFloatBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlFloat");
-        this.config.precision = config2?.precision;
-        this.config.scale = config2?.scale;
-        this.config.unsigned = config2?.unsigned;
+        this.config.precision = config3?.precision;
+        this.config.scale = config3?.scale;
+        this.config.unsigned = config3?.unsigned;
       }
       /** @internal */
-      build(table) {
-        return new MySqlFloat(table, this.config);
+      build(table3) {
+        return new MySqlFloat(table3, this.config);
       }
     };
     MySqlFloat = class extends MySqlColumnWithAutoIncrement {
@@ -26159,28 +27787,31 @@ var init_float = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/int.js
 function int2(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlIntBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlIntBuilder(name, config3);
 }
 var MySqlIntBuilder, MySqlInt;
 var init_int = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/int.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlIntBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlIntBuilder");
       }
       static [entityKind] = "MySqlIntBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlInt");
-        this.config.unsigned = config2 ? config2.unsigned : false;
+        this.config.unsigned = config3 ? config3.unsigned : false;
       }
       /** @internal */
-      build(table) {
-        return new MySqlInt(table, this.config);
+      build(table3) {
+        return new MySqlInt(table3, this.config);
       }
     };
     MySqlInt = class extends MySqlColumnWithAutoIncrement {
@@ -26209,7 +27840,10 @@ function json2(name) {
 var MySqlJsonBuilder, MySqlJson;
 var init_json = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/json.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_common2();
     MySqlJsonBuilder = class extends MySqlColumnBuilder {
@@ -26221,8 +27855,8 @@ var init_json = __esm({
         super(name, "json", "MySqlJson");
       }
       /** @internal */
-      build(table) {
-        return new MySqlJson(table, this.config);
+      build(table3) {
+        return new MySqlJson(table3, this.config);
       }
     };
     MySqlJson = class extends MySqlColumn {
@@ -26243,29 +27877,32 @@ var init_json = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/mediumint.js
 function mediumint(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlMediumIntBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlMediumIntBuilder(name, config3);
 }
 var MySqlMediumIntBuilder, MySqlMediumInt;
 var init_mediumint = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/mediumint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlMediumIntBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlMediumIntBuilder");
       }
       static [entityKind] = "MySqlMediumIntBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlMediumInt");
-        this.config.unsigned = config2 ? config2.unsigned : false;
+        this.config.unsigned = config3 ? config3.unsigned : false;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlMediumInt(
-          table,
+          table3,
           this.config
         );
       }
@@ -26291,29 +27928,32 @@ var init_mediumint = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/real.js
 function real(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlRealBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlRealBuilder(name, config3);
 }
 var MySqlRealBuilder, MySqlReal;
 var init_real = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/real.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlRealBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlRealBuilder");
       }
       static [entityKind] = "MySqlRealBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlReal");
-        this.config.precision = config2?.precision;
-        this.config.scale = config2?.scale;
+        this.config.precision = config3?.precision;
+        this.config.scale = config3?.scale;
       }
       /** @internal */
-      build(table) {
-        return new MySqlReal(table, this.config);
+      build(table3) {
+        return new MySqlReal(table3, this.config);
       }
     };
     MySqlReal = class extends MySqlColumnWithAutoIncrement {
@@ -26344,7 +27984,10 @@ function serial(name) {
 var MySqlSerialBuilder, MySqlSerial;
 var init_serial = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/serial.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_common2();
     MySqlSerialBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
@@ -26358,8 +28001,8 @@ var init_serial = __esm({
         this.config.autoIncrement = true;
       }
       /** @internal */
-      build(table) {
-        return new MySqlSerial(table, this.config);
+      build(table3) {
+        return new MySqlSerial(table3, this.config);
       }
     };
     MySqlSerial = class extends MySqlColumnWithAutoIncrement {
@@ -26383,29 +28026,32 @@ var init_serial = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/smallint.js
 function smallint(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlSmallIntBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlSmallIntBuilder(name, config3);
 }
 var MySqlSmallIntBuilder, MySqlSmallInt;
 var init_smallint = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/smallint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlSmallIntBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlSmallIntBuilder");
       }
       static [entityKind] = "MySqlSmallIntBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlSmallInt");
-        this.config.unsigned = config2 ? config2.unsigned : false;
+        this.config.unsigned = config3 ? config3.unsigned : false;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlSmallInt(
-          table,
+          table3,
           this.config
         );
       }
@@ -26431,41 +28077,44 @@ var init_smallint = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/text.js
 function text(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlTextBuilder(name, "text", config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlTextBuilder(name, "text", config3);
 }
 function tinytext(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlTextBuilder(name, "tinytext", config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlTextBuilder(name, "tinytext", config3);
 }
 function mediumtext(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlTextBuilder(name, "mediumtext", config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlTextBuilder(name, "mediumtext", config3);
 }
 function longtext(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlTextBuilder(name, "longtext", config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlTextBuilder(name, "longtext", config3);
 }
 var MySqlTextBuilder, MySqlText;
 var init_text = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/text.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlTextBuilder = class extends MySqlColumnBuilder {
       static {
         __name(this, "MySqlTextBuilder");
       }
       static [entityKind] = "MySqlTextBuilder";
-      constructor(name, textType, config2) {
+      constructor(name, textType, config3) {
         super(name, "string", "MySqlText");
         this.config.textType = textType;
-        this.config.enumValues = config2.enum;
+        this.config.enumValues = config3.enum;
       }
       /** @internal */
-      build(table) {
-        return new MySqlText(table, this.config);
+      build(table3) {
+        return new MySqlText(table3, this.config);
       }
     };
     MySqlText = class extends MySqlColumn {
@@ -26487,29 +28136,32 @@ var init_text = __esm({
 });
 
 // ../node_modules/drizzle-orm/mysql-core/columns/time.js
-function time3(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlTimeBuilder(name, config2);
+function time5(a, b) {
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlTimeBuilder(name, config3);
 }
 var MySqlTimeBuilder, MySqlTime;
 var init_time = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/time.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlTimeBuilder = class extends MySqlColumnBuilder {
       static {
         __name(this, "MySqlTimeBuilder");
       }
       static [entityKind] = "MySqlTimeBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlTime");
-        this.config.fsp = config2?.fsp;
+        this.config.fsp = config3?.fsp;
       }
       /** @internal */
-      build(table) {
-        return new MySqlTime(table, this.config);
+      build(table3) {
+        return new MySqlTime(table3, this.config);
       }
     };
     MySqlTime = class extends MySqlColumn {
@@ -26523,7 +28175,7 @@ var init_time = __esm({
         return `time${precision}`;
       }
     };
-    __name(time3, "time");
+    __name(time5, "time");
   }
 });
 
@@ -26531,7 +28183,10 @@ var init_time = __esm({
 var MySqlDateColumnBaseBuilder, MySqlDateBaseColumn;
 var init_date_common = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/date.common.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_sql();
     init_common2();
@@ -26562,32 +28217,35 @@ var init_date_common = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/timestamp.js
 function timestamp(a, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  if (config2?.mode === "string") {
-    return new MySqlTimestampStringBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  if (config3?.mode === "string") {
+    return new MySqlTimestampStringBuilder(name, config3);
   }
-  return new MySqlTimestampBuilder(name, config2);
+  return new MySqlTimestampBuilder(name, config3);
 }
 var MySqlTimestampBuilder, MySqlTimestamp, MySqlTimestampStringBuilder, MySqlTimestampString;
 var init_timestamp = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/timestamp.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_date_common();
     MySqlTimestampBuilder = class extends MySqlDateColumnBaseBuilder {
       static {
         __name(this, "MySqlTimestampBuilder");
       }
       static [entityKind] = "MySqlTimestampBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "date", "MySqlTimestamp");
-        this.config.fsp = config2?.fsp;
+        this.config.fsp = config3?.fsp;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlTimestamp(
-          table,
+          table3,
           this.config
         );
       }
@@ -26614,14 +28272,14 @@ var init_timestamp = __esm({
         __name(this, "MySqlTimestampStringBuilder");
       }
       static [entityKind] = "MySqlTimestampStringBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlTimestampString");
-        this.config.fsp = config2?.fsp;
+        this.config.fsp = config3?.fsp;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlTimestampString(
-          table,
+          table3,
           this.config
         );
       }
@@ -26643,29 +28301,32 @@ var init_timestamp = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/tinyint.js
 function tinyint(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlTinyIntBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlTinyIntBuilder(name, config3);
 }
 var MySqlTinyIntBuilder, MySqlTinyInt;
 var init_tinyint = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/tinyint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlTinyIntBuilder = class extends MySqlColumnBuilderWithAutoIncrement {
       static {
         __name(this, "MySqlTinyIntBuilder");
       }
       static [entityKind] = "MySqlTinyIntBuilder";
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "number", "MySqlTinyInt");
-        this.config.unsigned = config2 ? config2.unsigned : false;
+        this.config.unsigned = config3 ? config3.unsigned : false;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlTinyInt(
-          table,
+          table3,
           this.config
         );
       }
@@ -26691,15 +28352,18 @@ var init_tinyint = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/varbinary.js
 function varbinary(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlVarBinaryBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlVarBinaryBuilder(name, config3);
 }
 var MySqlVarBinaryBuilder, MySqlVarBinary;
 var init_varbinary = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/varbinary.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlVarBinaryBuilder = class extends MySqlColumnBuilder {
       static {
@@ -26707,14 +28371,14 @@ var init_varbinary = __esm({
       }
       static [entityKind] = "MySqlVarBinaryBuilder";
       /** @internal */
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlVarBinary");
-        this.config.length = config2?.length;
+        this.config.length = config3?.length;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlVarBinary(
-          table,
+          table3,
           this.config
         );
       }
@@ -26744,15 +28408,18 @@ var init_varbinary = __esm({
 
 // ../node_modules/drizzle-orm/mysql-core/columns/varchar.js
 function varchar(a, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a, b);
-  return new MySqlVarCharBuilder(name, config2);
+  const { name, config: config3 } = getColumnNameAndConfig(a, b);
+  return new MySqlVarCharBuilder(name, config3);
 }
 var MySqlVarCharBuilder, MySqlVarChar;
 var init_varchar = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/varchar.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
-    init_utils();
+    init_utils2();
     init_common2();
     MySqlVarCharBuilder = class extends MySqlColumnBuilder {
       static {
@@ -26760,15 +28427,15 @@ var init_varchar = __esm({
       }
       static [entityKind] = "MySqlVarCharBuilder";
       /** @internal */
-      constructor(name, config2) {
+      constructor(name, config3) {
         super(name, "string", "MySqlVarChar");
-        this.config.length = config2.length;
-        this.config.enum = config2.enum;
+        this.config.length = config3.length;
+        this.config.enum = config3.enum;
       }
       /** @internal */
-      build(table) {
+      build(table3) {
         return new MySqlVarChar(
-          table,
+          table3,
           this.config
         );
       }
@@ -26795,7 +28462,10 @@ function year(name) {
 var MySqlYearBuilder, MySqlYear;
 var init_year = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/year.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_common2();
     MySqlYearBuilder = class extends MySqlColumnBuilder {
@@ -26807,8 +28477,8 @@ var init_year = __esm({
         super(name, "number", "MySqlYear");
       }
       /** @internal */
-      build(table) {
-        return new MySqlYear(table, this.config);
+      build(table3) {
+        return new MySqlYear(table3, this.config);
       }
     };
     MySqlYear = class extends MySqlColumn {
@@ -26827,7 +28497,7 @@ var init_year = __esm({
 // ../node_modules/drizzle-orm/mysql-core/columns/all.js
 function getMySqlColumnBuilders() {
   return {
-    bigint: bigint4,
+    bigint: bigint5,
     binary,
     boolean: boolean4,
     char,
@@ -26845,7 +28515,7 @@ function getMySqlColumnBuilders() {
     serial,
     smallint,
     text,
-    time: time3,
+    time: time5,
     timestamp,
     tinyint,
     varbinary,
@@ -26858,7 +28528,10 @@ function getMySqlColumnBuilders() {
 }
 var init_all = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/all.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_bigint();
     init_binary();
     init_boolean();
@@ -26900,18 +28573,21 @@ function mysqlTableWithSchema(name, columns, extraConfig, schema, baseName = nam
       return [name2, column];
     })
   );
-  const table = Object.assign(rawTable, builtColumns);
-  table[Table.Symbol.Columns] = builtColumns;
-  table[Table.Symbol.ExtraConfigColumns] = builtColumns;
+  const table3 = Object.assign(rawTable, builtColumns);
+  table3[Table.Symbol.Columns] = builtColumns;
+  table3[Table.Symbol.ExtraConfigColumns] = builtColumns;
   if (extraConfig) {
-    table[MySqlTable.Symbol.ExtraConfigBuilder] = extraConfig;
+    table3[MySqlTable.Symbol.ExtraConfigBuilder] = extraConfig;
   }
-  return table;
+  return table3;
 }
 var InlineForeignKeys2, MySqlTable, mysqlTable;
 var init_table3 = __esm({
   "../node_modules/drizzle-orm/mysql-core/table.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table();
     init_all();
@@ -26943,7 +28619,10 @@ var init_table3 = __esm({
 var PrimaryKeyBuilder2, PrimaryKey2;
 var init_primary_keys2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/primary-keys.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table3();
     PrimaryKeyBuilder2 = class {
@@ -26960,16 +28639,16 @@ var init_primary_keys2 = __esm({
         this.name = name;
       }
       /** @internal */
-      build(table) {
-        return new PrimaryKey2(table, this.columns, this.name);
+      build(table3) {
+        return new PrimaryKey2(table3, this.columns, this.name);
       }
     };
     PrimaryKey2 = class {
       static {
         __name(this, "PrimaryKey");
       }
-      constructor(table, columns, name) {
-        this.table = table;
+      constructor(table3, columns, name) {
+        this.table = table3;
         this.columns = columns;
         this.name = name;
       }
@@ -26987,21 +28666,24 @@ var init_primary_keys2 = __esm({
 var MySqlViewConfig;
 var init_view_common2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/view-common.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     MySqlViewConfig = /* @__PURE__ */ Symbol.for("drizzle:MySqlViewConfig");
   }
 });
 
 // ../node_modules/drizzle-orm/mysql-core/utils.js
-function extractUsedTable(table) {
-  if (is(table, MySqlTable)) {
-    return [`${table[Table.Symbol.BaseName]}`];
+function extractUsedTable(table3) {
+  if (is(table3, MySqlTable)) {
+    return [`${table3[Table.Symbol.BaseName]}`];
   }
-  if (is(table, Subquery)) {
-    return table._.usedTables ?? [];
+  if (is(table3, Subquery)) {
+    return table3._.usedTables ?? [];
   }
-  if (is(table, SQL)) {
-    return table.usedTables ?? [];
+  if (is(table3, SQL)) {
+    return table3.usedTables ?? [];
   }
   return [];
 }
@@ -27013,9 +28695,12 @@ function convertIndexToString(indexes) {
 function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
-var init_utils2 = __esm({
+var init_utils3 = __esm({
   "../node_modules/drizzle-orm/mysql-core/utils.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_drizzle_orm();
     init_subquery();
@@ -27031,22 +28716,25 @@ var init_utils2 = __esm({
 var MySqlDeleteBase;
 var init_delete = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/delete.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_query_promise();
     init_selection_proxy();
     init_table();
-    init_utils2();
+    init_utils3();
     MySqlDeleteBase = class extends QueryPromise {
       static {
         __name(this, "MySqlDeleteBase");
       }
-      constructor(table, session, dialect, withList) {
+      constructor(table3, session, dialect, withList) {
         super();
-        this.table = table;
+        this.table = table3;
         this.session = session;
         this.dialect = dialect;
-        this.config = { table, withList };
+        this.config = { table: table3, withList };
       }
       static [entityKind] = "MySqlDelete";
       config;
@@ -27159,7 +28847,10 @@ function noopCase(input) {
 var CasingCache;
 var init_casing = __esm({
   "../node_modules/drizzle-orm/casing.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table();
     __name(toSnakeCase, "toSnakeCase");
@@ -27187,12 +28878,12 @@ var init_casing = __esm({
         }
         return this.cache[key];
       }
-      cacheTable(table) {
-        const schema = table[Table.Symbol.Schema] ?? "public";
-        const tableName = table[Table.Symbol.OriginalName];
+      cacheTable(table3) {
+        const schema = table3[Table.Symbol.Schema] ?? "public";
+        const tableName = table3[Table.Symbol.OriginalName];
         const tableKey = `${schema}.${tableName}`;
         if (!this.cachedTables[tableKey]) {
-          for (const column of Object.values(table[Table.Symbol.Columns])) {
+          for (const column of Object.values(table3[Table.Symbol.Columns])) {
             const columnKey = `${tableKey}.${column.name}`;
             this.cache[columnKey] = this.convert(column.name);
           }
@@ -27211,7 +28902,10 @@ var init_casing = __esm({
 var MySqlViewBase;
 var init_view_base = __esm({
   "../node_modules/drizzle-orm/mysql-core/view-base.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_sql();
     MySqlViewBase = class extends View {
@@ -27227,7 +28921,10 @@ var init_view_base = __esm({
 var MySqlDialect;
 var init_dialect = __esm({
   "../node_modules/drizzle-orm/mysql-core/dialect.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_alias();
     init_casing();
     init_column();
@@ -27238,7 +28935,7 @@ var init_dialect = __esm({
     init_sql();
     init_subquery();
     init_table();
-    init_utils();
+    init_utils2();
     init_view_common();
     init_common2();
     init_table3();
@@ -27250,11 +28947,11 @@ var init_dialect = __esm({
       static [entityKind] = "MySqlDialect";
       /** @internal */
       casing;
-      constructor(config2) {
-        this.casing = new CasingCache(config2?.casing);
+      constructor(config3) {
+        this.casing = new CasingCache(config3?.casing);
       }
-      async migrate(migrations, session, config2) {
-        const migrationsTable = config2.migrationsTable ?? "__drizzle_migrations";
+      async migrate(migrations, session, config3) {
+        const migrationsTable = config3.migrationsTable ?? "__drizzle_migrations";
         const migrationTableCreate = sql`
 			create table if not exists ${sql.identifier(migrationsTable)} (
 				id serial primary key,
@@ -27301,16 +28998,16 @@ var init_dialect = __esm({
         withSqlChunks.push(sql` `);
         return sql.join(withSqlChunks);
       }
-      buildDeleteQuery({ table, where, returning, withList, limit, orderBy }) {
+      buildDeleteQuery({ table: table3, where, returning, withList, limit, orderBy }) {
         const withSql = this.buildWithCTE(withList);
         const returningSql = returning ? sql` returning ${this.buildSelection(returning, { isSingleTable: true })}` : void 0;
         const whereSql = where ? sql` where ${where}` : void 0;
         const orderBySql = this.buildOrderBy(orderBy);
         const limitSql = this.buildLimit(limit);
-        return sql`${withSql}delete from ${table}${whereSql}${orderBySql}${limitSql}${returningSql}`;
+        return sql`${withSql}delete from ${table3}${whereSql}${orderBySql}${limitSql}${returningSql}`;
       }
-      buildUpdateSet(table, set2) {
-        const tableColumns = table[Table.Symbol.Columns];
+      buildUpdateSet(table3, set2) {
+        const tableColumns = table3[Table.Symbol.Columns];
         const columnNames = Object.keys(tableColumns).filter(
           (colName) => set2[colName] !== void 0 || tableColumns[colName]?.onUpdateFn !== void 0
         );
@@ -27325,14 +29022,14 @@ var init_dialect = __esm({
           return [res];
         }));
       }
-      buildUpdateQuery({ table, set: set2, where, returning, withList, limit, orderBy }) {
+      buildUpdateQuery({ table: table3, set: set2, where, returning, withList, limit, orderBy }) {
         const withSql = this.buildWithCTE(withList);
-        const setSql = this.buildUpdateSet(table, set2);
+        const setSql = this.buildUpdateSet(table3, set2);
         const returningSql = returning ? sql` returning ${this.buildSelection(returning, { isSingleTable: true })}` : void 0;
         const whereSql = where ? sql` where ${where}` : void 0;
         const orderBySql = this.buildOrderBy(orderBy);
         const limitSql = this.buildLimit(limit);
-        return sql`${withSql}update ${table} set ${setSql}${whereSql}${orderBySql}${limitSql}${returningSql}`;
+        return sql`${withSql}update ${table3} set ${setSql}${whereSql}${orderBySql}${limitSql}${returningSql}`;
       }
       /**
        * Builds selection SQL with provided fields/expressions
@@ -27402,7 +29099,7 @@ var init_dialect = __esm({
         fieldsFlat,
         where,
         having,
-        table,
+        table: table3,
         joins,
         orderBy,
         groupBy,
@@ -27417,8 +29114,8 @@ var init_dialect = __esm({
       }) {
         const fieldsList = fieldsFlat ?? orderSelectedFields(fields);
         for (const f of fieldsList) {
-          if (is(f.field, Column) && getTableName(f.field.table) !== (is(table, Subquery) ? table._.alias : is(table, MySqlViewBase) ? table[ViewBaseConfig].name : is(table, SQL) ? void 0 : getTableName(table)) && !((table2) => joins?.some(
-            ({ alias }) => alias === (table2[Table.Symbol.IsAlias] ? getTableName(table2) : table2[Table.Symbol.BaseName])
+          if (is(f.field, Column) && getTableName(f.field.table) !== (is(table3, Subquery) ? table3._.alias : is(table3, MySqlViewBase) ? table3[ViewBaseConfig].name : is(table3, SQL) ? void 0 : getTableName(table3)) && !((table22) => joins?.some(
+            ({ alias }) => alias === (table22[Table.Symbol.IsAlias] ? getTableName(table22) : table22[Table.Symbol.BaseName])
           ))(f.field.table)) {
             const tableName = getTableName(f.field.table);
             throw new Error(
@@ -27431,24 +29128,24 @@ var init_dialect = __esm({
         const distinctSql = distinct ? sql` distinct` : void 0;
         const selection = this.buildSelection(fieldsList, { isSingleTable });
         const tableSql = (() => {
-          if (is(table, Table) && table[Table.Symbol.IsAlias]) {
-            return sql`${sql`${sql.identifier(table[Table.Symbol.Schema] ?? "")}.`.if(table[Table.Symbol.Schema])}${sql.identifier(table[Table.Symbol.OriginalName])} ${sql.identifier(table[Table.Symbol.Name])}`;
+          if (is(table3, Table) && table3[Table.Symbol.IsAlias]) {
+            return sql`${sql`${sql.identifier(table3[Table.Symbol.Schema] ?? "")}.`.if(table3[Table.Symbol.Schema])}${sql.identifier(table3[Table.Symbol.OriginalName])} ${sql.identifier(table3[Table.Symbol.Name])}`;
           }
-          return table;
+          return table3;
         })();
         const joinsArray = [];
         if (joins) {
-          for (const [index, joinMeta] of joins.entries()) {
-            if (index === 0) {
+          for (const [index2, joinMeta] of joins.entries()) {
+            if (index2 === 0) {
               joinsArray.push(sql` `);
             }
-            const table2 = joinMeta.table;
+            const table22 = joinMeta.table;
             const lateralSql = joinMeta.lateral ? sql` lateral` : void 0;
             const onSql = joinMeta.on ? sql` on ${joinMeta.on}` : void 0;
-            if (is(table2, MySqlTable)) {
-              const tableName = table2[MySqlTable.Symbol.Name];
-              const tableSchema = table2[MySqlTable.Symbol.Schema];
-              const origTableName = table2[MySqlTable.Symbol.OriginalName];
+            if (is(table22, MySqlTable)) {
+              const tableName = table22[MySqlTable.Symbol.Name];
+              const tableSchema = table22[MySqlTable.Symbol.Schema];
+              const origTableName = table22[MySqlTable.Symbol.OriginalName];
               const alias = tableName === origTableName ? void 0 : joinMeta.alias;
               const useIndexSql2 = this.buildIndex({ indexes: joinMeta.useIndex, indexFor: "USE" });
               const forceIndexSql2 = this.buildIndex({ indexes: joinMeta.forceIndex, indexFor: "FORCE" });
@@ -27456,20 +29153,20 @@ var init_dialect = __esm({
               joinsArray.push(
                 sql`${sql.raw(joinMeta.joinType)} join${lateralSql} ${tableSchema ? sql`${sql.identifier(tableSchema)}.` : void 0}${sql.identifier(origTableName)}${useIndexSql2}${forceIndexSql2}${ignoreIndexSql2}${alias && sql` ${sql.identifier(alias)}`}${onSql}`
               );
-            } else if (is(table2, View)) {
-              const viewName = table2[ViewBaseConfig].name;
-              const viewSchema = table2[ViewBaseConfig].schema;
-              const origViewName = table2[ViewBaseConfig].originalName;
+            } else if (is(table22, View)) {
+              const viewName = table22[ViewBaseConfig].name;
+              const viewSchema = table22[ViewBaseConfig].schema;
+              const origViewName = table22[ViewBaseConfig].originalName;
               const alias = viewName === origViewName ? void 0 : joinMeta.alias;
               joinsArray.push(
                 sql`${sql.raw(joinMeta.joinType)} join${lateralSql} ${viewSchema ? sql`${sql.identifier(viewSchema)}.` : void 0}${sql.identifier(origViewName)}${alias && sql` ${sql.identifier(alias)}`}${onSql}`
               );
             } else {
               joinsArray.push(
-                sql`${sql.raw(joinMeta.joinType)} join${lateralSql} ${table2}${onSql}`
+                sql`${sql.raw(joinMeta.joinType)} join${lateralSql} ${table22}${onSql}`
               );
             }
-            if (index < joins.length - 1) {
+            if (index2 < joins.length - 1) {
               joinsArray.push(sql` `);
             }
           }
@@ -27486,11 +29183,11 @@ var init_dialect = __esm({
         const ignoreIndexSql = this.buildIndex({ indexes: ignoreIndex, indexFor: "IGNORE" });
         let lockingClausesSql;
         if (lockingClause) {
-          const { config: config2, strength } = lockingClause;
+          const { config: config3, strength } = lockingClause;
           lockingClausesSql = sql` for ${sql.raw(strength)}`;
-          if (config2.noWait) {
+          if (config3.noWait) {
             lockingClausesSql.append(sql` nowait`);
-          } else if (config2.skipLocked) {
+          } else if (config3.skipLocked) {
             lockingClausesSql.append(sql` skip locked`);
           }
         }
@@ -27544,9 +29241,9 @@ var init_dialect = __esm({
         const offsetSql = offset ? sql` offset ${offset}` : void 0;
         return sql`${leftChunk}${operatorChunk}${rightChunk}${orderBySql}${limitSql}${offsetSql}`;
       }
-      buildInsertQuery({ table, values: valuesOrSelect, ignore, onConflict, select }) {
+      buildInsertQuery({ table: table3, values: valuesOrSelect, ignore, onConflict, select }) {
         const valuesSqlList = [];
-        const columns = table[Table.Symbol.Columns];
+        const columns = table3[Table.Symbol.Columns];
         const colEntries = Object.entries(columns).filter(
           ([_, col]) => !col.shouldDisableInsert()
         );
@@ -27598,7 +29295,7 @@ var init_dialect = __esm({
         const ignoreSql = ignore ? sql` ignore` : void 0;
         const onConflictSql = onConflict ? sql` on duplicate key ${onConflict}` : void 0;
         return {
-          sql: sql`insert${ignoreSql} into ${table} ${insertOrder} ${valuesSql}${onConflictSql}`,
+          sql: sql`insert${ignoreSql} into ${table3} ${insertOrder} ${valuesSql}${onConflictSql}`,
           generatedIds: generatedIdsResponse
         };
       }
@@ -27615,9 +29312,9 @@ var init_dialect = __esm({
         fullSchema,
         schema,
         tableNamesMap,
-        table,
+        table: table3,
         tableConfig,
-        queryConfig: config2,
+        queryConfig: config3,
         tableAlias,
         nestedQueryRelation,
         joinOn
@@ -27625,7 +29322,7 @@ var init_dialect = __esm({
         let selection = [];
         let limit, offset, orderBy, where;
         const joins = [];
-        if (config2 === true) {
+        if (config3 === true) {
           const selectionEntries = Object.entries(tableConfig.columns);
           selection = selectionEntries.map(([key, value]) => ({
             dbKey: value.name,
@@ -27639,15 +29336,15 @@ var init_dialect = __esm({
           const aliasedColumns = Object.fromEntries(
             Object.entries(tableConfig.columns).map(([key, value]) => [key, aliasedTableColumn(value, tableAlias)])
           );
-          if (config2.where) {
-            const whereSql = typeof config2.where === "function" ? config2.where(aliasedColumns, getOperators()) : config2.where;
+          if (config3.where) {
+            const whereSql = typeof config3.where === "function" ? config3.where(aliasedColumns, getOperators()) : config3.where;
             where = whereSql && mapColumnsInSQLToAlias(whereSql, tableAlias);
           }
           const fieldsSelection = [];
           let selectedColumns = [];
-          if (config2.columns) {
+          if (config3.columns) {
             let isIncludeMode = false;
-            for (const [field, value] of Object.entries(config2.columns)) {
+            for (const [field, value] of Object.entries(config3.columns)) {
               if (value === void 0) {
                 continue;
               }
@@ -27659,7 +29356,7 @@ var init_dialect = __esm({
               }
             }
             if (selectedColumns.length > 0) {
-              selectedColumns = isIncludeMode ? selectedColumns.filter((c) => config2.columns?.[c] === true) : Object.keys(tableConfig.columns).filter((key) => !selectedColumns.includes(key));
+              selectedColumns = isIncludeMode ? selectedColumns.filter((c) => config3.columns?.[c] === true) : Object.keys(tableConfig.columns).filter((key) => !selectedColumns.includes(key));
             }
           } else {
             selectedColumns = Object.keys(tableConfig.columns);
@@ -27669,12 +29366,12 @@ var init_dialect = __esm({
             fieldsSelection.push({ tsKey: field, value: column });
           }
           let selectedRelations = [];
-          if (config2.with) {
-            selectedRelations = Object.entries(config2.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
+          if (config3.with) {
+            selectedRelations = Object.entries(config3.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
           }
           let extras;
-          if (config2.extras) {
-            extras = typeof config2.extras === "function" ? config2.extras(aliasedColumns, { sql }) : config2.extras;
+          if (config3.extras) {
+            extras = typeof config3.extras === "function" ? config3.extras(aliasedColumns, { sql }) : config3.extras;
             for (const [tsKey, value] of Object.entries(extras)) {
               fieldsSelection.push({
                 tsKey,
@@ -27692,7 +29389,7 @@ var init_dialect = __esm({
               selection: []
             });
           }
-          let orderByOrig = typeof config2.orderBy === "function" ? config2.orderBy(aliasedColumns, getOrderByOperators()) : config2.orderBy ?? [];
+          let orderByOrig = typeof config3.orderBy === "function" ? config3.orderBy(aliasedColumns, getOrderByOperators()) : config3.orderBy ?? [];
           if (!Array.isArray(orderByOrig)) {
             orderByOrig = [orderByOrig];
           }
@@ -27702,8 +29399,8 @@ var init_dialect = __esm({
             }
             return mapColumnsInSQLToAlias(orderByValue, tableAlias);
           });
-          limit = config2.limit;
-          offset = config2.offset;
+          limit = config3.limit;
+          offset = config3.offset;
           for (const {
             tsKey: selectedRelationTsKey,
             queryConfig: selectedRelationConfigValue,
@@ -27776,7 +29473,7 @@ var init_dialect = __esm({
           const needsSubquery = limit !== void 0 || offset !== void 0 || (orderBy?.length ?? 0) > 0;
           if (needsSubquery) {
             result = this.buildSelectQuery({
-              table: aliasedTable(table, tableAlias),
+              table: aliasedTable(table3, tableAlias),
               fields: {},
               fieldsFlat: [
                 {
@@ -27798,7 +29495,7 @@ var init_dialect = __esm({
             offset = void 0;
             orderBy = void 0;
           } else {
-            result = aliasedTable(table, tableAlias);
+            result = aliasedTable(table3, tableAlias);
           }
           result = this.buildSelectQuery({
             table: is(result, MySqlTable) ? result : new Subquery(result, {}, tableAlias),
@@ -27816,7 +29513,7 @@ var init_dialect = __esm({
           });
         } else {
           result = this.buildSelectQuery({
-            table: aliasedTable(table, tableAlias),
+            table: aliasedTable(table3, tableAlias),
             fields: {},
             fieldsFlat: selection.map(({ field }) => ({
               path: [],
@@ -27840,16 +29537,16 @@ var init_dialect = __esm({
         fullSchema,
         schema,
         tableNamesMap,
-        table,
+        table: table3,
         tableConfig,
-        queryConfig: config2,
+        queryConfig: config3,
         tableAlias,
         nestedQueryRelation,
         joinOn
       }) {
         let selection = [];
         let limit, offset, orderBy = [], where;
-        if (config2 === true) {
+        if (config3 === true) {
           const selectionEntries = Object.entries(tableConfig.columns);
           selection = selectionEntries.map(([key, value]) => ({
             dbKey: value.name,
@@ -27863,15 +29560,15 @@ var init_dialect = __esm({
           const aliasedColumns = Object.fromEntries(
             Object.entries(tableConfig.columns).map(([key, value]) => [key, aliasedTableColumn(value, tableAlias)])
           );
-          if (config2.where) {
-            const whereSql = typeof config2.where === "function" ? config2.where(aliasedColumns, getOperators()) : config2.where;
+          if (config3.where) {
+            const whereSql = typeof config3.where === "function" ? config3.where(aliasedColumns, getOperators()) : config3.where;
             where = whereSql && mapColumnsInSQLToAlias(whereSql, tableAlias);
           }
           const fieldsSelection = [];
           let selectedColumns = [];
-          if (config2.columns) {
+          if (config3.columns) {
             let isIncludeMode = false;
-            for (const [field, value] of Object.entries(config2.columns)) {
+            for (const [field, value] of Object.entries(config3.columns)) {
               if (value === void 0) {
                 continue;
               }
@@ -27883,7 +29580,7 @@ var init_dialect = __esm({
               }
             }
             if (selectedColumns.length > 0) {
-              selectedColumns = isIncludeMode ? selectedColumns.filter((c) => config2.columns?.[c] === true) : Object.keys(tableConfig.columns).filter((key) => !selectedColumns.includes(key));
+              selectedColumns = isIncludeMode ? selectedColumns.filter((c) => config3.columns?.[c] === true) : Object.keys(tableConfig.columns).filter((key) => !selectedColumns.includes(key));
             }
           } else {
             selectedColumns = Object.keys(tableConfig.columns);
@@ -27893,12 +29590,12 @@ var init_dialect = __esm({
             fieldsSelection.push({ tsKey: field, value: column });
           }
           let selectedRelations = [];
-          if (config2.with) {
-            selectedRelations = Object.entries(config2.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
+          if (config3.with) {
+            selectedRelations = Object.entries(config3.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
           }
           let extras;
-          if (config2.extras) {
-            extras = typeof config2.extras === "function" ? config2.extras(aliasedColumns, { sql }) : config2.extras;
+          if (config3.extras) {
+            extras = typeof config3.extras === "function" ? config3.extras(aliasedColumns, { sql }) : config3.extras;
             for (const [tsKey, value] of Object.entries(extras)) {
               fieldsSelection.push({
                 tsKey,
@@ -27916,7 +29613,7 @@ var init_dialect = __esm({
               selection: []
             });
           }
-          let orderByOrig = typeof config2.orderBy === "function" ? config2.orderBy(aliasedColumns, getOrderByOperators()) : config2.orderBy ?? [];
+          let orderByOrig = typeof config3.orderBy === "function" ? config3.orderBy(aliasedColumns, getOrderByOperators()) : config3.orderBy ?? [];
           if (!Array.isArray(orderByOrig)) {
             orderByOrig = [orderByOrig];
           }
@@ -27926,8 +29623,8 @@ var init_dialect = __esm({
             }
             return mapColumnsInSQLToAlias(orderByValue, tableAlias);
           });
-          limit = config2.limit;
-          offset = config2.offset;
+          limit = config3.limit;
+          offset = config3.offset;
           for (const {
             tsKey: selectedRelationTsKey,
             queryConfig: selectedRelationConfigValue,
@@ -27999,7 +29696,7 @@ var init_dialect = __esm({
           const needsSubquery = limit !== void 0 || offset !== void 0 || orderBy.length > 0;
           if (needsSubquery) {
             result = this.buildSelectQuery({
-              table: aliasedTable(table, tableAlias),
+              table: aliasedTable(table3, tableAlias),
               fields: {},
               fieldsFlat: [
                 {
@@ -28021,7 +29718,7 @@ var init_dialect = __esm({
             offset = void 0;
             orderBy = void 0;
           } else {
-            result = aliasedTable(table, tableAlias);
+            result = aliasedTable(table3, tableAlias);
           }
           result = this.buildSelectQuery({
             table: is(result, MySqlTable) ? result : new Subquery(result, {}, tableAlias),
@@ -28038,7 +29735,7 @@ var init_dialect = __esm({
           });
         } else {
           result = this.buildSelectQuery({
-            table: aliasedTable(table, tableAlias),
+            table: aliasedTable(table3, tableAlias),
             fields: {},
             fieldsFlat: selection.map(({ field }) => ({
               path: [],
@@ -28065,7 +29762,10 @@ var init_dialect = __esm({
 var TypedQueryBuilder;
 var init_query_builder = __esm({
   "../node_modules/drizzle-orm/query-builders/query-builder.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     TypedQueryBuilder = class {
       static {
@@ -28101,7 +29801,10 @@ function createSetOperator(type, isAll) {
 var MySqlSelectBuilder, MySqlSelectQueryBuilderBase, MySqlSelectBase, getMySqlSetOperators, union2, unionAll, intersect, intersectAll, except, exceptAll;
 var init_select2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/select.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table3();
     init_query_builder();
@@ -28110,9 +29813,9 @@ var init_select2 = __esm({
     init_sql();
     init_subquery();
     init_table();
-    init_utils();
-    init_view_common();
     init_utils2();
+    init_view_common();
+    init_utils3();
     init_view_base();
     MySqlSelectBuilder = class {
       static {
@@ -28124,14 +29827,14 @@ var init_select2 = __esm({
       dialect;
       withList = [];
       distinct;
-      constructor(config2) {
-        this.fields = config2.fields;
-        this.session = config2.session;
-        this.dialect = config2.dialect;
-        if (config2.withList) {
-          this.withList = config2.withList;
+      constructor(config3) {
+        this.fields = config3.fields;
+        this.session = config3.session;
+        this.dialect = config3.dialect;
+        if (config3.withList) {
+          this.withList = config3.withList;
         }
-        this.distinct = config2.distinct;
+        this.distinct = config3.distinct;
       }
       from(source, onIndex) {
         const isPartialSelect = !!this.fields;
@@ -28194,11 +29897,11 @@ var init_select2 = __esm({
       dialect;
       cacheConfig = void 0;
       usedTables = /* @__PURE__ */ new Set();
-      constructor({ table, fields, isPartialSelect, session, dialect, withList, distinct, useIndex, forceIndex, ignoreIndex }) {
+      constructor({ table: table3, fields, isPartialSelect, session, dialect, withList, distinct, useIndex, forceIndex, ignoreIndex }) {
         super();
         this.config = {
           withList,
-          table,
+          table: table3,
           fields: { ...fields },
           distinct,
           setOperators: [],
@@ -28213,22 +29916,22 @@ var init_select2 = __esm({
           selectedFields: fields,
           config: this.config
         };
-        this.tableName = getTableLikeName(table);
+        this.tableName = getTableLikeName(table3);
         this.joinsNotNullableMap = typeof this.tableName === "string" ? { [this.tableName]: true } : {};
-        for (const item of extractUsedTable(table)) this.usedTables.add(item);
+        for (const item of extractUsedTable(table3)) this.usedTables.add(item);
       }
       /** @internal */
       getUsedTables() {
         return [...this.usedTables];
       }
       createJoin(joinType, lateral) {
-        return (table, a, b) => {
+        return (table3, a, b) => {
           const isCrossJoin = joinType === "cross";
-          let on = isCrossJoin ? void 0 : a;
+          let on2 = isCrossJoin ? void 0 : a;
           const onIndex = isCrossJoin ? a : b;
           const baseTableName = this.tableName;
-          const tableName = getTableLikeName(table);
-          for (const item of extractUsedTable(table)) this.usedTables.add(item);
+          const tableName = getTableLikeName(table3);
+          for (const item of extractUsedTable(table3)) this.usedTables.add(item);
           if (typeof tableName === "string" && this.config.joins?.some((join) => join.alias === tableName)) {
             throw new Error(`Alias "${tableName}" is already used in this query`);
           }
@@ -28238,13 +29941,13 @@ var init_select2 = __esm({
                 [baseTableName]: this.config.fields
               };
             }
-            if (typeof tableName === "string" && !is(table, SQL)) {
-              const selection = is(table, Subquery) ? table._.selectedFields : is(table, View) ? table[ViewBaseConfig].selectedFields : table[Table.Symbol.Columns];
+            if (typeof tableName === "string" && !is(table3, SQL)) {
+              const selection = is(table3, Subquery) ? table3._.selectedFields : is(table3, View) ? table3[ViewBaseConfig].selectedFields : table3[Table.Symbol.Columns];
               this.config.fields[tableName] = selection;
             }
           }
-          if (typeof on === "function") {
-            on = on(
+          if (typeof on2 === "function") {
+            on2 = on2(
               new Proxy(
                 this.config.fields,
                 new SelectionProxyHandler({ sqlAliasedBehavior: "sql", sqlBehavior: "sql" })
@@ -28257,7 +29960,7 @@ var init_select2 = __esm({
           let useIndex = [];
           let forceIndex = [];
           let ignoreIndex = [];
-          if (is(table, MySqlTable) && onIndex && typeof onIndex !== "string") {
+          if (is(table3, MySqlTable) && onIndex && typeof onIndex !== "string") {
             if (onIndex.useIndex) {
               useIndex = convertIndexToString(toArray(onIndex.useIndex));
             }
@@ -28268,7 +29971,7 @@ var init_select2 = __esm({
               ignoreIndex = convertIndexToString(toArray(onIndex.ignoreIndex));
             }
           }
-          this.config.joins.push({ on, table, joinType, alias: tableName, useIndex, forceIndex, ignoreIndex, lateral });
+          this.config.joins.push({ on: on2, table: table3, joinType, alias: tableName, useIndex, forceIndex, ignoreIndex, lateral });
           if (typeof tableName === "string") {
             switch (joinType) {
               case "left": {
@@ -28859,8 +30562,8 @@ var init_select2 = __esm({
        * @param strength the lock strength.
        * @param config the lock configuration.
        */
-      for(strength, config2 = {}) {
-        this.config.lockingClause = { strength, config: config2 };
+      for(strength, config3 = {}) {
+        this.config.lockingClause = { strength, config: config3 };
         return this;
       }
       /** @internal */
@@ -28892,8 +30595,8 @@ var init_select2 = __esm({
       $dynamic() {
         return this;
       }
-      $withCache(config2) {
-        this.cacheConfig = config2 === void 0 ? { config: {}, enable: true, autoInvalidate: true } : config2 === false ? { enable: false } : { enable: true, autoInvalidate: true, ...config2 };
+      $withCache(config3) {
+        this.cacheConfig = config3 === void 0 ? { config: {}, enable: true, autoInvalidate: true } : config3 === false ? { enable: false } : { enable: true, autoInvalidate: true, ...config3 };
         return this;
       }
     };
@@ -28948,7 +30651,10 @@ var init_select2 = __esm({
 var QueryBuilder;
 var init_query_builder2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/query-builder.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_dialect();
     init_selection_proxy();
@@ -29032,20 +30738,23 @@ var init_query_builder2 = __esm({
 var MySqlInsertBuilder, MySqlInsertBase;
 var init_insert = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/insert.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_query_promise();
     init_sql();
     init_table();
-    init_utils();
     init_utils2();
+    init_utils3();
     init_query_builder2();
     MySqlInsertBuilder = class {
       static {
         __name(this, "MySqlInsertBuilder");
       }
-      constructor(table, session, dialect) {
-        this.table = table;
+      constructor(table3, session, dialect) {
+        this.table = table3;
         this.session = session;
         this.dialect = dialect;
       }
@@ -29085,11 +30794,11 @@ var init_insert = __esm({
       static {
         __name(this, "MySqlInsertBase");
       }
-      constructor(table, values, ignore, session, dialect, select) {
+      constructor(table3, values, ignore, session, dialect, select) {
         super();
         this.session = session;
         this.dialect = dialect;
-        this.config = { table, values, select, ignore };
+        this.config = { table: table3, values, select, ignore };
       }
       static [entityKind] = "MySqlInsert";
       config;
@@ -29120,8 +30829,8 @@ var init_insert = __esm({
        *   .onDuplicateKeyUpdate({ set: { id: sql`id` } });
        * ```
        */
-      onDuplicateKeyUpdate(config2) {
-        const setSql = this.dialect.buildUpdateSet(this.config.table, mapUpdateSet(this.config.table, config2.set));
+      onDuplicateKeyUpdate(config3) {
+        const setSql = this.dialect.buildUpdateSet(this.config.table, mapUpdateSet(this.config.table, config3.set));
         this.config.onConflict = sql`update ${setSql}`;
         return this;
       }
@@ -29178,7 +30887,10 @@ var init_insert = __esm({
 // ../node_modules/drizzle-orm/mysql-core/query-builders/select.types.js
 var init_select_types = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/select.types.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
@@ -29186,19 +30898,22 @@ var init_select_types = __esm({
 var MySqlUpdateBuilder, MySqlUpdateBase;
 var init_update = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/update.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_query_promise();
     init_selection_proxy();
     init_table();
-    init_utils();
     init_utils2();
+    init_utils3();
     MySqlUpdateBuilder = class {
       static {
         __name(this, "MySqlUpdateBuilder");
       }
-      constructor(table, session, dialect, withList) {
-        this.table = table;
+      constructor(table3, session, dialect, withList) {
+        this.table = table3;
         this.session = session;
         this.dialect = dialect;
         this.withList = withList;
@@ -29212,11 +30927,11 @@ var init_update = __esm({
       static {
         __name(this, "MySqlUpdateBase");
       }
-      constructor(table, set2, session, dialect, withList) {
+      constructor(table3, set2, session, dialect, withList) {
         super();
         this.session = session;
         this.dialect = dialect;
-        this.config = { set: set2, table, withList };
+        this.config = { set: set2, table: table3, withList };
       }
       static [entityKind] = "MySqlUpdate";
       config;
@@ -29320,7 +31035,10 @@ var init_update = __esm({
 // ../node_modules/drizzle-orm/mysql-core/query-builders/index.js
 var init_query_builders = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_delete();
     init_insert();
     init_query_builder2();
@@ -29334,7 +31052,10 @@ var init_query_builders = __esm({
 var RelationalQueryBuilder, MySqlRelationalQuery;
 var init_query = __esm({
   "../node_modules/drizzle-orm/mysql-core/query-builders/query.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_query_promise();
     init_relations();
@@ -29342,18 +31063,18 @@ var init_query = __esm({
       static {
         __name(this, "RelationalQueryBuilder");
       }
-      constructor(fullSchema, schema, tableNamesMap, table, tableConfig, dialect, session, mode) {
+      constructor(fullSchema, schema, tableNamesMap, table3, tableConfig, dialect, session, mode) {
         this.fullSchema = fullSchema;
         this.schema = schema;
         this.tableNamesMap = tableNamesMap;
-        this.table = table;
+        this.table = table3;
         this.tableConfig = tableConfig;
         this.dialect = dialect;
         this.session = session;
         this.mode = mode;
       }
       static [entityKind] = "MySqlRelationalQueryBuilder";
-      findMany(config2) {
+      findMany(config3) {
         return new MySqlRelationalQuery(
           this.fullSchema,
           this.schema,
@@ -29362,12 +31083,12 @@ var init_query = __esm({
           this.tableConfig,
           this.dialect,
           this.session,
-          config2 ? config2 : {},
+          config3 ? config3 : {},
           "many",
           this.mode
         );
       }
-      findFirst(config2) {
+      findFirst(config3) {
         return new MySqlRelationalQuery(
           this.fullSchema,
           this.schema,
@@ -29376,7 +31097,7 @@ var init_query = __esm({
           this.tableConfig,
           this.dialect,
           this.session,
-          config2 ? { ...config2, limit: 1 } : { limit: 1 },
+          config3 ? { ...config3, limit: 1 } : { limit: 1 },
           "first",
           this.mode
         );
@@ -29386,16 +31107,16 @@ var init_query = __esm({
       static {
         __name(this, "MySqlRelationalQuery");
       }
-      constructor(fullSchema, schema, tableNamesMap, table, tableConfig, dialect, session, config2, queryMode, mode) {
+      constructor(fullSchema, schema, tableNamesMap, table3, tableConfig, dialect, session, config3, queryMode, mode) {
         super();
         this.fullSchema = fullSchema;
         this.schema = schema;
         this.tableNamesMap = tableNamesMap;
-        this.table = table;
+        this.table = table3;
         this.tableConfig = tableConfig;
         this.dialect = dialect;
         this.session = session;
-        this.config = config2;
+        this.config = config3;
         this.queryMode = queryMode;
         this.mode = mode;
       }
@@ -29457,7 +31178,10 @@ var init_query = __esm({
 var MySqlDatabase;
 var init_db = __esm({
   "../node_modules/drizzle-orm/mysql-core/db.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_selection_proxy();
     init_sql();
@@ -29596,12 +31320,12 @@ var init_db = __esm({
           });
         }
         __name(selectDistinct, "selectDistinct");
-        function update(table) {
-          return new MySqlUpdateBuilder(table, self.session, self.dialect, queries);
+        function update(table3) {
+          return new MySqlUpdateBuilder(table3, self.session, self.dialect, queries);
         }
         __name(update, "update");
-        function delete_(table) {
-          return new MySqlDeleteBase(table, self.session, self.dialect, queries);
+        function delete_(table3) {
+          return new MySqlDeleteBase(table3, self.session, self.dialect, queries);
         }
         __name(delete_, "delete_");
         return { select, selectDistinct, update, delete: delete_ };
@@ -29638,8 +31362,8 @@ var init_db = __esm({
        * await db.update(cars).set({ color: 'red' }).where(eq(cars.brand, 'BMW'));
        * ```
        */
-      update(table) {
-        return new MySqlUpdateBuilder(table, this.session, this.dialect);
+      update(table3) {
+        return new MySqlUpdateBuilder(table3, this.session, this.dialect);
       }
       /**
        * Creates an insert query.
@@ -29660,8 +31384,8 @@ var init_db = __esm({
        * await db.insert(cars).values([{ brand: 'BMW' }, { brand: 'Porsche' }]);
        * ```
        */
-      insert(table) {
-        return new MySqlInsertBuilder(table, this.session, this.dialect);
+      insert(table3) {
+        return new MySqlInsertBuilder(table3, this.session, this.dialect);
       }
       /**
        * Creates a delete query.
@@ -29682,14 +31406,14 @@ var init_db = __esm({
        * await db.delete(cars).where(eq(cars.color, 'green'));
        * ```
        */
-      delete(table) {
-        return new MySqlDeleteBase(table, this.session, this.dialect);
+      delete(table3) {
+        return new MySqlDeleteBase(table3, this.session, this.dialect);
       }
       execute(query) {
         return this.session.execute(typeof query === "string" ? sql.raw(query) : query.getSQL());
       }
-      transaction(transaction, config2) {
-        return this.session.transaction(transaction, config2);
+      transaction(transaction, config3) {
+        return this.session.transaction(transaction, config3);
       }
     };
   }
@@ -29708,7 +31432,10 @@ async function hashQuery(sql2, params) {
 var Cache, NoopCache;
 var init_cache = __esm({
   "../node_modules/drizzle-orm/cache/core/cache.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     Cache = class {
       static {
@@ -29739,7 +31466,10 @@ var init_cache = __esm({
 // ../node_modules/drizzle-orm/cache/core/index.js
 var init_core3 = __esm({
   "../node_modules/drizzle-orm/cache/core/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_cache();
   }
 });
@@ -29748,7 +31478,10 @@ var init_core3 = __esm({
 var MySqlPreparedQuery, MySqlSession, MySqlTransaction;
 var init_session = __esm({
   "../node_modules/drizzle-orm/mysql-core/session.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_cache();
     init_entity();
     init_errors3();
@@ -29859,20 +31592,20 @@ var init_session = __esm({
           res[0][0]["count"]
         );
       }
-      getSetTransactionSQL(config2) {
+      getSetTransactionSQL(config3) {
         const parts = [];
-        if (config2.isolationLevel) {
-          parts.push(`isolation level ${config2.isolationLevel}`);
+        if (config3.isolationLevel) {
+          parts.push(`isolation level ${config3.isolationLevel}`);
         }
         return parts.length ? sql`set transaction ${sql.raw(parts.join(" "))}` : void 0;
       }
-      getStartTransactionSQL(config2) {
+      getStartTransactionSQL(config3) {
         const parts = [];
-        if (config2.withConsistentSnapshot) {
+        if (config3.withConsistentSnapshot) {
           parts.push("with consistent snapshot");
         }
-        if (config2.accessMode) {
-          parts.push(config2.accessMode);
+        if (config3.accessMode) {
+          parts.push(config3.accessMode);
         }
         return parts.length ? sql`start transaction ${sql.raw(parts.join(" "))}` : void 0;
       }
@@ -29898,14 +31631,17 @@ var init_session = __esm({
 var executeRawConfig, queryConfig, TiDBServerlessPreparedQuery, TiDBServerlessSession, TiDBServerlessTransaction;
 var init_session2 = __esm({
   "../node_modules/drizzle-orm/tidb-serverless/session.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_core3();
     init_column();
     init_entity();
     init_logger();
     init_session();
     init_sql();
-    init_utils();
+    init_utils2();
     executeRawConfig = { fullResult: true };
     queryConfig = { arrayMode: true };
     TiDBServerlessPreparedQuery = class extends MySqlPreparedQuery {
@@ -30059,32 +31795,32 @@ var init_session2 = __esm({
 });
 
 // ../node_modules/drizzle-orm/tidb-serverless/driver.js
-function construct(client2, config2 = {}) {
-  const dialect = new MySqlDialect({ casing: config2.casing });
+function construct(client2, config3 = {}) {
+  const dialect = new MySqlDialect({ casing: config3.casing });
   let logger;
-  if (config2.logger === true) {
+  if (config3.logger === true) {
     logger = new DefaultLogger();
-  } else if (config2.logger !== false) {
-    logger = config2.logger;
+  } else if (config3.logger !== false) {
+    logger = config3.logger;
   }
   let schema;
-  if (config2.schema) {
+  if (config3.schema) {
     const tablesConfig = extractTablesRelationalConfig(
-      config2.schema,
+      config3.schema,
       createTableRelationsHelpers
     );
     schema = {
-      fullSchema: config2.schema,
+      fullSchema: config3.schema,
       schema: tablesConfig.tables,
       tableNamesMap: tablesConfig.tableNamesMap
     };
   }
-  const session = new TiDBServerlessSession(client2, dialect, void 0, schema, { logger, cache: config2.cache });
+  const session = new TiDBServerlessSession(client2, dialect, void 0, schema, { logger, cache: config3.cache });
   const db = new TiDBServerlessDatabase(dialect, session, schema, "default");
   db.$client = client2;
-  db.$cache = config2.cache;
+  db.$cache = config3.cache;
   if (db.$cache) {
-    db.$cache["invalidate"] = config2.cache?.onMutate;
+    db.$cache["invalidate"] = config3.cache?.onMutate;
   }
   return db;
 }
@@ -30108,14 +31844,17 @@ function drizzle(...params) {
 var TiDBServerlessDatabase;
 var init_driver = __esm({
   "../node_modules/drizzle-orm/tidb-serverless/driver.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_dist6();
     init_entity();
     init_logger();
     init_db();
     init_dialect();
     init_relations();
-    init_utils();
+    init_utils2();
     init_session2();
     TiDBServerlessDatabase = class extends MySqlDatabase {
       static {
@@ -30126,8 +31865,8 @@ var init_driver = __esm({
     __name(construct, "construct");
     __name(drizzle, "drizzle");
     ((drizzle2) => {
-      function mock(config2) {
-        return construct({}, config2);
+      function mock(config3) {
+        return construct({}, config3);
       }
       __name(mock, "mock");
       drizzle2.mock = mock;
@@ -30138,7 +31877,10 @@ var init_driver = __esm({
 // ../node_modules/drizzle-orm/tidb-serverless/index.js
 var init_tidb_serverless = __esm({
   "../node_modules/drizzle-orm/tidb-serverless/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_driver();
     init_session2();
   }
@@ -30147,14 +31889,20 @@ var init_tidb_serverless = __esm({
 // ../node_modules/drizzle-orm/mysql-core/alias.js
 var init_alias2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/alias.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
 // ../node_modules/drizzle-orm/mysql-core/columns/index.js
 var init_columns = __esm({
   "../node_modules/drizzle-orm/mysql-core/columns/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_bigint();
     init_binary();
     init_boolean();
@@ -30193,10 +31941,13 @@ function mysqlViewWithSchema(name, selection, schema) {
 var ViewBuilderCore, ViewBuilder, ManualViewBuilder, MySqlView;
 var init_view = __esm({
   "../node_modules/drizzle-orm/mysql-core/view.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_selection_proxy();
-    init_utils();
+    init_utils2();
     init_query_builder2();
     init_table3();
     init_view_base();
@@ -30309,8 +32060,8 @@ var init_view = __esm({
       }
       static [entityKind] = "MySqlView";
       [MySqlViewConfig];
-      constructor({ mysqlConfig, config: config2 }) {
-        super(config2);
+      constructor({ mysqlConfig, config: config3 }) {
+        super(config3);
         this[MySqlViewConfig] = mysqlConfig;
       }
     };
@@ -30322,7 +32073,10 @@ var init_view = __esm({
 var MySqlSchema;
 var init_schema = __esm({
   "../node_modules/drizzle-orm/mysql-core/schema.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_entity();
     init_table3();
     init_view();
@@ -30347,14 +32101,20 @@ var init_schema = __esm({
 // ../node_modules/drizzle-orm/mysql-core/subquery.js
 var init_subquery2 = __esm({
   "../node_modules/drizzle-orm/mysql-core/subquery.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
   }
 });
 
 // ../node_modules/drizzle-orm/mysql-core/index.js
 var init_mysql_core = __esm({
   "../node_modules/drizzle-orm/mysql-core/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_alias2();
     init_checks3();
     init_columns();
@@ -30369,7 +32129,7 @@ var init_mysql_core = __esm({
     init_subquery2();
     init_table3();
     init_unique_constraint2();
-    init_utils2();
+    init_utils3();
     init_view_common2();
     init_view();
   }
@@ -30380,7 +32140,10 @@ var users, apiKeys, auditLogs, providerStats;
 var init_schema2 = __esm({
   "../drizzle/schema.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_mysql_core();
     users = mysqlTable("users", {
       /**
@@ -30423,7 +32186,10 @@ var init_schema2 = __esm({
       usageCount: int2("usage_count").default(0).notNull(),
       createdAt: timestamp("created_at").defaultNow().notNull(),
       updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull()
-    });
+    }, (table3) => [
+      index("idx_api_validity_checked").on(table3.validity, table3.lastCheckedAt),
+      index("idx_api_revalidate_checked").on(table3.revalidationSuggested, table3.lastCheckedAt)
+    ]);
     auditLogs = mysqlTable("audit_logs", {
       id: int2("id").autoincrement().primaryKey(),
       eventType: varchar("event_type", { length: 64 }).notNull(),
@@ -30433,7 +32199,10 @@ var init_schema2 = __esm({
       details: text("details"),
       // JSON stringified details
       createdAt: timestamp("created_at").defaultNow().notNull()
-    });
+    }, (table3) => [
+      index("idx_audit_event_created").on(table3.eventType, table3.createdAt),
+      index("idx_audit_created").on(table3.createdAt)
+    ]);
     providerStats = mysqlTable("provider_stats", {
       id: int2("id").autoincrement().primaryKey(),
       provider: varchar("provider", { length: 64 }).notNull().unique(),
@@ -30454,7 +32223,10 @@ var getEnvVar, ENV;
 var init_env = __esm({
   "../server/_core/env.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     getEnvVar = /* @__PURE__ */ __name((key) => {
       if (typeof globalThis.__PAGES_ENV__ !== "undefined") {
         return globalThis.__PAGES_ENV__[key];
@@ -30511,8 +32283,8 @@ async function getDb() {
         client = connect({ url: dbUrl });
       }
       _db = drizzle(client);
-    } catch (error51) {
-      console.warn("[Database] Failed to connect:", error51);
+    } catch (error53) {
+      console.warn("[Database] Failed to connect:", error53);
       _db = null;
     }
   }
@@ -30571,6 +32343,13 @@ async function updateKeyById(id, updates) {
   }
   return updated;
 }
+async function deleteApiKeysByIds(ids) {
+  if (ids.length === 0) return 0;
+  const db = await getDb();
+  if (!db) return 0;
+  await db.delete(apiKeys).where(inArray(apiKeys.id, ids));
+  return ids.length;
+}
 async function updateProviderStats(provider) {
   const db = await getDb();
   if (!db) return null;
@@ -30604,6 +32383,35 @@ async function logAuditEvent(eventType, provider, keyId, details) {
     details: details ? JSON.stringify(details) : null
   });
 }
+async function consumeRateLimitEvent(scope, limit, windowMs) {
+  const db = await getDb();
+  if (!db) return false;
+  const eventType = `rate_limit:${scope}`.slice(0, 64);
+  const since = new Date(Date.now() - windowMs);
+  const result = await db.select({ count: sql`COUNT(*)` }).from(auditLogs).where(and(eq(auditLogs.eventType, eventType), gte(auditLogs.createdAt, since)));
+  const count3 = Number(result[0]?.count || 0);
+  await db.insert(auditLogs).values({
+    eventType,
+    details: JSON.stringify({ allowed: count3 < limit, limit, windowMs })
+  });
+  return count3 < limit;
+}
+async function getAuditRetentionRecords(limit = 5e3) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: auditLogs.id,
+    eventType: auditLogs.eventType,
+    createdAt: auditLogs.createdAt
+  }).from(auditLogs).orderBy(auditLogs.createdAt).limit(limit);
+}
+async function deleteAuditLogsByIds(ids) {
+  if (ids.length === 0) return 0;
+  const db = await getDb();
+  if (!db) return 0;
+  await db.delete(auditLogs).where(inArray(auditLogs.id, ids));
+  return ids.length;
+}
 async function getAuditLogs() {
   const db = await getDb();
   if (!db) return [];
@@ -30622,7 +32430,10 @@ var _db, client;
 var init_db2 = __esm({
   "../server/db.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_drizzle_orm();
     init_tidb_serverless();
     init_dist6();
@@ -30637,8 +32448,12 @@ var init_db2 = __esm({
     __name(getKeysByProvider, "getKeysByProvider");
     __name(upsertApiKey, "upsertApiKey");
     __name(updateKeyById, "updateKeyById");
+    __name(deleteApiKeysByIds, "deleteApiKeysByIds");
     __name(updateProviderStats, "updateProviderStats");
     __name(logAuditEvent, "logAuditEvent");
+    __name(consumeRateLimitEvent, "consumeRateLimitEvent");
+    __name(getAuditRetentionRecords, "getAuditRetentionRecords");
+    __name(deleteAuditLogsByIds, "deleteAuditLogsByIds");
     __name(getAuditLogs, "getAuditLogs");
     __name(maskApiKey, "maskApiKey");
     __name(getAllProviderStats, "getAllProviderStats");
@@ -30671,7 +32486,10 @@ var PROVIDER_REGISTRY;
 var init_providerRegistry = __esm({
   "../shared/providerRegistry.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     PROVIDER_REGISTRY = [
       { canonical: "OpenAI", aliases: ["openai"], supportsValidation: true, supportsAiRouting: true, fallbackPriority: 50 },
       { canonical: "Anthropic", aliases: ["anthropic", "claude"], supportsValidation: true, supportsAiRouting: true, fallbackPriority: 45 },
@@ -30858,7 +32676,10 @@ var VALIDATORS;
 var init_keyValidator = __esm({
   "../server/keyValidator.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_providerRegistry();
     __name(validateOpenAIKey, "validateOpenAIKey");
     __name(validateAnthropicKey, "validateAnthropicKey");
@@ -30946,7 +32767,10 @@ var HunterKeySchema, HunterCommitSchema, HunterOutputSchema;
 var init_hunterContract = __esm({
   "../server/hunterContract.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_zod();
     init_providerRegistry();
     HunterKeySchema = external_exports.object({
@@ -31060,11 +32884,243 @@ function queueSort(a, b) {
 var init_hunterOperations = __esm({
   "../server/hunterOperations.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(buildHunterOperations, "buildHunterOperations");
     __name(toOperationalRecord, "toOperationalRecord");
     __name(isUnknownProvider, "isUnknownProvider");
     __name(queueSort, "queueSort");
+  }
+});
+
+// ../server/candidateLifecycle.ts
+function planCandidateLifecycle(keys, now = /* @__PURE__ */ new Date(), policy = DEFAULT_LIFECYCLE_POLICY) {
+  const revalidate = [];
+  const deleteCandidates = [];
+  const retained = [];
+  for (const key of keys) {
+    const ageDays = daysSince(referenceDate(key), now);
+    const deleteAfter = key.validity === "invalid" ? policy.invalidRetentionDays : key.validity === "unknown" ? policy.unknownRetentionDays : Number.POSITIVE_INFINITY;
+    if (ageDays >= deleteAfter && !key.lastUsedAt) {
+      deleteCandidates.push(key);
+      continue;
+    }
+    if (ageDays >= policy.revalidateAfterDays && key.validity !== "invalid") {
+      revalidate.push(key);
+    }
+    retained.push(key);
+  }
+  return {
+    generatedAt: now.toISOString(),
+    policy,
+    totals: {
+      inspected: keys.length,
+      retained: retained.length,
+      revalidate: revalidate.length,
+      deleteCandidates: deleteCandidates.length
+    },
+    retained,
+    revalidate,
+    deleteCandidates,
+    affectedProviders: Array.from(new Set([...revalidate, ...deleteCandidates].map((key) => key.provider))).sort()
+  };
+}
+function referenceDate(key) {
+  return toDate(key.lastCheckedAt) || toDate(key.discoveredAt);
+}
+function toDate(value) {
+  if (!value) return null;
+  const date6 = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date6.getTime()) ? null : date6;
+}
+function daysSince(date6, now) {
+  if (!date6) return Number.POSITIVE_INFINITY;
+  return Math.max(0, (now.getTime() - date6.getTime()) / 864e5);
+}
+function buildLifecyclePreview(plan, applyConfigured) {
+  return {
+    generatedAt: plan.generatedAt,
+    mode: applyConfigured ? "apply" : "dry-run",
+    policy: plan.policy,
+    totals: plan.totals,
+    affectedProviders: plan.affectedProviders,
+    revalidate: plan.revalidate.map(toSafeLifecycleRecord),
+    deleteCandidates: plan.deleteCandidates.map(toSafeLifecycleRecord)
+  };
+}
+function toSafeLifecycleRecord(key) {
+  return {
+    id: key.id,
+    provider: key.provider,
+    keyMasked: key.keyMasked || "***",
+    validity: key.validity,
+    lastCheckedAt: key.lastCheckedAt,
+    discoveredAt: key.discoveredAt || null
+  };
+}
+var DEFAULT_LIFECYCLE_POLICY;
+var init_candidateLifecycle = __esm({
+  "../server/candidateLifecycle.ts"() {
+    "use strict";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    DEFAULT_LIFECYCLE_POLICY = {
+      revalidateAfterDays: 14,
+      invalidRetentionDays: 90,
+      unknownRetentionDays: 180
+    };
+    __name(planCandidateLifecycle, "planCandidateLifecycle");
+    __name(referenceDate, "referenceDate");
+    __name(toDate, "toDate");
+    __name(daysSince, "daysSince");
+    __name(buildLifecyclePreview, "buildLifecyclePreview");
+    __name(toSafeLifecycleRecord, "toSafeLifecycleRecord");
+  }
+});
+
+// ../server/auditRetention.ts
+function planAuditRetention(records, now = /* @__PURE__ */ new Date(), policy = DEFAULT_AUDIT_RETENTION_POLICY) {
+  const expired = records.filter((record2) => {
+    const createdAt = new Date(record2.createdAt);
+    if (Number.isNaN(createdAt.getTime())) return false;
+    const ageDays = (now.getTime() - createdAt.getTime()) / 864e5;
+    const retentionDays = record2.eventType.startsWith("rate_limit:") ? policy.rateLimitDays : policy.securityAuditDays;
+    return ageDays >= retentionDays;
+  }).slice(0, policy.batchSize);
+  return {
+    expiredIds: expired.map((record2) => record2.id),
+    totals: {
+      inspected: records.length,
+      expired: expired.length,
+      rateLimit: expired.filter((record2) => record2.eventType.startsWith("rate_limit:")).length,
+      security: expired.filter((record2) => !record2.eventType.startsWith("rate_limit:")).length
+    },
+    policy
+  };
+}
+var DEFAULT_AUDIT_RETENTION_POLICY;
+var init_auditRetention = __esm({
+  "../server/auditRetention.ts"() {
+    "use strict";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    DEFAULT_AUDIT_RETENTION_POLICY = {
+      rateLimitDays: 7,
+      securityAuditDays: 365,
+      batchSize: 1e3
+    };
+    __name(planAuditRetention, "planAuditRetention");
+  }
+});
+
+// ../server/runAuditRetention.ts
+async function cleanupExpiredAuditLogs(options = {}) {
+  const policy = options.policy || auditRetentionPolicyFromEnv();
+  const records = await getAuditRetentionRecords(Math.max(policy.batchSize * 5, 5e3));
+  const plan = planAuditRetention(records, options.now || /* @__PURE__ */ new Date(), policy);
+  const deleted = options.apply === false ? 0 : await deleteAuditLogsByIds(plan.expiredIds);
+  return { ...plan, applied: options.apply !== false, deleted };
+}
+function auditRetentionPolicyFromEnv() {
+  return {
+    rateLimitDays: positiveInt(process.env.HUNTER_RATE_LIMIT_AUDIT_DAYS, DEFAULT_AUDIT_RETENTION_POLICY.rateLimitDays),
+    securityAuditDays: positiveInt(process.env.HUNTER_SECURITY_AUDIT_DAYS, DEFAULT_AUDIT_RETENTION_POLICY.securityAuditDays),
+    batchSize: positiveInt(process.env.HUNTER_AUDIT_CLEANUP_BATCH_SIZE, DEFAULT_AUDIT_RETENTION_POLICY.batchSize)
+  };
+}
+function positiveInt(value, fallback) {
+  const parsed = Number.parseInt(String(value || ""), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+var init_runAuditRetention = __esm({
+  "../server/runAuditRetention.ts"() {
+    "use strict";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_db2();
+    init_auditRetention();
+    __name(cleanupExpiredAuditLogs, "cleanupExpiredAuditLogs");
+    __name(auditRetentionPolicyFromEnv, "auditRetentionPolicyFromEnv");
+    __name(positiveInt, "positiveInt");
+  }
+});
+
+// ../server/runHunterLifecycle.ts
+import { fileURLToPath } from "node:url";
+async function runCandidateLifecycle(options = {}) {
+  const apply = Boolean(options.apply);
+  const action = options.action || "all";
+  const keys = await getAllKeys();
+  const plan = planCandidateLifecycle(
+    keys,
+    options.now || /* @__PURE__ */ new Date(),
+    options.policy || lifecyclePolicyFromEnv()
+  );
+  if (apply && (action === "all" || action === "schedule_revalidation")) {
+    for (const key of plan.revalidate) {
+      if (!key.revalidationSuggested) {
+        await updateKeyById(key.id, { revalidationSuggested: true, freshness: "stale" });
+      }
+    }
+  }
+  if (apply && (action === "all" || action === "cleanup")) {
+    await deleteApiKeysByIds(plan.deleteCandidates.map((key) => key.id));
+  }
+  if (apply) {
+    for (const provider of plan.affectedProviders) await updateProviderStats(provider);
+  }
+  const auditCleanup = await cleanupExpiredAuditLogs({
+    apply: process.env.HUNTER_AUDIT_RETENTION_APPLY !== "false",
+    now: options.now
+  });
+  await logAuditEvent(apply ? `lifecycle_${action}_applied` : "lifecycle_dry_run", void 0, void 0, {
+    ...plan.totals,
+    providers: plan.affectedProviders,
+    action,
+    deletedIds: apply && (action === "all" || action === "cleanup") ? plan.deleteCandidates.map((key) => key.id) : []
+  });
+  return { ...plan, applied: apply, auditCleanup };
+}
+function lifecyclePolicyFromEnv() {
+  return {
+    revalidateAfterDays: positiveInt2(process.env.HUNTER_REVALIDATE_AFTER_DAYS, DEFAULT_LIFECYCLE_POLICY.revalidateAfterDays),
+    invalidRetentionDays: positiveInt2(process.env.HUNTER_INVALID_RETENTION_DAYS, DEFAULT_LIFECYCLE_POLICY.invalidRetentionDays),
+    unknownRetentionDays: positiveInt2(process.env.HUNTER_UNKNOWN_RETENTION_DAYS, DEFAULT_LIFECYCLE_POLICY.unknownRetentionDays)
+  };
+}
+function positiveInt2(value, fallback) {
+  const parsed = Number.parseInt(String(value || ""), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+var init_runHunterLifecycle = __esm({
+  "../server/runHunterLifecycle.ts"() {
+    "use strict";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    init_runAuditRetention();
+    init_db2();
+    init_candidateLifecycle();
+    __name(runCandidateLifecycle, "runCandidateLifecycle");
+    __name(lifecyclePolicyFromEnv, "lifecyclePolicyFromEnv");
+    __name(positiveInt2, "positiveInt");
+    if (process.argv[1] === fileURLToPath(import.meta.url)) {
+      runCandidateLifecycle({ apply: process.env.HUNTER_RETENTION_APPLY === "true" }).then((result) => {
+        console.log(`[Hunter Lifecycle] ${result.applied ? "Applied" : "Dry run"}: ${result.totals.revalidate} revalidation, ${result.totals.deleteCandidates} deletion candidate(s).`);
+      }).catch((error53) => {
+        console.error("[Hunter Lifecycle] Failed:", error53);
+        process.exitCode = 1;
+      });
+    }
   }
 });
 
@@ -31103,7 +33159,10 @@ function groupValidKeyRecords(keys) {
 var init_keyAccess = __esm({
   "../server/keyAccess.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(toMaskedKeyRecord, "toMaskedKeyRecord");
     __name(toSafeEditAuditDetails, "toSafeEditAuditDetails");
     __name(groupValidKeyRecords, "groupValidKeyRecords");
@@ -31115,7 +33174,10 @@ var HttpError, ForbiddenError;
 var init_errors4 = __esm({
   "../shared/_core/errors.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     HttpError = class extends Error {
       constructor(statusCode, message2) {
         super(message2);
@@ -31135,7 +33197,10 @@ var init_errors4 = __esm({
 var require_dist = __commonJS({
   "../node_modules/cookie/dist/index.js"(exports) {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parseCookie = parseCookie;
     exports.parse = parseCookie;
@@ -31163,22 +33228,22 @@ var require_dist = __commonJS({
       if (len < 2)
         return obj;
       const dec = options?.decode || decode4;
-      let index = 0;
+      let index2 = 0;
       do {
-        const eqIdx = eqIndex(str, index, len);
+        const eqIdx = eqIndex(str, index2, len);
         if (eqIdx === -1)
           break;
-        const endIdx = endIndex(str, index, len);
+        const endIdx = endIndex(str, index2, len);
         if (eqIdx > endIdx) {
-          index = str.lastIndexOf(";", eqIdx - 1) + 1;
+          index2 = str.lastIndexOf(";", eqIdx - 1) + 1;
           continue;
         }
-        const key = valueSlice(str, index, eqIdx);
+        const key = valueSlice(str, index2, eqIdx);
         if (obj[key] === void 0) {
           obj[key] = dec(valueSlice(str, eqIdx + 1, endIdx));
         }
-        index = endIdx + 1;
-      } while (index < len);
+        index2 = endIdx + 1;
+      } while (index2 < len);
       return obj;
     }
     __name(parseCookie, "parseCookie");
@@ -31291,11 +33356,11 @@ var require_dist = __commonJS({
         name: valueSlice(str, 0, eqIdx),
         value: dec(valueSlice(str, eqIdx + 1, endIdx))
       };
-      let index = endIdx + 1;
-      while (index < len) {
-        const endIdx2 = endIndex(str, index, len);
-        const eqIdx2 = eqIndex(str, index, endIdx2);
-        const attr = eqIdx2 === -1 ? valueSlice(str, index, endIdx2) : valueSlice(str, index, eqIdx2);
+      let index2 = endIdx + 1;
+      while (index2 < len) {
+        const endIdx2 = endIndex(str, index2, len);
+        const eqIdx2 = eqIndex(str, index2, endIdx2);
+        const attr = eqIdx2 === -1 ? valueSlice(str, index2, endIdx2) : valueSlice(str, index2, eqIdx2);
         const val = eqIdx2 === -1 ? void 0 : valueSlice(str, eqIdx2 + 1, endIdx2);
         switch (attr.toLowerCase()) {
           case "httponly":
@@ -31341,19 +33406,19 @@ var require_dist = __commonJS({
             }
             break;
         }
-        index = endIdx2 + 1;
+        index2 = endIdx2 + 1;
       }
       return setCookie;
     }
     __name(parseSetCookie, "parseSetCookie");
     function endIndex(str, min, len) {
-      const index = str.indexOf(";", min);
-      return index === -1 ? len : index;
+      const index2 = str.indexOf(";", min);
+      return index2 === -1 ? len : index2;
     }
     __name(endIndex, "endIndex");
     function eqIndex(str, min, max) {
-      const index = str.indexOf("=", min);
-      return index < max ? index : -1;
+      const index2 = str.indexOf("=", min);
+      return index2 < max ? index2 : -1;
     }
     __name(eqIndex, "eqIndex");
     function valueSlice(str, min, max) {
@@ -31404,7 +33469,10 @@ function concat(...buffers) {
 var encoder, decoder, MAX_INT32;
 var init_buffer_utils = __esm({
   "../node_modules/jose/dist/webapi/lib/buffer_utils.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     encoder = new TextEncoder();
     decoder = new TextDecoder();
     MAX_INT32 = 2 ** 32;
@@ -31437,7 +33505,10 @@ function decodeBase64(encoded) {
 }
 var init_base64 = __esm({
   "../node_modules/jose/dist/webapi/lib/base64.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(encodeBase64, "encodeBase64");
     __name(decodeBase64, "decodeBase64");
   }
@@ -31473,7 +33544,10 @@ function encode3(input) {
 }
 var init_base64url = __esm({
   "../node_modules/jose/dist/webapi/util/base64url.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_buffer_utils();
     init_base64();
     __name(decode3, "decode");
@@ -31485,7 +33559,10 @@ var init_base64url = __esm({
 var JOSEError, JWTClaimValidationFailed, JWTExpired, JOSEAlgNotAllowed, JOSENotSupported, JWSInvalid, JWTInvalid, JWSSignatureVerificationFailed;
 var init_errors5 = __esm({
   "../node_modules/jose/dist/webapi/util/errors.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     JOSEError = class extends Error {
       static {
         __name(this, "JOSEError");
@@ -31664,7 +33741,10 @@ function checkSigCryptoKey(key, alg, usage) {
 }
 var init_crypto_key = __esm({
   "../node_modules/jose/dist/webapi/lib/crypto_key.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(unusable, "unusable");
     __name(isAlgorithm, "isAlgorithm");
     __name(getHashLength, "getHashLength");
@@ -31702,7 +33782,10 @@ function withAlg(alg, actual, ...types) {
 var invalid_key_input_default;
 var init_invalid_key_input = __esm({
   "../node_modules/jose/dist/webapi/lib/invalid_key_input.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(message, "message");
     invalid_key_input_default = /* @__PURE__ */ __name((actual, ...types) => {
       return message("Key must be ", actual, ...types);
@@ -31721,7 +33804,10 @@ function isKeyObject(key) {
 var is_key_like_default;
 var init_is_key_like = __esm({
   "../node_modules/jose/dist/webapi/lib/is_key_like.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(isCryptoKey, "isCryptoKey");
     __name(isKeyObject, "isKeyObject");
     is_key_like_default = /* @__PURE__ */ __name((key) => {
@@ -31734,7 +33820,10 @@ var init_is_key_like = __esm({
 var is_disjoint_default;
 var init_is_disjoint = __esm({
   "../node_modules/jose/dist/webapi/lib/is_disjoint.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     is_disjoint_default = /* @__PURE__ */ __name((...headers) => {
       const sources = headers.filter(Boolean);
       if (sources.length === 0 || sources.length === 1) {
@@ -31766,7 +33855,10 @@ function isObjectLike(value) {
 var is_object_default;
 var init_is_object = __esm({
   "../node_modules/jose/dist/webapi/lib/is_object.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     __name(isObjectLike, "isObjectLike");
     is_object_default = /* @__PURE__ */ __name((input) => {
       if (!isObjectLike(input) || Object.prototype.toString.call(input) !== "[object Object]") {
@@ -31788,7 +33880,10 @@ var init_is_object = __esm({
 var check_key_length_default;
 var init_check_key_length = __esm({
   "../node_modules/jose/dist/webapi/lib/check_key_length.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     check_key_length_default = /* @__PURE__ */ __name((alg, key) => {
       if (alg.startsWith("RS") || alg.startsWith("PS")) {
         const { modulusLength } = key.algorithm;
@@ -31900,7 +33995,10 @@ function subtleMapping(jwk) {
 var jwk_to_key_default;
 var init_jwk_to_key = __esm({
   "../node_modules/jose/dist/webapi/lib/jwk_to_key.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_errors5();
     __name(subtleMapping, "subtleMapping");
     jwk_to_key_default = /* @__PURE__ */ __name(async (jwk) => {
@@ -31922,7 +34020,10 @@ var init_jwk_to_key = __esm({
 var validate_crit_default;
 var init_validate_crit = __esm({
   "../node_modules/jose/dist/webapi/lib/validate_crit.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_errors5();
     validate_crit_default = /* @__PURE__ */ __name((Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) => {
       if (joseHeader.crit !== void 0 && protectedHeader?.crit === void 0) {
@@ -31960,7 +34061,10 @@ var init_validate_crit = __esm({
 var validate_algorithms_default;
 var init_validate_algorithms = __esm({
   "../node_modules/jose/dist/webapi/lib/validate_algorithms.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     validate_algorithms_default = /* @__PURE__ */ __name((option, algorithms) => {
       if (algorithms !== void 0 && (!Array.isArray(algorithms) || algorithms.some((s) => typeof s !== "string"))) {
         throw new TypeError(`"${option}" option must be an array of strings`);
@@ -31988,7 +34092,10 @@ function isSecretJWK(key) {
 }
 var init_is_jwk = __esm({
   "../node_modules/jose/dist/webapi/lib/is_jwk.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_is_object();
     __name(isJWK, "isJWK");
     __name(isPrivateJWK, "isPrivateJWK");
@@ -32001,7 +34108,10 @@ var init_is_jwk = __esm({
 var cache, handleJWK, handleKeyObject, normalize_key_default;
 var init_normalize_key = __esm({
   "../node_modules/jose/dist/webapi/lib/normalize_key.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_is_jwk();
     init_base64url();
     init_jwk_to_key();
@@ -32181,7 +34291,10 @@ var init_normalize_key = __esm({
 var tag, jwkMatchesOp, symmetricTypeCheck, asymmetricTypeCheck, check_key_type_default;
 var init_check_key_type = __esm({
   "../node_modules/jose/dist/webapi/lib/check_key_type.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_invalid_key_input();
     init_is_key_like();
     init_is_jwk();
@@ -32309,7 +34422,10 @@ var init_check_key_type = __esm({
 var subtle_dsa_default;
 var init_subtle_dsa = __esm({
   "../node_modules/jose/dist/webapi/lib/subtle_dsa.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_errors5();
     subtle_dsa_default = /* @__PURE__ */ __name((alg, algorithm) => {
       const hash2 = `SHA-${alg.slice(-3)}`;
@@ -32348,7 +34464,10 @@ var init_subtle_dsa = __esm({
 var get_sign_verify_key_default;
 var init_get_sign_verify_key = __esm({
   "../node_modules/jose/dist/webapi/lib/get_sign_verify_key.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_crypto_key();
     init_invalid_key_input();
     get_sign_verify_key_default = /* @__PURE__ */ __name(async (alg, key, usage) => {
@@ -32368,7 +34487,10 @@ var init_get_sign_verify_key = __esm({
 var verify_default;
 var init_verify = __esm({
   "../node_modules/jose/dist/webapi/lib/verify.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_subtle_dsa();
     init_check_key_length();
     init_get_sign_verify_key();
@@ -32488,7 +34610,10 @@ async function flattenedVerify(jws, key, options) {
 }
 var init_verify2 = __esm({
   "../node_modules/jose/dist/webapi/jws/flattened/verify.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_base64url();
     init_verify();
     init_errors5();
@@ -32524,7 +34649,10 @@ async function compactVerify(jws, key, options) {
 }
 var init_verify3 = __esm({
   "../node_modules/jose/dist/webapi/jws/compact/verify.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_verify2();
     init_errors5();
     init_buffer_utils();
@@ -32536,7 +34664,10 @@ var init_verify3 = __esm({
 var epoch_default;
 var init_epoch = __esm({
   "../node_modules/jose/dist/webapi/lib/epoch.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     epoch_default = /* @__PURE__ */ __name((date6) => Math.floor(date6.getTime() / 1e3), "default");
   }
 });
@@ -32545,7 +34676,10 @@ var init_epoch = __esm({
 var minute, hour, day, week, year2, REGEX, secs_default;
 var init_secs = __esm({
   "../node_modules/jose/dist/webapi/lib/secs.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     minute = 60;
     hour = minute * 60;
     day = hour * 24;
@@ -32698,7 +34832,10 @@ function validateClaimsSet(protectedHeader, encodedPayload, options = {}) {
 var normalizeTyp, checkAudiencePresence, JWTClaimsBuilder;
 var init_jwt_claims_set = __esm({
   "../node_modules/jose/dist/webapi/lib/jwt_claims_set.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_errors5();
     init_buffer_utils();
     init_epoch();
@@ -32805,7 +34942,10 @@ async function jwtVerify(jwt2, key, options) {
 }
 var init_verify4 = __esm({
   "../node_modules/jose/dist/webapi/jwt/verify.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_verify3();
     init_jwt_claims_set();
     init_errors5();
@@ -32817,7 +34957,10 @@ var init_verify4 = __esm({
 var sign_default;
 var init_sign = __esm({
   "../node_modules/jose/dist/webapi/lib/sign.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_subtle_dsa();
     init_check_key_length();
     init_get_sign_verify_key();
@@ -32834,7 +34977,10 @@ var init_sign = __esm({
 var FlattenedSign;
 var init_sign2 = __esm({
   "../node_modules/jose/dist/webapi/jws/flattened/sign.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_base64url();
     init_sign();
     init_is_disjoint();
@@ -32930,7 +35076,10 @@ var init_sign2 = __esm({
 var CompactSign;
 var init_sign3 = __esm({
   "../node_modules/jose/dist/webapi/jws/compact/sign.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_sign2();
     CompactSign = class {
       static {
@@ -32959,7 +35108,10 @@ var init_sign3 = __esm({
 var SignJWT;
 var init_sign4 = __esm({
   "../node_modules/jose/dist/webapi/jwt/sign.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_sign3();
     init_errors5();
     init_jwt_claims_set();
@@ -33019,7 +35171,10 @@ var init_sign4 = __esm({
 // ../node_modules/jose/dist/webapi/index.js
 var init_webapi = __esm({
   "../node_modules/jose/dist/webapi/index.js"() {
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_verify4();
     init_sign4();
     init_errors5();
@@ -33032,7 +35187,10 @@ var import_cookie, isNonEmptyString, SDKServer, sdk;
 var init_sdk = __esm({
   "../server/_core/sdk.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_const();
     init_errors4();
     import_cookie = __toESM(require_dist(), 1);
@@ -33100,8 +35258,8 @@ var init_sdk = __esm({
             appId: appId || "",
             name
           };
-        } catch (error51) {
-          console.warn("[Auth] Session verification failed", String(error51));
+        } catch (error53) {
+          console.warn("[Auth] Session verification failed", String(error53));
           return null;
         }
       }
@@ -33130,12 +35288,92 @@ var init_sdk = __esm({
   }
 });
 
+// ../server/lifecycleActions.ts
+function authorizeLifecycleAction(action, confirmation, cleanupEnabled) {
+  if (action === "schedule_revalidation") {
+    if (confirmation !== "SCHEDULE REVALIDATION") {
+      return { allowed: false, reason: "confirmation_mismatch" };
+    }
+    return { allowed: true };
+  }
+  if (!cleanupEnabled) {
+    return { allowed: false, reason: "cleanup_disabled" };
+  }
+  if (confirmation !== "DELETE STALE CANDIDATES") {
+    return { allowed: false, reason: "confirmation_mismatch" };
+  }
+  return { allowed: true };
+}
+var init_lifecycleActions = __esm({
+  "../server/lifecycleActions.ts"() {
+    "use strict";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    __name(authorizeLifecycleAction, "authorizeLifecycleAction");
+  }
+});
+
+// ../server/sensitiveRateLimit.ts
+import crypto2 from "node:crypto";
+function buildRateLimitScope(userId, action) {
+  const actorHash = crypto2.createHash("sha256").update(userId).digest("hex").slice(0, 16);
+  return `${action}:${actorHash}`;
+}
+async function enforceSensitiveRateLimit(options) {
+  const policy = SENSITIVE_LIMITS[options.action];
+  const scope = buildRateLimitScope(options.userId, options.action);
+  const allowed = await options.consume(scope, policy.limit, policy.windowMs);
+  return {
+    allowed,
+    action: options.action,
+    limit: policy.limit,
+    windowMs: policy.windowMs
+  };
+}
+var SENSITIVE_LIMITS;
+var init_sensitiveRateLimit = __esm({
+  "../server/sensitiveRateLimit.ts"() {
+    "use strict";
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
+    SENSITIVE_LIMITS = {
+      reveal_key: { limit: 30, windowMs: 6e4 },
+      copy_key: { limit: 60, windowMs: 6e4 },
+      validate_key: { limit: 30, windowMs: 6e4 },
+      validate_provider: { limit: 5, windowMs: 6e5 },
+      lifecycle_action: { limit: 3, windowMs: 36e5 }
+    };
+    __name(buildRateLimitScope, "buildRateLimitScope");
+    __name(enforceSensitiveRateLimit, "enforceSensitiveRateLimit");
+  }
+});
+
 // ../server/routers.ts
+async function requireSensitiveCapacity(userId, action) {
+  const result = await enforceSensitiveRateLimit({
+    userId,
+    action,
+    consume: consumeRateLimitEvent
+  });
+  if (!result.allowed) {
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: `Rate limit reached for ${action}. Try again later.`
+    });
+  }
+}
 var appRouter;
 var init_routers = __esm({
   "../server/routers.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_const();
     init_trpc();
     init_zod();
@@ -33144,9 +35382,14 @@ var init_routers = __esm({
     init_keyValidator();
     init_hunterContract();
     init_hunterOperations();
+    init_candidateLifecycle();
+    init_runHunterLifecycle();
     init_keyAccess();
     init_env();
     init_sdk();
+    init_lifecycleActions();
+    init_sensitiveRateLimit();
+    __name(requireSensitiveCapacity, "requireSensitiveCapacity");
     appRouter = router({
       auth: router({
         login: publicProcedure.input(external_exports.object({ password: external_exports.string() })).mutation(async ({ input, ctx }) => {
@@ -33204,7 +35447,47 @@ var init_routers = __esm({
         getHunterOperations: protectedProcedure.query(async ({ ctx }) => {
           if (ctx.user?.role !== "admin")
             throw new TRPCError({ code: "FORBIDDEN" });
-          return buildHunterOperations(await getAllKeys());
+          const keys = await getAllKeys();
+          const lifecyclePlan = planCandidateLifecycle(
+            keys,
+            /* @__PURE__ */ new Date(),
+            lifecyclePolicyFromEnv()
+          );
+          return {
+            ...buildHunterOperations(keys),
+            lifecycle: buildLifecyclePreview(
+              lifecyclePlan,
+              process.env.HUNTER_RETENTION_APPLY === "true"
+            )
+          };
+        }),
+        applyLifecycleAction: protectedProcedure.input(external_exports.object({
+          action: external_exports.enum(["schedule_revalidation", "cleanup"]),
+          confirmation: external_exports.string()
+        })).mutation(async ({ input, ctx }) => {
+          if (ctx.user?.role !== "admin")
+            throw new TRPCError({ code: "FORBIDDEN" });
+          await requireSensitiveCapacity(ctx.user.openId, "lifecycle_action");
+          const authorization = authorizeLifecycleAction(
+            input.action,
+            input.confirmation,
+            process.env.HUNTER_RETENTION_APPLY === "true"
+          );
+          if (!authorization.allowed) {
+            throw new TRPCError({
+              code: authorization.reason === "cleanup_disabled" ? "PRECONDITION_FAILED" : "BAD_REQUEST",
+              message: authorization.reason === "cleanup_disabled" ? "Cleanup is disabled. Set HUNTER_RETENTION_APPLY=true on the server first." : "Lifecycle confirmation phrase did not match."
+            });
+          }
+          const result = await runCandidateLifecycle({
+            apply: true,
+            action: input.action
+          });
+          return {
+            success: true,
+            action: input.action,
+            totals: result.totals
+          };
         }),
         getValidKeyVault: protectedProcedure.query(async ({ ctx }) => {
           if (ctx.user?.role !== "admin")
@@ -33227,6 +35510,7 @@ var init_routers = __esm({
         ).mutation(async ({ input, ctx }) => {
           if (ctx.user?.role !== "admin")
             throw new TRPCError({ code: "FORBIDDEN" });
+          await requireSensitiveCapacity(ctx.user.openId, "reveal_key");
           const key = await getKeyById(input.keyId);
           if (!key || key.provider !== input.provider)
             throw new TRPCError({ code: "NOT_FOUND" });
@@ -33240,6 +35524,7 @@ var init_routers = __esm({
         ).mutation(async ({ input, ctx }) => {
           if (ctx.user?.role !== "admin")
             throw new TRPCError({ code: "FORBIDDEN" });
+          await requireSensitiveCapacity(ctx.user.openId, "copy_key");
           const key = await getKeyById(input.keyId);
           if (!key || key.provider !== input.provider)
             throw new TRPCError({ code: "NOT_FOUND" });
@@ -33252,6 +35537,7 @@ var init_routers = __esm({
           if (ctx.user?.role !== "admin") {
             throw new TRPCError({ code: "FORBIDDEN" });
           }
+          await requireSensitiveCapacity(ctx.user.openId, "validate_key");
           const keys = await getKeysByProvider(input.provider);
           const key = keys.find((k) => k.id === input.keyId);
           if (!key) {
@@ -33271,6 +35557,7 @@ var init_routers = __esm({
           if (ctx.user?.role !== "admin") {
             throw new TRPCError({ code: "FORBIDDEN" });
           }
+          await requireSensitiveCapacity(ctx.user.openId, "validate_provider");
           const keys = await getKeysByProvider(input.provider);
           const results = { valid: 0, invalid: 0, rateLimited: 0 };
           for (const key of keys) {
@@ -33360,7 +35647,7 @@ async function createContext(opts) {
   let user = null;
   try {
     user = await sdk.authenticateRequest(opts.req);
-  } catch (error51) {
+  } catch (error53) {
     user = null;
   }
   return {
@@ -33372,7 +35659,10 @@ async function createContext(opts) {
 var init_context2 = __esm({
   "../server/_core/context.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_sdk();
     __name(createContext, "createContext");
   }
@@ -33388,8 +35678,8 @@ async function secureTokenEqual(candidate, expected) {
   const left = new Uint8Array(candidateDigest);
   const right = new Uint8Array(expectedDigest);
   let difference = left.length ^ right.length;
-  for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
-    difference |= (left[index] || 0) ^ (right[index] || 0);
+  for (let index2 = 0; index2 < Math.max(left.length, right.length); index2 += 1) {
+    difference |= (left[index2] || 0) ^ (right[index2] || 0);
   }
   return difference === 0;
 }
@@ -33408,7 +35698,10 @@ var encoder2;
 var init_bridgeAuth = __esm({
   "../server/bridgeAuth.ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     encoder2 = new TextEncoder();
     __name(secureTokenEqual, "secureTokenEqual");
     __name(authorizeBridgeToken, "authorizeBridgeToken");
@@ -33439,7 +35732,10 @@ var app, onRequest;
 var init_route2 = __esm({
   "api/[[route]].ts"() {
     "use strict";
-    init_functionsRoutes_0_698410973351653();
+    init_functionsRoutes_0_3720013997293571();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+    init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+    init_performance2();
     init_dist();
     init_cloudflare_pages();
     init_dist2();
@@ -33528,10 +35824,10 @@ var init_route2 = __esm({
           const validity = String(key.validity || "unknown");
           counts.set(validity, (counts.get(validity) || 0) + 1);
         }
-        return Array.from(counts.entries()).map(([validity, count]) => ({
+        return Array.from(counts.entries()).map(([validity, count3]) => ({
           provider,
           validity,
-          count
+          count: count3
         }));
       });
       const allKeys = keysByProvider.flatMap((entry) => entry.keys);
@@ -33572,10 +35868,10 @@ var init_route2 = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-ZEEu8K/functionsRoutes-0.698410973351653.mjs
+// ../.wrangler/tmp/pages-Y27lKm/functionsRoutes-0.3720013997293571.mjs
 var routes;
-var init_functionsRoutes_0_698410973351653 = __esm({
-  "../.wrangler/tmp/pages-ZEEu8K/functionsRoutes-0.698410973351653.mjs"() {
+var init_functionsRoutes_0_3720013997293571 = __esm({
+  "../.wrangler/tmp/pages-Y27lKm/functionsRoutes-0.3720013997293571.mjs"() {
     "use strict";
     init_route2();
     routes = [
@@ -33591,10 +35887,16 @@ var init_functionsRoutes_0_698410973351653 = __esm({
 });
 
 // ../node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_698410973351653();
+init_functionsRoutes_0_3720013997293571();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+init_performance2();
 
 // ../node_modules/wrangler/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_698410973351653();
+init_functionsRoutes_0_3720013997293571();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+init_performance2();
 function lexer(str) {
   var tokens = [];
   var i = 0;
@@ -33640,7 +35942,7 @@ function lexer(str) {
       continue;
     }
     if (char2 === "(") {
-      var count = 1;
+      var count3 = 1;
       var pattern = "";
       var j = i + 1;
       if (str[j] === "?") {
@@ -33652,20 +35954,20 @@ function lexer(str) {
           continue;
         }
         if (str[j] === ")") {
-          count--;
-          if (count === 0) {
+          count3--;
+          if (count3 === 0) {
             j++;
             break;
           }
         } else if (str[j] === "(") {
-          count++;
+          count3++;
           if (str[j + 1] !== "?") {
             throw new TypeError("Capturing groups are not allowed at ".concat(j));
           }
         }
         pattern += str[j++];
       }
-      if (count)
+      if (count3)
         throw new TypeError("Unbalanced pattern at ".concat(i));
       if (!pattern)
         throw new TypeError("Missing pattern at ".concat(i));
@@ -33697,8 +35999,8 @@ function parse5(str, options) {
     var value2 = tryConsume(type);
     if (value2 !== void 0)
       return value2;
-    var _a4 = tokens[i], nextType = _a4.type, index = _a4.index;
-    throw new TypeError("Unexpected ".concat(nextType, " at ").concat(index, ", expected ").concat(type));
+    var _a4 = tokens[i], nextType = _a4.type, index2 = _a4.index;
+    throw new TypeError("Unexpected ".concat(nextType, " at ").concat(index2, ", expected ").concat(type));
   }, "mustConsume");
   var consumeText = /* @__PURE__ */ __name(function() {
     var result2 = "";
@@ -33796,7 +36098,7 @@ function regexpToFunction(re2, keys, options) {
     var m = re2.exec(pathname);
     if (!m)
       return false;
-    var path = m[0], index = m.index;
+    var path = m[0], index2 = m.index;
     var params = /* @__PURE__ */ Object.create(null);
     var _loop_1 = /* @__PURE__ */ __name(function(i2) {
       if (m[i2] === void 0)
@@ -33813,7 +36115,7 @@ function regexpToFunction(re2, keys, options) {
     for (var i = 1; i < m.length; i++) {
       _loop_1(i);
     }
-    return { path, index, params };
+    return { path, index: index2, params };
   };
 }
 __name(regexpToFunction, "regexpToFunction");
@@ -33829,12 +36131,12 @@ function regexpToRegexp(path, keys) {
   if (!keys)
     return path;
   var groupsRegex = /\((?:\?<(.*?)>)?(?!\?)/g;
-  var index = 0;
+  var index2 = 0;
   var execResult = groupsRegex.exec(path.source);
   while (execResult) {
     keys.push({
       // Use parenthesized substring match if available, index otherwise
-      name: execResult[1] || index++,
+      name: execResult[1] || index2++,
       prefix: "",
       suffix: "",
       modifier: "",
@@ -33972,7 +36274,7 @@ function* executeRequest(request) {
 }
 __name(executeRequest, "executeRequest");
 var pages_template_worker_default = {
-  async fetch(originalRequest, env, workerContext) {
+  async fetch(originalRequest, env2, workerContext) {
     let request = originalRequest;
     const handlerIterator = executeRequest(request);
     let data = {};
@@ -33988,7 +36290,7 @@ var pages_template_worker_default = {
       const result = handlerIterator.next();
       if (result.done === false) {
         const { handler, params, path } = result.value;
-        const context = {
+        const context2 = {
           request: new Request(request.clone()),
           functionPath: path,
           next,
@@ -34002,19 +36304,19 @@ var pages_template_worker_default = {
             }
             data = value;
           },
-          env,
+          env: env2,
           waitUntil: workerContext.waitUntil.bind(workerContext),
           passThroughOnException: /* @__PURE__ */ __name(() => {
             isFailOpen = true;
           }, "passThroughOnException")
         };
-        const response = await handler(context);
+        const response = await handler(context2);
         if (!(response instanceof Response)) {
           throw new Error("Your Pages function should return a Response");
         }
         return cloneResponse(response);
       } else if ("ASSETS") {
-        const response = await env["ASSETS"].fetch(request);
+        const response = await env2["ASSETS"].fetch(request);
         return cloneResponse(response);
       } else {
         const response = await fetch(request);
@@ -34023,12 +36325,12 @@ var pages_template_worker_default = {
     }, "next");
     try {
       return await next();
-    } catch (error51) {
+    } catch (error53) {
       if (isFailOpen) {
-        const response = await env["ASSETS"].fetch(request);
+        const response = await env2["ASSETS"].fetch(request);
         return cloneResponse(response);
       }
-      throw error51;
+      throw error53;
     }
   }
 };

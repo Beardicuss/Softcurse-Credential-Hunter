@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url";
+import { cleanupExpiredAuditLogs } from "./runAuditRetention";
 import {
   deleteApiKeysByIds,
   getAllKeys,
@@ -16,8 +17,10 @@ export async function runCandidateLifecycle(options: {
   apply?: boolean;
   now?: Date;
   policy?: LifecyclePolicy;
+  action?: "all" | "schedule_revalidation" | "cleanup";
 } = {}) {
   const apply = Boolean(options.apply);
+  const action = options.action || "all";
   const keys = await getAllKeys();
   const plan = planCandidateLifecycle(
     keys,
@@ -25,23 +28,32 @@ export async function runCandidateLifecycle(options: {
     options.policy || lifecyclePolicyFromEnv()
   );
 
-  if (apply) {
+  if (apply && (action === "all" || action === "schedule_revalidation")) {
     for (const key of plan.revalidate) {
       if (!key.revalidationSuggested) {
         await updateKeyById(key.id, { revalidationSuggested: true, freshness: "stale" });
       }
     }
+  }
+  if (apply && (action === "all" || action === "cleanup")) {
     await deleteApiKeysByIds(plan.deleteCandidates.map(key => key.id));
+  }
+  if (apply) {
     for (const provider of plan.affectedProviders) await updateProviderStats(provider);
   }
 
-  await logAuditEvent(apply ? "lifecycle_applied" : "lifecycle_dry_run", undefined, undefined, {
+  const auditCleanup = await cleanupExpiredAuditLogs({
+    apply: process.env.HUNTER_AUDIT_RETENTION_APPLY !== "false",
+    now: options.now,
+  });
+  await logAuditEvent(apply ? `lifecycle_${action}_applied` : "lifecycle_dry_run", undefined, undefined, {
     ...plan.totals,
     providers: plan.affectedProviders,
-    deletedIds: apply ? plan.deleteCandidates.map(key => key.id) : [],
+    action,
+    deletedIds: apply && (action === "all" || action === "cleanup") ? plan.deleteCandidates.map(key => key.id) : [],
   });
 
-  return { ...plan, applied: apply };
+  return { ...plan, applied: apply, auditCleanup };
 }
 
 export function lifecyclePolicyFromEnv(): LifecyclePolicy {

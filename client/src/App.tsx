@@ -1,11 +1,10 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from "react";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 
+const AdminToaster = lazy(() => import("./components/admin/AdminToaster"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AuditLogs = lazy(() => import("./pages/AuditLogs"));
 const ValidKeyVault = lazy(() => import("./pages/ValidKeyVault"));
@@ -36,13 +35,18 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+  const isAdminRoute = location.startsWith("/admin");
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        {isAdminRoute && (
+          <Suspense fallback={null}>
+            <AdminToaster />
+          </Suspense>
+        )}
+        <Router />
       </ThemeProvider>
     </ErrorBoundary>
   );

@@ -1,4 +1,4 @@
-import { eq, sql, and, desc, inArray } from "drizzle-orm";
+import { eq, sql, and, desc, inArray, gte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/tidb-serverless";
 import { connect } from "@tidbcloud/serverless";
 import {
@@ -277,6 +277,47 @@ export async function logAuditEvent(
   });
 }
 
+export async function consumeRateLimitEvent(
+  scope: string,
+  limit: number,
+  windowMs: number
+) {
+  const db = await getDb();
+  if (!db) return false;
+  const eventType = `rate_limit:${scope}`.slice(0, 64);
+  const since = new Date(Date.now() - windowMs);
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(auditLogs)
+    .where(and(eq(auditLogs.eventType, eventType), gte(auditLogs.createdAt, since)));
+  const count = Number(result[0]?.count || 0);
+  await db.insert(auditLogs).values({
+    eventType,
+    details: JSON.stringify({ allowed: count < limit, limit, windowMs }),
+  });
+  return count < limit;
+}
+export async function getAuditRetentionRecords(limit = 5000) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      id: auditLogs.id,
+      eventType: auditLogs.eventType,
+      createdAt: auditLogs.createdAt,
+    })
+    .from(auditLogs)
+    .orderBy(auditLogs.createdAt)
+    .limit(limit);
+}
+
+export async function deleteAuditLogsByIds(ids: number[]) {
+  if (ids.length === 0) return 0;
+  const db = await getDb();
+  if (!db) return 0;
+  await db.delete(auditLogs).where(inArray(auditLogs.id, ids));
+  return ids.length;
+}
 export async function getAuditLogs() {
   const db = await getDb();
   if (!db) return [];

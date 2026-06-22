@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Softcurse Credential Hunter" width="180" />
+  <img src="client\src\assets\favicon.webp" alt="Softcurse Credential Hunter" width="180" />
 </p>
 
 # Softcurse Credential Hunter
@@ -52,6 +52,9 @@ pnpm hunt
 pnpm hunt:sync
 pnpm check
 pnpm test
+pnpm test:acceptance
+pnpm workflow:verify
+pnpm pages:build
 pnpm build
 ```
 
@@ -59,9 +62,9 @@ pnpm build
 
 ## Scheduled workflow
 
-[`.github/workflows/credential-hunter.yml`](.github/workflows/credential-hunter.yml) runs every 12 hours and can also be started manually. Configure `DATABASE_URL` as a GitHub Actions secret. Set the repository variable `GRAYHAT_ENABLED=true` to activate GrayHatWarfare ingestion, and store its token as the `GRAYHAT_TOKEN` Actions secret. Optional source tokens should always be stored as Actions secrets.
+[`.github/workflows/credential-hunter.yml`](.github/workflows/credential-hunter.yml) runs every 6 hours and can also be started manually. Configure `DATABASE_URL` as a GitHub Actions secret. Set the repository variable `GRAYHAT_ENABLED=true` to activate GrayHatWarfare ingestion, and store its token as the `GRAYHAT_TOKEN` Actions secret. Optional source tokens should always be stored as Actions secrets.
 
-The workflow installs with the frozen pnpm lockfile, type-checks the project, runs the multi-source hunter, verifies the output schema, and then synchronizes it. It deliberately does not upload raw hunt output.
+The workflow installs with the frozen pnpm lockfile, runs unit and authorized synthetic multi-source acceptance tests, type-checks and builds the dashboard and Pages Worker, runs the multi-source hunter, verifies the output schema, and then synchronizes it. It deliberately does not upload raw hunt output.
 
 ## API
 

@@ -18,9 +18,20 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return undefined;
+          if (/node_modules[\\/](@?react|react-dom|scheduler)[\\/]/.test(id)) return "vendor-react";
+          if (/node_modules[\\/](@tanstack|@trpc|superjson)[\\/]/.test(id)) return "vendor-data";
+          if (id.includes("node_modules/@radix-ui/")) return "vendor-radix";
+          if (id.includes("node_modules/sonner/")) return "vendor-notifications";
+          return undefined;
+        },
+      },
+    },
   },
   server: {
     host: true,
   },
 });
-

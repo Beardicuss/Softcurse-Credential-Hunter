@@ -1,4 +1,4 @@
-import { boolean, double, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, double, index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -50,7 +50,10 @@ export const apiKeys = mysqlTable("api_keys", {
   usageCount: int("usage_count").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-});
+}, table => [
+  index("idx_api_validity_checked").on(table.validity, table.lastCheckedAt),
+  index("idx_api_revalidate_checked").on(table.revalidationSuggested, table.lastCheckedAt),
+]);
 
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = typeof apiKeys.$inferInsert;
@@ -65,7 +68,10 @@ export const auditLogs = mysqlTable("audit_logs", {
   keyId: int("key_id"),
   details: text("details"), // JSON stringified details
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, table => [
+  index("idx_audit_event_created").on(table.eventType, table.createdAt),
+  index("idx_audit_created").on(table.createdAt),
+]);
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;

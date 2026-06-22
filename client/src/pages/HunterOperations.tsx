@@ -31,6 +31,21 @@ export default function HunterOperations() {
     enabled: isAuthenticated && user?.role === "admin",
     refetchOnWindowFocus: false,
   });
+  const [pendingLifecycleAction, setPendingLifecycleAction] = useState<
+    "schedule_revalidation" | "cleanup" | null
+  >(null);
+  const lifecycleAction = trpc.hunter.applyLifecycleAction.useMutation({
+    onSuccess: async result => {
+      toast.success(
+        result.action === "cleanup"
+          ? `Cleanup completed: ${result.totals.deleteCandidates} candidate(s)`
+          : `Revalidation scheduled: ${result.totals.revalidate} key(s)`
+      );
+      await operations.refetch();
+    },
+    onError: error => toast.error(`Lifecycle action failed: ${error.message}`),
+    onSettled: () => setPendingLifecycleAction(null),
+  });
   const validate = trpc.hunter.validateKey.useMutation({
     onSuccess: async () => {
       toast.success("Key validation completed");
@@ -122,7 +137,31 @@ export default function HunterOperations() {
               />
             </section>
 
-            {data?.lifecycle && <LifecyclePreview lifecycle={data.lifecycle} />}
+            {data?.lifecycle && (
+              <LifecyclePreview
+                lifecycle={data.lifecycle}
+                pendingAction={pendingLifecycleAction}
+                onScheduleRevalidation={() => {
+                  const confirmation = window.prompt(
+                    'Type SCHEDULE REVALIDATION to continue.'
+                  );
+                  if (confirmation !== 'SCHEDULE REVALIDATION') return;
+                  setPendingLifecycleAction('schedule_revalidation');
+                  lifecycleAction.mutate({
+                    action: 'schedule_revalidation',
+                    confirmation,
+                  });
+                }}
+                onCleanup={() => {
+                  const confirmation = window.prompt(
+                    'Type DELETE STALE CANDIDATES to permanently remove the current deletion candidates.'
+                  );
+                  if (confirmation !== 'DELETE STALE CANDIDATES') return;
+                  setPendingLifecycleAction('cleanup');
+                  lifecycleAction.mutate({ action: 'cleanup', confirmation });
+                }}
+              />
+            )}
 
             <section className="glass-panel p-6">
               <div className="flex items-center justify-between mb-5">

@@ -177,3 +177,24 @@ Turn Credential Hunter from a GitHub-only hardcoded script into a modular multi-
 - Valid keys are never automatically deleted; used invalid/unknown keys are retained, and lifecycle actions are audited without key material.
 - Hunter Operations now exposes a masked lifecycle preview with active retention policy, dry-run/apply mode, revalidation totals, and deletion candidates.
 - Lifecycle preview serialization is regression-tested to ensure raw key values never cross the operator API.
+- Hunter Operations now supports separately confirmed revalidation scheduling and cleanup actions.
+- Cleanup requires exact operator confirmation plus server-side `HUNTER_RETENTION_APPLY=true`; revalidation and cleanup regenerate the plan from current database state.
+- Lifecycle actions are audited by action/count/provider/record ID only, with no key material.
+- Persisted per-user/action rate limiting added for key reveal, key copy, single validation, provider-wide validation, and lifecycle actions.
+- Rate-limit scopes use one-way actor hashes and audit only action/window/decision metadata; sensitive routes fail closed when persistence is unavailable.
+- Automatic batched audit retention added: rate-limit telemetry defaults to 7 days and security/operator events to 365 days.
+- Audit cleanup runs with the scheduled lifecycle job, defaults to apply mode, and can be disabled with `HUNTER_AUDIT_RETENTION_APPLY=false`.
+- Retention windows and batch size are environment-configurable and policy-tested.
+- Composite database indexes added for persisted rate-limit lookup, audit retention scans, validity/check-time lifecycle filtering, and revalidation queues.
+- Index migration uses `information_schema.STATISTICS` for idempotency and generates additive-only SQL from static identifiers.
+- Repeat-deployment migration safety is covered with an injected fake connection proving no ALTER statements run when schema/indexes already exist.
+- Frontend vendor boundaries added for React, tRPC/TanStack data runtime, Radix admin UI, and notifications; the application entry chunk dropped from about 415 KB to 42 KB.
+- Unused global tooltip runtime and redundant `next-themes` toaster dependency removed.
+- Notification runtime now loads only on admin routes, keeping Sonner and Radix off the public home path.
+- Credential sync now has an injectable payload-level boundary with regression coverage proving unknown providers and discovery metadata survive database import.
+- Scheduled workflow contract verification enforces the six-hour schedule and critical validation/build/migrate/hunt/sync/lifecycle order.
+- CI now builds the dashboard and bundles the actual Cloudflare Pages Functions Worker with Node.js compatibility enabled before touching the database or external sources.
+- Final authorized multi-source acceptance coverage exercises GitHub, GrayHat, GitLab, Gist, and web-text source orchestration with synthetic credentials only.
+- Acceptance validates transient retry behavior, source diagnostics, deduplication, provider probing, hunter.v1 output validity, database sync projection, and secret-free diagnostics.
+- The acceptance gate is required by the scheduled workflow before build, migration, hunting, or synchronization.
+- Hunter upgrade roadmap completed locally; final production evidence is one successful scheduled/manual workflow run with configured GitHub Actions secrets and TiDB.

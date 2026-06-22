@@ -12,13 +12,14 @@ import {
   updateKeyById,
   updateProviderStats,
   getAuditLogs,
+  consumeRateLimitEvent,
 } from "./db";
 import { TRPCError } from "@trpc/server";
 import { validateKeyForProvider } from "./keyValidator";
 import { buildHunterDatabaseSnapshot } from "./hunterContract";
 import { buildHunterOperations } from "./hunterOperations";
 import { buildLifecyclePreview, planCandidateLifecycle } from "./candidateLifecycle";
-import { lifecyclePolicyFromEnv } from "./runHunterLifecycle";
+import { lifecyclePolicyFromEnv, runCandidateLifecycle } from "./runHunterLifecycle";
 import {
   groupValidKeyRecords,
   toMaskedKeyRecord,
@@ -27,7 +28,22 @@ import {
 import { getDefaultCredentialHunterPath } from "./credentialHunterIntegration";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
+import { authorizeLifecycleAction } from "./lifecycleActions";
+import { enforceSensitiveRateLimit, type SensitiveAction } from "./sensitiveRateLimit";
 
+async function requireSensitiveCapacity(userId: string, action: SensitiveAction) {
+  const result = await enforceSensitiveRateLimit({
+    userId,
+    action,
+    consume: consumeRateLimitEvent,
+  });
+  if (!result.allowed) {
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: `Rate limit reached for ${action}. Try again later.`,
+    });
+  }
+}
 export const appRouter = router({
   auth: router({
     login: publicProcedure
@@ -105,6 +121,38 @@ export const appRouter = router({
         ),
       };
     }),
+    applyLifecycleAction: protectedProcedure
+      .input(z.object({
+        action: z.enum(["schedule_revalidation", "cleanup"]),
+        confirmation: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin")
+          throw new TRPCError({ code: "FORBIDDEN" });
+        await requireSensitiveCapacity(ctx.user.openId, "lifecycle_action");
+        const authorization = authorizeLifecycleAction(
+          input.action,
+          input.confirmation,
+          process.env.HUNTER_RETENTION_APPLY === "true"
+        );
+        if (!authorization.allowed) {
+          throw new TRPCError({
+            code: authorization.reason === "cleanup_disabled" ? "PRECONDITION_FAILED" : "BAD_REQUEST",
+            message: authorization.reason === "cleanup_disabled"
+              ? "Cleanup is disabled. Set HUNTER_RETENTION_APPLY=true on the server first."
+              : "Lifecycle confirmation phrase did not match.",
+          });
+        }
+        const result = await runCandidateLifecycle({
+          apply: true,
+          action: input.action,
+        });
+        return {
+          success: true,
+          action: input.action,
+          totals: result.totals,
+        };
+      }),
     getValidKeyVault: protectedProcedure.query(async ({ ctx }) => {
       if (ctx.user?.role !== "admin")
         throw new TRPCError({ code: "FORBIDDEN" });
@@ -131,6 +179,7 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         if (ctx.user?.role !== "admin")
           throw new TRPCError({ code: "FORBIDDEN" });
+        await requireSensitiveCapacity(ctx.user.openId, "reveal_key");
         const key = await getKeyById(input.keyId);
         if (!key || key.provider !== input.provider)
           throw new TRPCError({ code: "NOT_FOUND" });
@@ -147,6 +196,7 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         if (ctx.user?.role !== "admin")
           throw new TRPCError({ code: "FORBIDDEN" });
+        await requireSensitiveCapacity(ctx.user.openId, "copy_key");
         const key = await getKeyById(input.keyId);
         if (!key || key.provider !== input.provider)
           throw new TRPCError({ code: "NOT_FOUND" });
@@ -161,6 +211,7 @@ export const appRouter = router({
         if (ctx.user?.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN" });
         }
+        await requireSensitiveCapacity(ctx.user.openId, "validate_key");
         const keys = await getKeysByProvider(input.provider);
         const key = keys.find(k => k.id === input.keyId);
         if (!key) {
@@ -183,6 +234,7 @@ export const appRouter = router({
         if (ctx.user?.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN" });
         }
+        await requireSensitiveCapacity(ctx.user.openId, "validate_provider");
         const keys = await getKeysByProvider(input.provider);
         const results = { valid: 0, invalid: 0, rateLimited: 0 };
         for (const key of keys) {

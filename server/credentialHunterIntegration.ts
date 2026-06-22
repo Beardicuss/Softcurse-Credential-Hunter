@@ -38,14 +38,28 @@ interface LeakedKeysOutput {
   }>;
 }
 
-export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<{
+export interface CredentialHunterSyncDependencies {
+  upsertApiKey: typeof upsertApiKey;
+  updateProviderStats: typeof updateProviderStats;
+  logAuditEvent: typeof logAuditEvent;
+}
+
+const defaultSyncDependencies: CredentialHunterSyncDependencies = {
+  upsertApiKey,
+  updateProviderStats,
+  logAuditEvent,
+};
+
+export type CredentialHunterSyncStats = {
   imported: number;
   valid: number;
   invalid: number;
   providers: Record<string, number>;
   validProviders: Record<string, number>;
   invalidProviders: Record<string, number>;
-}> {
+};
+
+export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<CredentialHunterSyncStats> {
   try {
     if (!fs.existsSync(jsonFilePath)) {
       console.warn(`[Credential Hunter] Payload file not found: ${jsonFilePath}`);
@@ -54,9 +68,19 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
     }
 
     const fileContent = fs.readFileSync(jsonFilePath, "utf-8");
-    const data = HunterOutputSchema.parse(JSON.parse(fileContent)) as LeakedKeysOutput;
+    return await syncCredentialHunterPayload(JSON.parse(fileContent));
+  } catch (error) {
+    console.error("[Credential Hunter] Sync failed:", error);
+    throw error;
+  }
+}
 
-    const stats = {
+export async function syncCredentialHunterPayload(
+  payload: unknown,
+  dependencies: CredentialHunterSyncDependencies = defaultSyncDependencies,
+): Promise<CredentialHunterSyncStats> {
+  const data = HunterOutputSchema.parse(payload) as LeakedKeysOutput;
+  const stats = {
       imported: 0,
       valid: 0,
       invalid: 0,
@@ -83,7 +107,7 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
       }
 
       try {
-        await upsertApiKey(normalizedProvider, key.value_full, key.validity, {
+        await dependencies.upsertApiKey(normalizedProvider, key.value_full, key.validity, {
           confidence: key.confidence ?? null,
           matchStrength: key.matchStrength ?? null,
           validationTier: key.validationTier ?? null,
@@ -114,10 +138,10 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
     }
 
     for (const provider of Array.from(touchedProviders)) {
-      await updateProviderStats(provider);
+      await dependencies.updateProviderStats(provider);
     }
 
-    await logAuditEvent("refresh_completed", undefined, undefined, {
+    await dependencies.logAuditEvent("refresh_completed", undefined, undefined, {
       imported: stats.imported,
       valid: stats.valid,
       invalid: stats.invalid,
@@ -133,11 +157,7 @@ export async function syncCredentialHunterOutput(jsonFilePath: string): Promise<
     });
 
     console.log(`[Credential Hunter] Synced ${stats.imported} keys (${stats.valid} valid, ${stats.invalid} invalid)`);
-    return stats;
-  } catch (error) {
-    console.error("[Credential Hunter] Sync failed:", error);
-    throw error;
-  }
+  return stats;
 }
 
 

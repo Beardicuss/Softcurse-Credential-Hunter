@@ -1,11 +1,22 @@
-import { ArchiveX, CalendarClock, ShieldCheck } from "lucide-react";
+import { ArchiveX, CalendarClock, Loader2, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../../server/routers";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type Lifecycle = RouterOutput["hunter"]["getHunterOperations"]["lifecycle"];
 
-export function LifecyclePreview({ lifecycle }: { lifecycle: Lifecycle }) {
+export function LifecyclePreview({
+  lifecycle,
+  pendingAction,
+  onScheduleRevalidation,
+  onCleanup,
+}: {
+  lifecycle: Lifecycle;
+  pendingAction: "schedule_revalidation" | "cleanup" | null;
+  onScheduleRevalidation: () => void;
+  onCleanup: () => void;
+}) {
   const applyMode = lifecycle.mode === "apply";
   return (
     <section className="glass-panel p-6">
@@ -18,9 +29,30 @@ export function LifecyclePreview({ lifecycle }: { lifecycle: Lifecycle }) {
             Revalidation and retention preview from the current persisted key pool.
           </p>
         </div>
-        <span className={`data-text text-xs border px-3 py-2 ${applyMode ? "border-[var(--c-magenta)] text-[var(--c-magenta)]" : "border-yellow-500 text-yellow-400"}`}>
-          {applyMode ? "APPLY ENABLED" : "DRY RUN"}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            className="border-yellow-500 text-yellow-400"
+            onClick={onScheduleRevalidation}
+            disabled={pendingAction !== null || lifecycle.totals.revalidate === 0}
+          >
+            {pendingAction === "schedule_revalidation" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            SCHEDULE REVALIDATION
+          </Button>
+          <Button
+            variant="outline"
+            className="border-[var(--c-magenta)] text-[var(--c-magenta)]"
+            onClick={onCleanup}
+            disabled={!applyMode || pendingAction !== null || lifecycle.totals.deleteCandidates === 0}
+            title={applyMode ? "Delete current lifecycle candidates" : "Set HUNTER_RETENTION_APPLY=true to enable cleanup"}
+          >
+            {pendingAction === "cleanup" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            CLEANUP
+          </Button>
+          <span className={`data-text text-xs border px-3 py-2 ${applyMode ? "border-[var(--c-magenta)] text-[var(--c-magenta)]" : "border-yellow-500 text-yellow-400"}`}>
+            {applyMode ? "APPLY ENABLED" : "DRY RUN"}
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
