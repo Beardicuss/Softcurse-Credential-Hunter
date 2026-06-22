@@ -53,7 +53,7 @@ export default function Home() {
               <Loader2 className="h-4 w-4 animate-spin" style={{ color: "var(--c-cyan)" }} />
             ) : (
               <span className="data-text font-bold" style={{ color: "var(--c-cyan)" }}>
-                {isError ? "OFFLINE" : "OPERATIONAL"}
+                {isError ? "OFFLINE" : statusData?.status === "degraded" ? "DEGRADED" : "OPERATIONAL"}
               </span>
             )}
           </div>
@@ -69,7 +69,7 @@ export default function Home() {
               className="data-text font-bold"
               style={{ color: "var(--c-red)", animation: "pulse-red 3s infinite" }}
             >
-              {statusData ? `${statusData.validKeys} KEYS` : "OFFLINE"}
+              {statusData?.database?.connected ? String(statusData.validKeys) + " KEYS" : statusData?.database?.error || "OFFLINE"}
             </span>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import {
   getAllProviderStats,
+  getDatabaseDiagnostics,
   getAllKeys,
   getAllValidKeys,
   getKeysByProvider,
@@ -83,17 +84,18 @@ export const appRouter = router({
 
   hunter: router({
     getStatus: publicProcedure.query(async () => {
-      const stats = await getAllProviderStats();
+      const database = await getDatabaseDiagnostics();
+      const stats = database.connected ? await getAllProviderStats() : [];
       return {
         service: "softcurse-credential-hunter",
-        status: "operational" as const,
-        providers: stats?.length || 0,
-        validKeys:
-          stats?.reduce(
-            (total, item) => total + Number(item.validKeyCount || 0),
-            0
-          ) || 0,
-        stats: stats || [],
+        status: database.connected ? "operational" as const : "degraded" as const,
+        providers: stats.length,
+        validKeys: stats.reduce(
+          (total, item) => total + Number(item.validKeyCount || 0),
+          0
+        ),
+        stats,
+        database,
       };
     }),
     getProviderStats: protectedProcedure.query(async ({ ctx }) => {

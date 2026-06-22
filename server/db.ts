@@ -118,6 +118,62 @@ export async function getValidKeysByProvider(provider: string) {
     .where(and(eq(apiKeys.provider, provider), eq(apiKeys.validity, "valid")));
 }
 
+export async function getDatabaseDiagnostics() {
+  const dbUrl = ENV.databaseUrl;
+  if (!dbUrl) {
+    return {
+      configured: false,
+      connected: false,
+      database: null,
+      error: "missing_database_url",
+      counts: { keys: 0, auditLogs: 0, providers: 0 },
+    };
+  }
+
+  let database: string | null = null;
+  try {
+    const parsed = new URL(dbUrl);
+    database = decodeURIComponent(parsed.pathname.replace(/^\/+/, "")) || null;
+    const db = await getDb();
+    if (!db) throw new Error("database_unavailable");
+
+    const [keyRows, auditRows, providerRows] = await Promise.all([
+      db.select({ count: sql<number>`COUNT(*)` }).from(apiKeys),
+      db.select({ count: sql<number>`COUNT(*)` }).from(auditLogs),
+      db.select({ count: sql<number>`COUNT(*)` }).from(providerStats),
+    ]);
+
+    return {
+      configured: true,
+      connected: true,
+      database,
+      error: null,
+      counts: {
+        keys: Number(keyRows[0]?.count || 0),
+        auditLogs: Number(auditRows[0]?.count || 0),
+        providers: Number(providerRows[0]?.count || 0),
+      },
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      connected: false,
+      database,
+      error: classifyDatabaseDiagnosticError(error),
+      counts: { keys: 0, auditLogs: 0, providers: 0 },
+    };
+  }
+}
+
+export function classifyDatabaseDiagnosticError(error: unknown) {
+  const message = String(error instanceof Error ? error.message : error).toLowerCase();
+  if (message.includes("reserved tidb system database")) return "system_database";
+  if (message.includes("access denied") || message.includes("authentication")) return "access_denied";
+  if (message.includes("doesn't exist") || message.includes("does not exist") || message.includes("unknown table")) return "schema_missing";
+  if (message.includes("timeout")) return "timeout";
+  return "query_failed";
+}
+
 export async function getAllValidKeys() {
   const db = await getDb();
   if (!db) return [];
