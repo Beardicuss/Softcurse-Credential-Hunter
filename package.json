@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:cf": "wrangler pages dev -- pnpm dev",
     "build": "vite build",
-    "pages:build": "wrangler pages functions build functions --outdir .wrangler/functions-build --project-directory . --build-output-directory dist/public --compatibility-date 2026-06-22 --compatibility-flag nodejs_compat",
+    "pages:build": "wrangler pages functions build functions --outdir .wrangler/functions-build --project-directory . --build-output-directory dist --compatibility-date 2026-06-22 --compatibility-flag nodejs_compat",
     "workflow:verify": "node scripts/verify-workflow.cjs",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
