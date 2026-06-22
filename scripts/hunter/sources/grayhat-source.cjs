@@ -8,6 +8,7 @@ const { normalizeGrayhatResults } = require('./grayhat-normalizer.cjs');
 const { extractGrayhatFileKeys } = require('./grayhat-content-extractor.cjs');
 
 async function collectGrayhatCandidates(options = {}) {
+  const fetchSearch = options.fetchSearch || fetchGrayhatSearch;
   const config = options.config || getHunterSourceConfig().grayhat;
   const {
     enabled = false,
@@ -18,6 +19,7 @@ async function collectGrayhatCandidates(options = {}) {
     maxContentFiles = 8,
     maxContentBytes = 262144,
     timeoutMs = 15000,
+    apiPath = '/api/v2/files',
     userAgent = 'credential-hunter/0.1',
     allowedExtensions = [],
     allowedContentTypes = [],
@@ -64,10 +66,14 @@ async function collectGrayhatCandidates(options = {}) {
 
     try {
       await guard.beforeRequest();
-      const response = await fetchGrayhatSearch(query, { token, timeoutMs, userAgent, pathPrefix: apiPath });
+      const response = await fetchSearch(query, { token, timeoutMs, userAgent, pathPrefix: apiPath });
       if (response.statusCode !== 200) {
         errors.push({ source: 'grayhat', provider: query.provider, keyword: query.keyword, error: `http_${response.statusCode}` });
         await guard.onError(new Error(`http_${response.statusCode}`), { label: query.keyword + ' HTTP ' + response.statusCode });
+        if (response.statusCode === 401 || response.statusCode === 403) {
+          logger?.log?.('  · GrayHat authentication rejected; stopping source after one request.');
+          break;
+        }
         continue;
       }
 
@@ -77,6 +83,10 @@ async function collectGrayhatCandidates(options = {}) {
       } catch (_) {
         errors.push({ source: 'grayhat', provider: query.provider, keyword: query.keyword, error: 'parse_error' });
         await guard.onError(new Error('parse_error'), { label: query.keyword + ' HTTP ' + response.statusCode });
+        if (response.statusCode === 401 || response.statusCode === 403) {
+          logger?.log?.('  · GrayHat authentication rejected; stopping source after one request.');
+          break;
+        }
         continue;
       }
 
@@ -88,6 +98,8 @@ async function collectGrayhatCandidates(options = {}) {
       summary[query.provider].candidates += records.length;
     } catch (error) {
       errors.push({ source: 'grayhat', provider: query.provider, keyword: query.keyword, error: error?.message || 'request_failed' });
+      const safeReason = String(error?.message || 'request_failed').replace(/access_token=[^&\s]+/gi, 'access_token=***');
+      logger?.log?.('  · GrayHat request failed (' + query.keyword + '): ' + safeReason);
       await guard.onError(error, { label: query.keyword });
     }
   }
