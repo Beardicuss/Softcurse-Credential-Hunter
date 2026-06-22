@@ -64,10 +64,10 @@ async function collectGrayhatCandidates(options = {}) {
 
     try {
       await guard.beforeRequest();
-      const response = await fetchGrayhatSearch(query, { token, timeoutMs, userAgent });
+      const response = await fetchGrayhatSearch(query, { token, timeoutMs, userAgent, pathPrefix: apiPath });
       if (response.statusCode !== 200) {
         errors.push({ source: 'grayhat', provider: query.provider, keyword: query.keyword, error: `http_${response.statusCode}` });
-        await guard.onError(new Error(`http_${response.statusCode}`), { label: query.keyword });
+        await guard.onError(new Error(`http_${response.statusCode}`), { label: query.keyword + ' HTTP ' + response.statusCode });
         continue;
       }
 
@@ -76,7 +76,7 @@ async function collectGrayhatCandidates(options = {}) {
         payload = JSON.parse(response.body || 'null');
       } catch (_) {
         errors.push({ source: 'grayhat', provider: query.provider, keyword: query.keyword, error: 'parse_error' });
-        await guard.onError(new Error('parse_error'), { label: query.keyword });
+        await guard.onError(new Error('parse_error'), { label: query.keyword + ' HTTP ' + response.statusCode });
         continue;
       }
 

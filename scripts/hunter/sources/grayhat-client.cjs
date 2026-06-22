@@ -3,7 +3,7 @@ const https = require('https');
 function fetchGrayhatSearch(query, options = {}) {
   const {
     hostname = 'buckets.grayhatwarfare.com',
-    pathPrefix = '/api/v1/files',
+    pathPrefix = '/api/v2/files',
     userAgent = 'credential-hunter/0.1',
     timeoutMs = 15000,
     token = process.env.GRAYHAT_TOKEN || '',
@@ -12,6 +12,7 @@ function fetchGrayhatSearch(query, options = {}) {
   const params = new URLSearchParams();
   if (query?.keyword) params.set('keywords', query.keyword);
   if (query?.extensionQuery) params.set('extensions', query.extensionQuery);
+  if (token) params.set('access_token', token);
 
   const path = `${pathPrefix}?${params.toString()}`;
   const headers = {

@@ -34,6 +34,7 @@ function getHunterSourceConfig(env = process.env) {
       maxContentFiles: toInt(env.GRAYHAT_MAX_CONTENT_FILES, 8),
       maxContentBytes: toInt(env.GRAYHAT_MAX_CONTENT_BYTES, 262144),
       timeoutMs: toInt(env.GRAYHAT_TIMEOUT_MS, 15000),
+      apiPath: String(env.GRAYHAT_API_PATH || '/api/v2/files').trim(),
       userAgent: String(env.GRAYHAT_USER_AGENT || 'credential-hunter/0.1').trim(),
       allowedExtensions: String(env.GRAYHAT_ALLOWED_EXTENSIONS || 'env,json,txt,yaml,yml,config,js,ts,py,csv')
         .split(',')
