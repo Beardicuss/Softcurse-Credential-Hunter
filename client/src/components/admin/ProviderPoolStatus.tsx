@@ -3,13 +3,6 @@ import { Loader2, Plus } from "lucide-react";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../../server/routers";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -62,31 +55,33 @@ export function ProviderPoolStatus({
     <div className="glass-panel p-6">
       <div className="data-text data-cyan mb-4 tracking-widest uppercase border-b border-[var(--c-border)] pb-2 flex justify-between items-center">
         <span><span className="decorator" />Provider Pool Status</span>
-        <Dialog open={open} onOpenChange={nextOpen => { setOpen(nextOpen); if (!nextOpen) reset(); }}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="h-8 border-[var(--c-cyan)] text-[var(--c-cyan)] hover:bg-[var(--c-cyan)] hover:text-black">
-              <Plus className="h-4 w-4 mr-2" />ADD KEY
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="glass-panel border-[var(--c-cyan)] bg-[var(--c-bg)]">
-            <DialogHeader><DialogTitle className="data-text data-cyan">ADD NEW KEY</DialogTitle></DialogHeader>
-            <div className="grid gap-4 py-4 mt-2">
-              <Input placeholder="Provider (e.g. OpenAI)" className="glass-panel text-[var(--c-text)] data-text" value={provider} onChange={event => setProvider(event.target.value)} />
-              <Input placeholder="API Key Value" type="password" className="glass-panel text-[var(--c-text)] data-text" value={keyValue} onChange={event => setKeyValue(event.target.value)} />
-              <Select onValueChange={value => setValidity(value as AddableValidity)} value={validity}>
-                <SelectTrigger className="glass-panel !mb-2 data-text"><SelectValue placeholder="Validity Status" /></SelectTrigger>
-                <SelectContent className="glass-panel bg-[var(--c-bg)] border-[var(--c-cyan)]">
-                  <SelectItem value="valid" className="data-text text-green-500">valid</SelectItem>
-                  <SelectItem value="unknown" className="data-text text-yellow-500">unknown</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button className="w-full bg-[var(--c-cyan)] text-black hover:bg-[var(--c-cyan-soft)] mt-4 font-mono tracking-widest" onClick={submit} disabled={isAdding || !provider.trim() || !keyValue.trim()}>
+        <Button variant="outline" className="h-8 border-[var(--c-cyan)] text-[var(--c-cyan)] hover:bg-[var(--c-cyan)] hover:text-black" onClick={() => setOpen(open => !open)}>
+          <Plus className="h-4 w-4 mr-2" />ADD KEY
+        </Button>
+      </div>
+
+      {open && (
+        <div className="glass-panel border border-[var(--c-cyan)] bg-[var(--c-bg)] p-4 mb-4">
+          <div className="data-text data-cyan mb-3 tracking-widest uppercase">ADD NEW KEY</div>
+          <div className="grid gap-3">
+            <Input placeholder="Provider (e.g. OpenAI)" className="glass-panel text-[var(--c-text)] data-text" value={provider} onChange={event => setProvider(event.target.value)} />
+            <Input placeholder="API Key Value" type="password" className="glass-panel text-[var(--c-text)] data-text" value={keyValue} onChange={event => setKeyValue(event.target.value)} />
+            <Select onValueChange={value => setValidity(value as AddableValidity)} value={validity}>
+              <SelectTrigger className="glass-panel !mb-2 data-text"><SelectValue placeholder="Validity Status" /></SelectTrigger>
+              <SelectContent className="glass-panel bg-[var(--c-bg)] border-[var(--c-cyan)]">
+                <SelectItem value="valid" className="data-text text-green-500">valid</SelectItem>
+                <SelectItem value="unknown" className="data-text text-yellow-500">unknown</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex gap-3">
+              <Button className="flex-1 bg-[var(--c-cyan)] text-black hover:bg-[var(--c-cyan-soft)] font-mono tracking-widest" onClick={submit} disabled={isAdding || !provider.trim() || !keyValue.trim()}>
                 {isAdding ? <Loader2 className="h-4 w-4 animate-spin" /> : "[ INJECT KEY ]"}
               </Button>
+              <Button variant="outline" className="border-[var(--c-border)] text-[var(--c-cyan-dim)]" onClick={() => { reset(); setOpen(false); }}>CANCEL</Button>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono text-sm data-text">
         <StatusMetric label="Service" value={status.status.toUpperCase()} tone="text-green-400" />
